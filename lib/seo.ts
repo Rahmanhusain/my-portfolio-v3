@@ -1,0 +1,37 @@
+import type { Metadata } from 'next';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
+const siteName = 'Rahman — Full-Stack Developer';
+const defaultDescription =
+  'Full-Stack Developer building fast, accessible, and beautifully crafted web products. Available for freelance.';
+
+export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: siteName,
+      template: `%s | Rahman`,
+    },
+    description: defaultDescription,
+    openGraph: {
+      title: siteName,
+      description: defaultDescription,
+      url: siteUrl,
+      siteName,
+      images: ['/og-image.png'],
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: siteName,
+      description: defaultDescription,
+      images: ['/og-image.png'],
+    },
+    robots: { index: true, follow: true },
+    alternates: { canonical: '/' },
+    ...overrides,
+  };
+}
+
+export { siteUrl, siteName, defaultDescription };

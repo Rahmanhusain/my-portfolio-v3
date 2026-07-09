@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors */
+  --color-bg: #0a0a0a;
+  --color-surface: #141414;
+  --color-fg: #fafafa;
+  --color-muted: #8a8a8a;
+  --color-border: #242424;
+  --color-invert: #ffffff;
+
+  /* Typography */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-inter-tight);
+  --font-cursive: var(--font-cursive);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scrolling */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0a0a0a;
+  color: #fafafa;
+  font-family: var(--font-inter), Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection */
+::selection {
+  background-color: #fafafa;
+  color: #0a0a0a;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #242424;
+  border-radius: 2px;
+}
+
+/* Wheel perspective container */
+.wheel-perspective {
+  perspective: 1200px;
+}
+.wheel-flip {
+  transform-style: preserve-3d;
+}
+
+/* Section base */
+section {
+  position: relative;
+}
+
+/* Floating cards — width container; scale is handled in the component */
+.cards-responsive {
+  width: 100%;
 }
