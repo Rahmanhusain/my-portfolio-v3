@@ -102,7 +102,7 @@ export default function About() {
 
             <div ref={bioRef} className="space-y-4 text-[#8a8a8a] leading-relaxed">
               <p>
-                I&apos;m a Full-Stack Developer based in [City], specializing in building
+                I&apos;m a Full-Stack Developer based in Delhi, specializing in building
                 fast, accessible, and beautifully crafted web experiences. I work across
                 the entire stack — from designing pixel-perfect interfaces to architecting
                 scalable backend systems.
