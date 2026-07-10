@@ -81,7 +81,7 @@ export default function About() {
           ease: "none",
           scrollTrigger: {
             trigger: imgEl,
-            start: "top 80%",
+            start: "top 85%",
             end: "top center",
             scrub: 0.45,
           },
