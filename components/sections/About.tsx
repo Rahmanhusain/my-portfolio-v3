@@ -38,10 +38,11 @@ export default function About() {
   const bioRef = useRef<HTMLDivElement>(null);
 
   useScrollReveal(sectionRef, {
-    targets: bioRef,
+    targets: ".about-bio-line",
     trigger: bioRef,
-    y: 40,
-    duration: 0.9,
+    y: 24,
+    stagger: 0.14,
+    duration: 0.75,
     start: "top 82%",
   });
 
@@ -298,20 +299,20 @@ export default function About() {
             />
 
             <div ref={bioRef} className="space-y-4 text-muted leading-relaxed">
-              <p>
+              <p className="about-bio-line">
                 I&apos;m a Full-Stack Developer based in Delhi, specializing in
                 building fast, accessible, and beautifully crafted web
                 experiences. I work across the entire stack — from designing
                 pixel-perfect interfaces to architecting scalable backend
                 systems.
               </p>
-              <p>
+              <p className="about-bio-line">
                 I care deeply about performance, clean code, and the details
                 that make a product feel genuinely great to use. Whether
                 it&apos;s a startup&apos;s MVP or a production-grade platform, I
                 bring the same level of craft to every project.
               </p>
-              <p>
+              <p className="about-bio-line">
                 When I&apos;m not building, I&apos;m writing about web
                 development, contributing to open source, or exploring the
                 intersection of design and engineering.
