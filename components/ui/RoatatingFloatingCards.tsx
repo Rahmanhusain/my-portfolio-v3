@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import { useRef, useEffect, useState, useCallback } from 'react';
-import Image from 'next/image';
-import { gsap } from '@/lib/gsap';
-import { techStack } from '@/lib/data/techStack';
+import {
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useCallback,
+} from "react";
+import Image from "next/image";
+import { gsap } from "@/lib/gsap";
+import { techStack } from "@/lib/data/techStack";
 
 const W = 120;
 const H = 160;
@@ -25,6 +31,7 @@ const IDLE_LERP = 0.028;
 
 export default function FloatingCards() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const entranceRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const wheelRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -64,36 +71,44 @@ export default function FloatingCards() {
 
     const ro = new ResizeObserver(updateScale);
     ro.observe(parent);
-    window.addEventListener('resize', updateScale);
+    window.addEventListener("resize", updateScale);
 
     return () => {
       ro.disconnect();
-      window.removeEventListener('resize', updateScale);
+      window.removeEventListener("resize", updateScale);
     };
   }, [updateScale]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
+      "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const cardEls = sceneRef.current?.querySelectorAll<HTMLElement>('.fcard');
+    if (prefersReducedMotion) return;
+
+    const cardEls = sceneRef.current?.querySelectorAll<HTMLElement>(".fcard");
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    tl.fromTo(
+      entranceRef.current,
+      { opacity: 0, scale: 0.82, y: 22 },
+      { opacity: 1, scale: 1, y: 0, duration: 1 },
+    );
+
     if (cardEls) {
-      gsap.fromTo(
+      tl.fromTo(
         cardEls,
         { opacity: 0, scale: 0.55 },
         {
           opacity: 1,
           scale: 1,
-          duration: 1,
+          duration: 0.9,
           stagger: 0.06,
-          ease: 'back.out(1.5)',
-          delay: 0.35,
-        }
+          ease: "back.out(1.5)",
+        },
+        0.18,
       );
     }
-
-    if (prefersReducedMotion) return;
 
     const tick = (time: number) => {
       const s = state.current;
@@ -160,15 +175,15 @@ export default function FloatingCards() {
     };
 
     const el = sceneRef.current;
-    el?.addEventListener('pointerdown', onPointerDown);
-    el?.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
+    el?.addEventListener("pointerdown", onPointerDown);
+    el?.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
 
     return () => {
       cancelAnimationFrame(state.current.raf);
-      el?.removeEventListener('pointerdown', onPointerDown);
-      el?.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
+      el?.removeEventListener("pointerdown", onPointerDown);
+      el?.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
     };
   }, [angleStep]);
 
@@ -182,7 +197,11 @@ export default function FloatingCards() {
         style={{
           width: SCENE_W * scale,
           height: SCENE_H * scale,
+          opacity: 0,
+          transform: "translateY(22px) scale(0.82)",
+          transformOrigin: "center center",
         }}
+        ref={entranceRef}
       >
         <div
           ref={sceneRef}
@@ -191,109 +210,113 @@ export default function FloatingCards() {
             width: SCENE_W,
             height: SCENE_H,
             transform: `scale(${scale})`,
-            transformOrigin: 'top left',
+            transformOrigin: "top left",
             perspective: PERSPECTIVE,
-            perspectiveOrigin: '48% 40%',
+            perspectiveOrigin: "48% 40%",
           }}
           aria-label="Interactive 3D tech stack carousel"
           role="img"
         >
-      {/* Pose layer — locks the cylinder orientation in 3D (diagonal + pitched) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          transform: `rotateZ(${TILT_Z}deg) rotateX(${TILT_X}deg)`,
-          transformStyle: 'preserve-3d',
-          transformOrigin: '50% 50%',
-        }}
-      >
-        {/* Spin layer — only rotates around the cylinder's long axis (local Y) */}
-        <div
-          ref={wheelRef}
-          className="absolute inset-0"
-          style={{
-            transformStyle: 'preserve-3d',
-            transformOrigin: '50% 50%',
-          }}
-        >
-          {/* Ring guide — makes the wheel structure readable */}
+          {/* Pose layer — locks the cylinder orientation in 3D (diagonal + pitched) */}
           <div
-            className="absolute pointer-events-none"
-            aria-hidden="true"
+            className="absolute inset-0"
             style={{
-              width: RADIUS * 2,
-              height: RADIUS * 2,
-              left: `calc(50% - ${RADIUS}px)`,
-              top: `calc(50% - ${RADIUS}px)`,
-              border: '1px solid rgba(255,255,255,0.07)',
-              borderRadius: '50%',
-              transform: 'rotateX(90deg)',
-              transformStyle: 'preserve-3d',
-              boxShadow:
-                '0 0 40px rgba(255,255,255,0.02), inset 0 0 30px rgba(255,255,255,0.015)',
+              transform: `rotateZ(${TILT_Z}deg) rotateX(${TILT_X}deg)`,
+              transformStyle: "preserve-3d",
+              transformOrigin: "50% 50%",
             }}
-          />
-
-          {cards.map((tech, i) => (
+          >
+            {/* Spin layer — only rotates around the cylinder's long axis (local Y) */}
             <div
-              key={tech.name}
-              ref={(el) => {
-                cardRefs.current[i] = el;
-              }}
-              className="fcard absolute rounded-2xl overflow-hidden border border-white/10 bg-[#141414]"
+              ref={wheelRef}
+              className="absolute inset-0"
               style={{
-                width: W,
-                height: H,
-                left: `calc(50% - ${W / 2}px)`,
-                top: `calc(50% - ${H / 2}px)`,
-                transform: `
-                  rotateY(${i * angleStep}deg)
-                  translateZ(${RADIUS}px)
-                `,
-                transformStyle: 'preserve-3d',
-                boxShadow:
-                  '0 20px 60px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35)',
-                willChange: 'transform, opacity',
+                transformStyle: "preserve-3d",
+                transformOrigin: "50% 50%",
               }}
             >
+              {/* Ring guide — makes the wheel structure readable */}
               <div
-                className="absolute inset-0 z-10 pointer-events-none"
+                className="absolute pointer-events-none"
+                aria-hidden="true"
                 style={{
-                  background:
-                    'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.35) 100%)',
+                  width: RADIUS * 2,
+                  height: RADIUS * 2,
+                  left: `calc(50% - ${RADIUS}px)`,
+                  top: `calc(50% - ${RADIUS}px)`,
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "50%",
+                  transform: "rotateX(90deg)",
+                  transformStyle: "preserve-3d",
+                  boxShadow:
+                    "0 0 40px rgba(255,255,255,0.02), inset 0 0 30px rgba(255,255,255,0.015)",
                 }}
               />
 
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4">
-                <div className="w-14 h-14 flex items-center justify-center">
-                  <Image
-                    src={tech.icon}
-                    alt={tech.name}
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                    style={{ filter: 'brightness(0) invert(1) opacity(0.85)' }}
-                    onError={(e) => {
-                      const t = e.currentTarget as HTMLImageElement;
-                      t.style.display = 'none';
-                      const p = t.parentElement;
-                      if (p && !p.querySelector('span')) {
-                        const sp = document.createElement('span');
-                        sp.className = 'text-2xl font-bold text-white/40';
-                        sp.textContent = tech.name.slice(0, 2).toUpperCase();
-                        p.appendChild(sp);
-                      }
+              {cards.map((tech, i) => (
+                <div
+                  key={tech.name}
+                  ref={(el) => {
+                    cardRefs.current[i] = el;
+                  }}
+                  className="fcard absolute rounded-2xl overflow-hidden border border-white/10 bg-surface"
+                  style={{
+                    width: W,
+                    height: H,
+                    left: `calc(50% - ${W / 2}px)`,
+                    top: `calc(50% - ${H / 2}px)`,
+                    transform: `
+                  rotateY(${i * angleStep}deg)
+                  translateZ(${RADIUS}px)
+                `,
+                    transformStyle: "preserve-3d",
+                    boxShadow:
+                      "0 20px 60px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35)",
+                    willChange: "transform, opacity",
+                  }}
+                >
+                  <div
+                    className="absolute inset-0 z-10 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.35) 100%)",
                     }}
                   />
+
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4">
+                    <div className="w-14 h-14 flex items-center justify-center">
+                      <Image
+                        src={tech.icon}
+                        alt={tech.name}
+                        width={48}
+                        height={48}
+                        className="object-contain"
+                        style={{
+                          filter: "brightness(0) invert(1) opacity(0.85)",
+                        }}
+                        onError={(e) => {
+                          const t = e.currentTarget as HTMLImageElement;
+                          t.style.display = "none";
+                          const p = t.parentElement;
+                          if (p && !p.querySelector("span")) {
+                            const sp = document.createElement("span");
+                            sp.className = "text-2xl font-bold text-white/40";
+                            sp.textContent = tech.name
+                              .slice(0, 2)
+                              .toUpperCase();
+                            p.appendChild(sp);
+                          }
+                        }}
+                      />
+                    </div>
+                    <span className="text-[11px] font-medium text-white/40 tracking-wide">
+                      {tech.name}
+                    </span>
+                  </div>
                 </div>
-                <span className="text-[11px] font-medium text-white/40 tracking-wide">
-                  {tech.name}
-                </span>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
         </div>
       </div>
     </div>

@@ -5,10 +5,13 @@ import Projects from '@/components/sections/Projects';
 import Testimonials from '@/components/sections/Testimonials';
 import BlogPreview from '@/components/sections/BlogPreview';
 import Contact from '@/components/sections/Contact';
+import SmoothScrollProvider from '@/components/layout/SmoothScrollProvider';
+
 
 export default function HomePage() {
   return (
     <>
+    <SmoothScrollProvider>
       <Hero />
       <About />
       <Services />
@@ -16,6 +19,7 @@ export default function HomePage() {
       <Testimonials />
       <BlogPreview />
       <Contact />
+    </SmoothScrollProvider>
     </>
   );
 }

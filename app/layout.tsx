@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Inter_Tight, Dancing_Script } from 'next/font/google';
 import './globals.css';
-import SmoothScrollProvider from '@/components/layout/SmoothScrollProvider';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -84,12 +83,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-[#0a0a0a] text-[#fafafa] antialiased">
-        <SmoothScrollProvider>
           <Header />
           <main id="main-content" className="flex-1">
             {children}
           </main>
-        </SmoothScrollProvider>
         <Footer />
       </body>
     </html>
