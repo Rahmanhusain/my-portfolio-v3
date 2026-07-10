@@ -29,7 +29,7 @@ const DRAG_SENSITIVITY = 0.38;
 const MOMENTUM_FRICTION = 0.975;
 const IDLE_LERP = 0.028;
 
-export default function FloatingCards() {
+export default function RotatingFloatingCards() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const entranceRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);

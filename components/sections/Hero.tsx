@@ -1,33 +1,52 @@
-'use client';
+"use client";
 
-import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import { gsap } from '@/lib/gsap';
-import TechIconWheel from '@/components/ui/TechIconWheel';
-import MagneticButton from '@/components/ui/MagneticButton';
-import FloatingCards from '../ui/RoatatingFloatingCards';
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
+import MagneticButton from "@/components/ui/MagneticButton";
+import RotatingFloatingCards from "../ui/RoatatingFloatingCards";
 
 export default function Hero() {
-  const sectionRef   = useRef<HTMLElement>(null);
-  const nameLeftRef  = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const nameLeftRef = useRef<HTMLDivElement>(null);
   const nameRightRef = useRef<HTMLDivElement>(null);
-  const labelRef     = useRef<HTMLDivElement>(null);
-  const ctaRef       = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const heroNameSize = "clamp(2.6rem, min(8vw, 12vh), 8rem)";
 
   useGSAP(
     () => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.1 });
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        delay: 0.1,
+      });
 
-      tl.fromTo(nameLeftRef.current,
-          { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 1.0 }, 0)
-        .fromTo(nameRightRef.current,
-          { opacity: 0, x: 50 },  { opacity: 1, x: 0, duration: 1.0 }, 0)
-        .fromTo(labelRef.current,
-          { opacity: 0, y: 16 },  { opacity: 1, y: 0, duration: 0.75 }, 0.35)
-        .fromTo(ctaRef.current,
-          { opacity: 0, y: 16 },  { opacity: 1, y: 0, duration: 0.7  }, 0.5);
+      tl.fromTo(
+        nameLeftRef.current,
+        { opacity: 0, x: -50 },
+        { opacity: 1, x: 0, duration: 1.0 },
+        0,
+      )
+        .fromTo(
+          nameRightRef.current,
+          { opacity: 0, x: 50 },
+          { opacity: 1, x: 0, duration: 1.0 },
+          0,
+        )
+        .fromTo(
+          labelRef.current,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.75 },
+          0.35,
+        )
+        .fromTo(
+          ctaRef.current,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.7 },
+          0.5,
+        );
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   return (
@@ -44,7 +63,7 @@ export default function Hero() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 60% 55% at 50% 48%, rgba(255,255,255,0.028) 0%, transparent 70%)',
+            "radial-gradient(ellipse 60% 55% at 50% 48%, rgba(255,255,255,0.028) 0%, transparent 70%)",
         }}
         aria-hidden="true"
       />
@@ -69,11 +88,10 @@ export default function Hero() {
 
       {/* ── Main content — max-w-6xl container, matches all other sections ── */}
       <div className="max-w-6xl mx-auto px-6 w-full flex flex-col flex-1">
-
         {/* Cards — vertically centred, takes remaining space */}
-        <div className="flex flex-1 items-center justify-center py-10">
+        <div className="flex flex-1 items-center justify-center py-5">
           <div className="cards-responsive">
-            <FloatingCards   />
+            <RotatingFloatingCards />
           </div>
         </div>
 
@@ -84,8 +102,8 @@ export default function Hero() {
               id="hero-heading"
               className="font-display font-bold text-[#fafafa] leading-none"
               style={{
-                fontSize: 'clamp(2.6rem, 8vw, 8rem)',
-                letterSpacing: '-0.04em',
+                fontSize: heroNameSize,
+                letterSpacing: "-0.04em",
               }}
             >
               Rahman
@@ -96,10 +114,10 @@ export default function Hero() {
             <p
               className="font-display font-bold leading-none"
               style={{
-                fontSize: 'clamp(2.6rem, 8vw, 8rem)',
-                letterSpacing: '-0.04em',
-                color: 'transparent',
-                WebkitTextStroke: '1.5px rgba(250,250,250,0.2)',
+                fontSize: heroNameSize,
+                letterSpacing: "-0.04em",
+                color: "transparent",
+                WebkitTextStroke: "1.5px rgba(250,250,250,0.2)",
               }}
               aria-hidden="true"
             >
@@ -117,7 +135,10 @@ export default function Hero() {
             </p>
           </div>
 
-          <div ref={ctaRef} className="flex flex-wrap items-center justify-center gap-3">
+          <div
+            ref={ctaRef}
+            className="flex flex-wrap items-center justify-center gap-3"
+          >
             <MagneticButton
               as="a"
               href="/#contact"
@@ -128,14 +149,16 @@ export default function Hero() {
           </div>
 
           {/* Scroll cue */}
-          <div className="flex flex-col items-center gap-1 opacity-20" aria-hidden="true">
+          <div
+            className="flex flex-col items-center gap-1 opacity-20"
+            aria-hidden="true"
+          >
             <div className="w-px h-5 bg-[#fafafa]" />
             <span className="text-[9px] tracking-[0.18em] uppercase text-[#fafafa]">
               Scroll
             </span>
           </div>
         </div>
-
       </div>
     </section>
   );
