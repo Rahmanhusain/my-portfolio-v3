@@ -23,16 +23,12 @@ export default function About() {
   const imgScrollRef = useRef<HTMLDivElement>(null);
   const imgHoverRef = useRef<HTMLDivElement>(null);
   const imgPhotoRef = useRef<HTMLDivElement>(null);
-  const hoverTweenRef = useRef<gsap.core.Timeline | null>(null);
-  const moveTweensRef = useRef<{
-    rotateX: (value: number) => void;
-    rotateY: (value: number) => void;
-    x: (value: number) => void;
-    y: (value: number) => void;
-    scale: (value: number) => void;
+  const hoverEnabledRef = useRef(false);
+  const hoverMoveRef = useRef<{
+    cardX: (value: number) => void;
+    cardY: (value: number) => void;
     photoX: (value: number) => void;
     photoY: (value: number) => void;
-    photoScale: (value: number) => void;
   } | null>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const bioRef = useRef<HTMLDivElement>(null);
@@ -64,6 +60,7 @@ export default function About() {
       if (!imgEl) return;
 
       if (prefersReducedMotion) {
+        hoverEnabledRef.current = true;
         gsap.set(imgEl, { clearProps: "all", opacity: 1 });
         return;
       }
@@ -85,6 +82,9 @@ export default function About() {
             start: "top 85%",
             end: "top center",
             scrub: 0.45,
+            onUpdate: (self) => {
+              hoverEnabledRef.current = self.progress >= 0.995;
+            },
           },
           transformOrigin: "center center",
         },
@@ -94,6 +94,8 @@ export default function About() {
   );
 
   const handleImgEnter = useCallback(() => {
+    if (!hoverEnabledRef.current) return;
+
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -101,146 +103,84 @@ export default function About() {
     const photo = imgPhotoRef.current;
     if (prefersReducedMotion || !card || !photo) return;
 
-    if (!moveTweensRef.current) {
-      moveTweensRef.current = {
-        rotateX: gsap.quickTo(card, "rotateX", {
-          duration: 0.28,
-          ease: "power3.out",
-        }),
-        rotateY: gsap.quickTo(card, "rotateY", {
-          duration: 0.28,
-          ease: "power3.out",
-        }),
-        x: gsap.quickTo(card, "x", { duration: 0.28, ease: "power3.out" }),
-        y: gsap.quickTo(card, "y", { duration: 0.28, ease: "power3.out" }),
-        scale: gsap.quickTo(card, "scale", {
-          duration: 0.28,
-          ease: "power3.out",
-        }),
-        photoX: gsap.quickTo(photo, "x", { duration: 0.3, ease: "power3.out" }),
-        photoY: gsap.quickTo(photo, "y", { duration: 0.3, ease: "power3.out" }),
-        photoScale: gsap.quickTo(photo, "scale", {
-          duration: 0.3,
-          ease: "power3.out",
-        }),
+    if (!hoverMoveRef.current) {
+      hoverMoveRef.current = {
+        cardX: gsap.quickTo(card, "x", { duration: 0.3, ease: "power2.out" }),
+        cardY: gsap.quickTo(card, "y", { duration: 0.3, ease: "power2.out" }),
+        photoX: gsap.quickTo(photo, "x", { duration: 0.3, ease: "power2.out" }),
+        photoY: gsap.quickTo(photo, "y", { duration: 0.3, ease: "power2.out" }),
       };
     }
 
-    hoverTweenRef.current?.kill();
-    hoverTweenRef.current = gsap
-      .timeline()
-      .to(
-        card,
-        {
-          rotateX: -6,
-          rotateY: 10,
-          scale: 1.04,
-          boxShadow: IMG_SHADOW_HOVER,
-          duration: 0.45,
-          ease: "power2.out",
-        },
-        0,
-      )
-      .to(
-        photo,
-        {
-          filter: "grayscale(0%) brightness(1.08) saturate(1.05)",
-          scale: 1.06,
-          duration: 0.45,
-          ease: "power2.out",
-        },
-        0,
-      );
+    gsap.to(card, {
+      boxShadow: IMG_SHADOW_HOVER,
+      scale: 1.015,
+      duration: 0.3,
+      ease: "power2.out",
+    });
 
-    moveTweensRef.current.rotateX(-7);
-    moveTweensRef.current.rotateY(9);
-    moveTweensRef.current.x(0);
-    moveTweensRef.current.y(0);
-    moveTweensRef.current.scale(1.045);
-    moveTweensRef.current.photoX(0);
-    moveTweensRef.current.photoY(0);
-    moveTweensRef.current.photoScale(1.06);
+    gsap.to(photo, {
+      filter: "grayscale(0%) brightness(1.08) saturate(1.05)",
+      scale: 1.1,
+      duration: 0.3,
+      ease: "power2.out",
+    });
   }, []);
 
   const handleImgMove = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!hoverEnabledRef.current) return;
+
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
       const card = imgHoverRef.current;
       const photo = imgPhotoRef.current;
-      const moveTweens = moveTweensRef.current;
-      if (prefersReducedMotion || !card || !moveTweens) return;
+      const hoverMove = hoverMoveRef.current;
+      if (prefersReducedMotion || !card || !hoverMove) return;
 
       const rect = card.getBoundingClientRect();
-      const offsetX = (event.clientX - rect.left) / rect.width - 0.5;
-      const offsetY = (event.clientY - rect.top) / rect.height - 0.5;
+      const x = event.clientX - rect.left - rect.width / 2;
+      const y = event.clientY - rect.top - rect.height / 2;
 
-      moveTweens.rotateY(offsetX * 16);
-      moveTweens.rotateX(offsetY * -15);
-      moveTweens.x(offsetX * 8);
-      moveTweens.y(offsetY * 8);
-      moveTweens.photoX(offsetX * -10);
-      moveTweens.photoY(offsetY * -10);
+      hoverMove.cardX(x * 0.2);
+      hoverMove.cardY(y * 0.2);
 
       if (photo) {
-        gsap.to(photo, {
-          filter: "grayscale(0%) brightness(1.1) saturate(1.08)",
-          duration: 0.18,
-          ease: "power2.out",
-        });
+        hoverMove.photoX(x * -0.07);
+        hoverMove.photoY(y * -0.07);
       }
     },
     [],
   );
 
   const handleImgLeave = useCallback(() => {
+    if (!hoverEnabledRef.current) return;
+
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     const card = imgHoverRef.current;
     const photo = imgPhotoRef.current;
-    const moveTweens = moveTweensRef.current;
-    if (prefersReducedMotion || !card || !photo || !moveTweens) return;
+    if (prefersReducedMotion || !card || !photo) return;
 
-    hoverTweenRef.current?.kill();
-    hoverTweenRef.current = gsap
-      .timeline()
-      .to(
-        card,
-        {
-          rotateX: 0,
-          rotateY: 0,
-          x: 0,
-          y: 0,
-          scale: 1,
-          boxShadow: IMG_SHADOW_REST,
-          duration: 0.65,
-          ease: "elastic.out(1, 0.55)",
-        },
-        0,
-      )
-      .to(
-        photo,
-        {
-          filter: "grayscale(100%) brightness(1)",
-          scale: 1.02,
-          x: 0,
-          y: 0,
-          duration: 0.55,
-          ease: "power2.out",
-        },
-        0,
-      );
+    gsap.to(card, {
+      x: 0,
+      y: 0,
+      scale: 1,
+      boxShadow: IMG_SHADOW_REST,
+      duration: 0.5,
+      ease: "elastic.out(1, 0.4)",
+    });
 
-    moveTweens.rotateX(0);
-    moveTweens.rotateY(0);
-    moveTweens.x(0);
-    moveTweens.y(0);
-    moveTweens.scale(1);
-    moveTweens.photoX(0);
-    moveTweens.photoY(0);
-    moveTweens.photoScale(1.02);
+    gsap.to(photo, {
+      x: 0,
+      y: 0,
+      scale: 1.08,
+      filter: "grayscale(100%) brightness(1)",
+      duration: 0.45,
+      ease: "power2.out",
+    });
   }, []);
 
   return (
@@ -259,15 +199,12 @@ export default function About() {
             >
               <div
                 ref={imgHoverRef}
-                className="relative aspect-3/4 w-full rounded-2xl overflow-hidden border border-border bg-surface shrink-0 cursor-pointer touch-none"
+                className="relative aspect-[3/4.2] w-full rounded-2xl overflow-hidden border border-border bg-surface shrink-0 cursor-pointer touch-none"
                 style={{
                   boxShadow: IMG_SHADOW_REST,
                   transformStyle: "preserve-3d",
                   willChange: "transform, box-shadow",
                 }}
-                onMouseEnter={handleImgEnter}
-                onMouseLeave={handleImgLeave}
-                onMouseMove={handleImgMove}
                 onPointerEnter={handleImgEnter}
                 onPointerLeave={handleImgLeave}
                 onPointerMove={handleImgMove}
@@ -278,13 +215,18 @@ export default function About() {
                 <div
                   ref={imgPhotoRef}
                   className="absolute inset-0 grayscale"
-                  style={{ transform: "translateZ(0) scale(1.02)" }}
+                  style={{
+                    transform: "translateZ(0) scale(1.08)",
+                    willChange: "transform, filter",
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                  }}
                 >
                   <Image
                     src="/rahman.jpeg"
                     alt="Rahman — Full-Stack Developer"
                     fill
-                    className="object-cover object-[28%_center]"
+                    className="object-cover object-[2%_center]"
                     sizes="(max-width: 640px) 288px, (max-width: 768px) 320px, (max-width: 1024px) 352px, 384px"
                   />
                 </div>
