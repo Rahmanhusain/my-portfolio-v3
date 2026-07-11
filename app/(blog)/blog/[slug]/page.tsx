@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
-import { posts } from '@/lib/data/posts';
+import { posts, type ContentBlock } from '@/lib/data/posts';
+import { siteUrl } from '@/lib/seo';
 
-type Props = {
-  params: Promise<{ slug: string }>;
-};
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return posts.map((post) => ({ slug: post.slug }));
+  return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -16,49 +16,141 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = posts.find((p) => p.slug === slug);
   if (!post) return {};
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
+  const canonical = `${siteUrl}/blog/${post.slug}`;
+  const ogImage   = post.bannerImage.startsWith('/')
+    ? `${siteUrl}${post.bannerImage}`
+    : post.bannerImage;
 
   return {
-    title: post.title,
+    title:       post.title,
     description: post.description,
+    keywords:    post.keywords,
+    alternates:  { canonical },
     openGraph: {
-      title: post.title,
-      description: post.description,
-      url: `${siteUrl}/blog/${post.slug}`,
-      type: 'article',
+      title:         post.title,
+      description:   post.description,
+      url:           canonical,
+      type:          'article',
       publishedTime: post.updatedAt.toISOString(),
-      authors: ['Rahman'],
+      modifiedTime:  post.updatedAt.toISOString(),
+      authors:       ['Rahman'],
+      tags:          post.tags,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.bannerAlt }],
     },
     twitter: {
-      card: 'summary_large_image',
-      title: post.title,
+      card:        'summary_large_image',
+      title:       post.title,
       description: post.description,
+      images:      [ogImage],
     },
   };
 }
+
+// ─── Rich content renderer ───────────────────────────────────────────────────
+
+function renderBlock(block: ContentBlock, i: number) {
+  switch (block.type) {
+    case 'h2':
+      return (
+        <h2 key={i} className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mt-10 mb-4">
+          {block.text}
+        </h2>
+      );
+    case 'h3':
+      return (
+        <h3 key={i} className="font-display text-xl font-semibold text-[#fafafa] tracking-tight mt-7 mb-3">
+          {block.text}
+        </h3>
+      );
+    case 'p':
+      return (
+        <p key={i} className="text-[#8a8a8a] leading-relaxed mb-5">
+          {block.text}
+        </p>
+      );
+    case 'ul':
+      return (
+        <ul key={i} className="mb-5 space-y-2 pl-5 list-disc marker:text-[#3a3a3a]">
+          {block.items.map((item, j) => (
+            <li key={j} className="text-sm text-[#8a8a8a] leading-relaxed">
+              {item}
+            </li>
+          ))}
+        </ul>
+      );
+    case 'code':
+      return (
+        <div key={i} className="mb-5 rounded-xl overflow-hidden border border-[#242424]">
+          <div className="flex items-center justify-between px-4 py-2 bg-[#141414] border-b border-[#242424]">
+            <span className="text-[10px] text-[#8a8a8a] uppercase tracking-wider font-mono">
+              {block.lang}
+            </span>
+          </div>
+          <pre className="bg-[#0d0d0d] p-5 overflow-x-auto">
+            <code className="text-xs text-[#c9d1d9] font-mono leading-relaxed whitespace-pre">
+              {block.code}
+            </code>
+          </pre>
+        </div>
+      );
+    case 'image':
+      return (
+        <figure key={i} className="mb-6">
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-[#242424]">
+            <Image
+              src={block.src}
+              alt={block.alt}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 672px"
+            />
+          </div>
+          {block.caption && (
+            <figcaption className="text-xs text-[#8a8a8a] text-center mt-3">
+              {block.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+    case 'hr':
+      return <hr key={i} className="border-[#242424] my-8" />;
+    default:
+      return null;
+  }
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = posts.find((p) => p.slug === slug);
   if (!post) notFound();
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
+  const canonical = `${siteUrl}/blog/${post.slug}`;
 
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
-    description: post.description,
+    '@context':    'https://schema.org',
+    '@type':       'BlogPosting',
+    headline:      post.title,
+    description:   post.description,
+    keywords:      post.keywords.join(', '),
     datePublished: post.updatedAt.toISOString(),
-    dateModified: post.updatedAt.toISOString(),
+    dateModified:  post.updatedAt.toISOString(),
+    url:           canonical,
+    image:         post.bannerImage.startsWith('/')
+                     ? `${siteUrl}${post.bannerImage}`
+                     : post.bannerImage,
     author: {
       '@type': 'Person',
-      name: 'Rahman',
-      url: siteUrl,
+      name:    'Rahman',
+      url:     siteUrl,
     },
-    url: `${siteUrl}/blog/${post.slug}`,
+    publisher: {
+      '@type': 'Person',
+      name:    'Rahman',
+      url:     siteUrl,
+    },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   };
 
   return (
@@ -68,16 +160,31 @@ export default async function BlogPostPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <article className="min-h-screen pt-32 pb-20">
+      <article className="min-h-screen pb-20">
+        {/* Banner image */}
+        <div className="relative w-full aspect-[21/9] max-h-[480px] overflow-hidden mb-0">
+          <Image
+            src={post.bannerImage}
+            alt={post.bannerAlt}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]" />
+        </div>
+
         <div className="max-w-2xl mx-auto px-6">
+          {/* Back link */}
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-xs text-[#8a8a8a] hover:text-[#fafafa] transition-colors mb-12"
+            className="inline-flex items-center gap-2 text-xs text-[#8a8a8a] hover:text-[#fafafa] transition-colors mt-10 mb-10"
           >
             ← All posts
           </Link>
 
-          <header className="mb-12">
+          {/* Post header */}
+          <header className="mb-10">
             <div className="flex items-center gap-3 text-xs text-[#8a8a8a] mb-5">
               <time dateTime={post.updatedAt.toISOString().split('T')[0]}>
                 {post.date}
@@ -106,53 +213,26 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </header>
 
-          <hr className="border-[#242424] mb-12" />
+          <hr className="border-[#242424] mb-10" />
 
-          <div
-            className="prose prose-invert prose-sm md:prose-base max-w-none
-              prose-headings:font-display prose-headings:tracking-tight prose-headings:text-[#fafafa]
-              prose-p:text-[#8a8a8a] prose-p:leading-relaxed
-              prose-a:text-[#fafafa] prose-a:underline prose-a:underline-offset-2
-              prose-code:text-[#fafafa] prose-code:bg-[#141414] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
-              prose-pre:bg-[#141414] prose-pre:border prose-pre:border-[#242424]
-              prose-hr:border-[#242424]
-              prose-strong:text-[#fafafa]"
-          >
-            {post.content.split('\n').map((line, i) => {
-              if (line.startsWith('# '))
-                return (
-                  <h1 key={i} className="text-3xl font-bold mt-10 mb-4">
-                    {line.slice(2)}
-                  </h1>
-                );
-              if (line.startsWith('## '))
-                return (
-                  <h2 key={i} className="text-2xl font-semibold mt-8 mb-3">
-                    {line.slice(3)}
-                  </h2>
-                );
-              if (line.startsWith('### '))
-                return (
-                  <h3 key={i} className="text-xl font-semibold mt-6 mb-2">
-                    {line.slice(4)}
-                  </h3>
-                );
-              if (line.startsWith('```')) return null;
-              if (line.trim() === '') return <br key={i} />;
-              return (
-                <p key={i} className="text-[#8a8a8a] leading-relaxed mb-4">
-                  {line}
-                </p>
-              );
-            })}
+          {/* Rich content */}
+          <div className="prose-custom">
+            {post.body.map((block, i) => renderBlock(block, i))}
           </div>
 
-          <div className="mt-16 pt-8 border-t border-[#242424]">
+          {/* Footer nav */}
+          <div className="mt-16 pt-8 border-t border-[#242424] flex items-center justify-between">
             <Link
               href="/blog"
               className="text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors"
             >
               ← Back to all posts
+            </Link>
+            <Link
+              href="/services"
+              className="text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors"
+            >
+              View Services →
             </Link>
           </div>
         </div>

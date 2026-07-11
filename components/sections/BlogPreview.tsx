@@ -8,7 +8,10 @@ import { posts } from '@/lib/data/posts';
 
 export default function BlogPreview() {
   const sectionRef = useRef<HTMLElement>(null);
-  const previewPosts = posts.slice(0, 3);
+  // posts are sorted newest-first in the data file; take the first 3
+  const previewPosts = [...posts]
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, 3);
 
   useScrollReveal(sectionRef, {
     targets: '.blog-post-row',

@@ -1,0 +1,130 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { services } from '@/lib/data/services';
+import { siteUrl } from '@/lib/seo';
+
+export const metadata: Metadata = {
+  title: 'Services — Full-Stack Web Development',
+  description:
+    'Professional web development, UI/UX design, API development, custom CRM, business email, and hosting services. Crafted for startups and growing businesses.',
+  keywords: [
+    'web development services',
+    'full-stack developer for hire',
+    'UI UX design services',
+    'API development',
+    'custom CRM development',
+    'business email setup',
+    'web hosting deployment',
+    'freelance web developer',
+  ],
+  alternates: { canonical: `${siteUrl}/services` },
+  openGraph: {
+    title: 'Services — Full-Stack Web Development by Rahman',
+    description:
+      'End-to-end web development, design, and infrastructure services for businesses that care about quality.',
+    url: `${siteUrl}/services`,
+    type: 'website',
+    images: [{ url: `${siteUrl}/og-image.png`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Services — Full-Stack Web Development by Rahman',
+    description:
+      'End-to-end web development, design, and infrastructure services for businesses that care about quality.',
+    images: [`${siteUrl}/og-image.png`],
+  },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Services — Rahman Full-Stack Developer',
+  description: metadata.description,
+  url: `${siteUrl}/services`,
+  itemListElement: services.map((s, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: s.title,
+    description: s.shortDesc,
+    url: `${siteUrl}/services/${s.slug}`,
+  })),
+};
+
+export default function ServicesPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <div className="min-h-screen pt-32 pb-20">
+        <div className="max-w-6xl mx-auto px-6">
+          {/* Header */}
+          <header className="mb-20 max-w-2xl">
+            <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-4">
+              What I Do
+            </p>
+            <h1 className="font-display text-5xl md:text-6xl font-bold text-[#fafafa] tracking-tight leading-tight mb-6">
+              Services
+            </h1>
+            <p className="text-[#8a8a8a] leading-relaxed text-lg">
+              I work across the entire stack — from designing pixel-perfect
+              interfaces to building the infrastructure behind them. Whether
+              you need a complete product built from scratch or a specific
+              piece of the puzzle, here is how I can help.
+            </p>
+          </header>
+
+          {/* Services grid — same visual pattern as home page */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#242424] border border-[#242424] rounded-2xl overflow-hidden">
+            {services.map((service) => (
+              <article
+                key={service.slug}
+                className="p-8 bg-[#0a0a0a] hover:bg-[#141414] transition-colors duration-300 group flex flex-col"
+              >
+                <p className="font-display text-xs font-medium text-[#242424] group-hover:text-[#3a3a3a] mb-4 transition-colors duration-300 tracking-wider">
+                  {service.number}
+                </p>
+                <h2 className="font-display text-xl font-semibold text-[#fafafa] mb-3 leading-tight tracking-tight">
+                  {service.title}
+                </h2>
+                <p className="text-sm text-[#8a8a8a] leading-relaxed flex-1">
+                  {service.shortDesc}
+                </p>
+                <div className="mt-6 flex items-center justify-between">
+                  <div className="w-6 h-px bg-[#242424] group-hover:w-12 group-hover:bg-[#fafafa] transition-all duration-300" />
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className="text-[11px] font-semibold uppercase tracking-wide text-[#8a8a8a] group-hover:text-[#fafafa] transition-colors duration-200"
+                    aria-label={`Learn more about ${service.title}`}
+                  >
+                    Learn More →
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div className="mt-20 pt-12 border-t border-[#242424] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+              <h2 className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mb-2">
+                Not sure what you need?
+              </h2>
+              <p className="text-sm text-[#8a8a8a]">
+                Drop me a message and we can figure it out together.
+              </p>
+            </div>
+            <a
+              href="mailto:hello@yourname.dev"
+              className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-6 py-3 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
+            >
+              Get in Touch
+            </a>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

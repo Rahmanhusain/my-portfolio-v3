@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 
 const navLinks = [
-  { label: 'Work',    href: '/#projects' },
-  { label: 'About',   href: '/#about'    },
-  { label: 'Blog',    href: '/blog'       },
-  { label: 'Contact', href: '/#contact'  },
+  { label: 'Services', href: '/services' },
+  { label: 'About',    href: '/#about'   },
+  { label: 'Blog',     href: '/blog'     },
+  { label: 'Contact',  href: '/#contact' },
 ];
 
 export default function Header() {
@@ -49,7 +49,7 @@ export default function Header() {
           className={[
             'flex items-center justify-center gap-0.5 mx-auto rounded-full px-1.5 py-1 transition-all duration-500',
             scrolled
-              ? 'bg-white/[0.05] border border-white/[0.08]'
+              ? 'bg-white/[0.01] border border-white/[0.08]'
               : 'bg-white/[0.03] border border-white/[0.05]',
           ].join(' ')}
         >

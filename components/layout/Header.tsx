@@ -7,10 +7,10 @@ import { gsap, ScrollTrigger } from '@/lib/gsap';
 import clsx from 'clsx';
 
 const navLinks = [
-  { label: 'Work',    href: '/#projects' },
-  { label: 'About',   href: '/#about'    },
-  { label: 'Blog',    href: '/blog'       },
-  { label: 'Contact', href: '/#contact'  },
+  { label: 'Services', href: '/services' },
+  { label: 'About',    href: '/#about'   },
+  { label: 'Blog',     href: '/blog'     },
+  { label: 'Contact',  href: '/#contact' },
 ];
 
 export default function Header() {
