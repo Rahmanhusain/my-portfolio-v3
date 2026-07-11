@@ -1,17 +1,5 @@
-import type { ReactNode } from 'react';
-
-// ─── Content block types ────────────────────────────────────────────────────
-// Rich content is expressed as a typed array of blocks so pages can render
-// images, code, headings and paragraphs without a markdown parser.
-
-export type ContentBlock =
-  | { type: 'h2';   text: string }
-  | { type: 'h3';   text: string }
-  | { type: 'p';    text: string }
-  | { type: 'ul';   items: string[] }
-  | { type: 'code'; lang: string; code: string }
-  | { type: 'image'; src: string; alt: string; caption?: string }
-  | { type: 'hr' };
+import type { ContentBlock } from '@/lib/content-blocks';
+export type { ContentBlock } from '@/lib/content-blocks';
 
 // ─── Post type ───────────────────────────────────────────────────────────────
 

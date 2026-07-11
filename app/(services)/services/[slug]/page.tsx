@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { services } from '@/lib/data/services';
 import { siteUrl } from '@/lib/seo';
+import { renderBlock } from '@/lib/content-blocks';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -112,6 +113,13 @@ export default async function ServicePage({ params }: Props) {
           </header>
 
           <hr className="border-[#242424] mb-12" />
+
+          {/* Rich body content */}
+          {service.body.length > 0 && (
+            <div className="mb-14">
+              {service.body.map((block, i) => renderBlock(block, i))}
+            </div>
+          )}
 
           {/* Benefits */}
           <section aria-labelledby="benefits-heading" className="mb-14">

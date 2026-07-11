@@ -27,9 +27,9 @@ const DRAG_SENSITIVITY = 0.38;
 const MOMENTUM_FRICTION = 0.975;
 const IDLE_LERP = 0.028;
 
-const HOVER_TILT_MAX = 7;     // max extra degrees on each axis from hover
+const HOVER_TILT_MAX = 15;     // max extra degrees on each axis from hover
 const TILT_LERP = 0.07;       // how quickly tilt follows the cursor (0-1)
-const SCROLL_BOOST = 0.30;    // deltaY → velocity multiplier
+const SCROLL_BOOST = 0.40;    // deltaY → velocity multiplier
 
 export default function RotatingFloatingCards() {
   const wrapRef    = useRef<HTMLDivElement>(null);
