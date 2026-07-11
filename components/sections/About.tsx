@@ -65,6 +65,8 @@ export default function About() {
         return;
       }
 
+      gsap.set([imgHoverRef.current, imgPhotoRef.current], { force3D: true });
+
       gsap.fromTo(
         imgEl,
         {
@@ -120,7 +122,6 @@ export default function About() {
     });
 
     gsap.to(photo, {
-      filter: "grayscale(0%) brightness(1.08) saturate(1.05)",
       scale: 1.1,
       duration: 0.3,
       ease: "power2.out",
@@ -143,12 +144,12 @@ export default function About() {
       const x = event.clientX - rect.left - rect.width / 2;
       const y = event.clientY - rect.top - rect.height / 2;
 
-      hoverMove.cardX(x * 0.2);
-      hoverMove.cardY(y * 0.2);
+      hoverMove.cardX(x * 0.16);
+      hoverMove.cardY(y * 0.16);
 
       if (photo) {
-        hoverMove.photoX(x * -0.07);
-        hoverMove.photoY(y * -0.07);
+        hoverMove.photoX(x * -0.045);
+        hoverMove.photoY(y * -0.045);
       }
     },
     [],
@@ -177,7 +178,6 @@ export default function About() {
       x: 0,
       y: 0,
       scale: 1.08,
-      filter: "grayscale(100%) brightness(1)",
       duration: 0.45,
       ease: "power2.out",
     });
@@ -199,7 +199,7 @@ export default function About() {
             >
               <div
                 ref={imgHoverRef}
-                className="relative aspect-[3/4.2] w-full rounded-2xl overflow-hidden border border-border bg-surface shrink-0 cursor-pointer touch-none"
+                className="relative aspect-[3/4.1] w-full rounded-2xl overflow-hidden border border-border bg-surface shrink-0 cursor-pointer touch-none"
                 style={{
                   boxShadow: IMG_SHADOW_REST,
                   transformStyle: "preserve-3d",
@@ -214,10 +214,10 @@ export default function About() {
               >
                 <div
                   ref={imgPhotoRef}
-                  className="absolute inset-0 grayscale"
+                  className="absolute inset-0"
                   style={{
-                    transform: "translateZ(0) scale(1.08)",
-                    willChange: "transform, filter",
+                    transform: "translateZ(0) scale(1.12)",
+                    willChange: "transform",
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
                   }}
@@ -226,7 +226,7 @@ export default function About() {
                     src="/rahman.jpeg"
                     alt="Rahman — Full-Stack Developer"
                     fill
-                    className="object-cover object-[2%_center]"
+                    className="object-cover object-center"
                     sizes="(max-width: 640px) 288px, (max-width: 768px) 320px, (max-width: 1024px) 352px, 384px"
                   />
                 </div>
