@@ -70,7 +70,6 @@ export default async function BlogPostPage({ params }: Props) {
 
       <article className="min-h-screen pt-32 pb-20">
         <div className="max-w-2xl mx-auto px-6">
-          {/* Back */}
           <Link
             href="/blog"
             className="inline-flex items-center gap-2 text-xs text-[#8a8a8a] hover:text-[#fafafa] transition-colors mb-12"
@@ -78,7 +77,6 @@ export default async function BlogPostPage({ params }: Props) {
             ← All posts
           </Link>
 
-          {/* Header */}
           <header className="mb-12">
             <div className="flex items-center gap-3 text-xs text-[#8a8a8a] mb-5">
               <time dateTime={post.updatedAt.toISOString().split('T')[0]}>
@@ -110,7 +108,6 @@ export default async function BlogPostPage({ params }: Props) {
 
           <hr className="border-[#242424] mb-12" />
 
-          {/* Content */}
           <div
             className="prose prose-invert prose-sm md:prose-base max-w-none
               prose-headings:font-display prose-headings:tracking-tight prose-headings:text-[#fafafa]
@@ -140,8 +137,7 @@ export default async function BlogPostPage({ params }: Props) {
                     {line.slice(4)}
                   </h3>
                 );
-              if (line.startsWith('```'))
-                return null; // code fences handled below
+              if (line.startsWith('```')) return null;
               if (line.trim() === '') return <br key={i} />;
               return (
                 <p key={i} className="text-[#8a8a8a] leading-relaxed mb-4">
@@ -151,7 +147,6 @@ export default async function BlogPostPage({ params }: Props) {
             })}
           </div>
 
-          {/* Footer nav */}
           <div className="mt-16 pt-8 border-t border-[#242424]">
             <Link
               href="/blog"

@@ -7,10 +7,8 @@ import BlogPreview from '@/components/sections/BlogPreview';
 import Contact from '@/components/sections/Contact';
 import SmoothScrollProvider from '@/components/layout/SmoothScrollProvider';
 
-
 export default function HomePage() {
   return (
-    <>
     <SmoothScrollProvider>
       <Hero />
       <About />
@@ -20,6 +18,5 @@ export default function HomePage() {
       <BlogPreview />
       <Contact />
     </SmoothScrollProvider>
-    </>
   );
 }

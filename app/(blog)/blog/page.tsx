@@ -12,7 +12,6 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen pt-32 pb-20">
       <div className="max-w-3xl mx-auto px-6">
-        {/* Header */}
         <header className="mb-16">
           <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-4">
             Writing
@@ -26,7 +25,6 @@ export default function BlogPage() {
           </p>
         </header>
 
-        {/* Posts list */}
         <ol className="divide-y divide-[#242424]">
           {posts.map((post) => (
             <li key={post.slug}>

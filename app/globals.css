@@ -66,6 +66,18 @@ body {
   transform-style: preserve-3d;
 }
 
+/* Header entrance animation */
+@keyframes header-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Section base */
 section {
   position: relative;
