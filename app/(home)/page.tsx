@@ -3,6 +3,7 @@ import About from '@/components/sections/About';
 import Services from '@/components/sections/Services';
 import Projects from '@/components/sections/Projects';
 import Testimonials from '@/components/sections/Testimonials';
+import Workflow from '@/components/sections/Workflow';
 import BlogPreview from '@/components/sections/BlogPreview';
 import Contact from '@/components/sections/Contact';
 import SmoothScrollProvider from '@/components/layout/SmoothScrollProvider';
@@ -15,6 +16,7 @@ export default function HomePage() {
       <Services />
       <Projects />
       <Testimonials />
+      <Workflow />
       <BlogPreview />
       <Contact />
     </SmoothScrollProvider>
