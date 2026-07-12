@@ -1,0 +1,41 @@
+{
+  "number": "02",
+  "slug": "ui-ux-design",
+  "title": "UI/UX Design",
+  "shortDesc": "Pixel-perfect interfaces with fluid animations and micro-interactions that elevate user experience.",
+  "description": "Good design is not decoration — it is the difference between a product people enjoy using and one they tolerate. I design interfaces in Figma, then bring them to life in code with precise attention to spacing, typography, and motion.",
+  "bannerImage": "/services/ui-ux-design.jpg",
+  "bannerAlt": "Figma design file showing component library and responsive layouts",
+  "keywords": ["UI UX design services", "Figma designer", "web interface design", "user experience design", "motion design"],
+  "body": [
+    { "type": "h2", "text": "Design and code in one hand" },
+    {
+      "type": "p",
+      "text": "Most design processes suffer from a handoff gap — the gap between what is designed and what gets built. Because I do both, that gap does not exist. What you approve in Figma is what ships in the browser, pixel for pixel."
+    },
+    { "type": "h2", "text": "The design process" },
+    {
+      "type": "ol",
+      "items": [
+        "Discovery — understanding your users, brand, and business goals",
+        "Information architecture — defining structure and user flows before visual design begins",
+        "Wireframes — low-fidelity layouts that focus on structure and hierarchy",
+        "Visual design — high-fidelity screens with your brand applied consistently",
+        "Prototyping — interactive Figma prototype for stakeholder review",
+        "Implementation — design translated directly into production code"
+      ]
+    },
+    { "type": "h2", "text": "Motion design" },
+    {
+      "type": "p",
+      "text": "Animation is part of the design, not a finishing touch. Page transitions, hover states, loading indicators, and scroll-driven reveals are all considered during the design phase so they are purposeful rather than decorative."
+    }
+  ],
+  "benefits": [
+    { "title": "Design to code, no handoff gaps", "description": "Because I design and build, the finished product matches the mockup exactly — no compromises in translation." },
+    { "title": "Component-driven systems", "description": "A well-organised design system speeds up iteration and keeps every screen visually consistent." },
+    { "title": "Motion that means something", "description": "Animations guide attention and communicate state rather than just decorating the page." },
+    { "title": "Mobile-first by default", "description": "Every layout is designed for small screens first, then progressively enhanced for larger viewports." }
+  ],
+  "whyMe": "I approach design as a problem-solving discipline, not an aesthetic exercise. I ask why before asking what, which means the interfaces I create solve real user problems while looking genuinely beautiful. My background in both design and engineering means I never propose something that cannot be built."
+}

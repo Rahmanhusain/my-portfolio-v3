@@ -1,0 +1,43 @@
+{
+  "number": "01",
+  "slug": "web-app-development",
+  "title": "Web & App Development",
+  "shortDesc": "End-to-end web applications built with modern frameworks — fast, scalable, and production-ready.",
+  "description": "I build web applications from scratch using React, Next.js, and TypeScript. Whether you need a marketing site, a SaaS dashboard, or a complex data-driven platform, I handle everything from architecture decisions to deployment. Every project ships with clean code, thorough documentation, and a focus on long-term maintainability.",
+  "bannerImage": "/blogpostimages/banner.webp",
+  "bannerAlt": "Code editor showing a modern React and Next.js web application",
+  "keywords": ["web development services", "Next.js developer", "React app development", "full-stack web developer", "custom web application"],
+  "body": [
+    { "type": "h2", "text": "What the process looks like" },
+    {
+      "type": "p",
+      "text": "Every engagement starts with a discovery call where we define goals, constraints, and success criteria. From there I produce a technical spec before writing a single line of code — so you know exactly what you are getting and when."
+    },
+    { "type": "h2", "text": "The technology stack" },
+    {
+      "type": "p",
+      "text": "I default to Next.js with the App Router for most web projects. It gives you server-side rendering, static generation, API routes, and image optimisation in one cohesive framework. TypeScript is non-negotiable — it catches entire classes of bugs at compile time rather than in production."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Frontend: React 19, Next.js 15, TypeScript, Tailwind CSS",
+        "State management: Zustand or React Query depending on the data model",
+        "Database: PostgreSQL with Prisma, or MongoDB for document-oriented data",
+        "Deployment: Vercel (web) or Docker on a managed VPS for full control"
+      ]
+    },
+    { "type": "h2", "text": "What gets delivered" },
+    {
+      "type": "p",
+      "text": "You receive a production-ready codebase in a private Git repository, a deployment pipeline, environment variable documentation, and a handover session. I do not disappear after launch — the first 30 days include free bug fixes on anything I built."
+    }
+  ],
+  "benefits": [
+    { "title": "Performance by default", "description": "Server-side rendering, image optimisation, and code splitting are built in from the start — not bolted on afterward." },
+    { "title": "Scalable architecture", "description": "Clean separation of concerns and typed interfaces mean your codebase stays manageable as the product grows." },
+    { "title": "SEO-ready structure", "description": "Semantic HTML, proper metadata, and static generation where appropriate give search engines exactly what they need." },
+    { "title": "Accessible out of the box", "description": "WCAG-compliant markup, keyboard navigation, and screen-reader support are part of every build, not an afterthought." }
+  ],
+  "whyMe": "I have shipped production applications for startups and established businesses across e-commerce, SaaS, and media. I care about the details — from the architecture diagram to the loading spinner — and I stay involved through launch and beyond. You get a partner who understands both the business problem and the technical solution."
+}

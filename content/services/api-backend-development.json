@@ -1,0 +1,43 @@
+{
+  "number": "03",
+  "slug": "api-backend-development",
+  "title": "API & Backend Development",
+  "shortDesc": "Robust REST and GraphQL APIs, database design, and cloud infrastructure that scale with your product.",
+  "description": "A strong frontend is only as good as the backend behind it. I design and build REST and GraphQL APIs using Node.js, with PostgreSQL or MongoDB depending on your data model. Authentication, rate limiting, caching, and deployment are all handled so your backend is reliable, secure, and ready for growth.",
+  "bannerImage": "/services/api-backend.jpg",
+  "bannerAlt": "Terminal window showing API routes and database schema for a Node.js application",
+  "keywords": ["API development services", "Node.js backend developer", "REST API development", "GraphQL API", "backend as a service"],
+  "body": [
+    { "type": "h2", "text": "REST vs GraphQL — picking the right tool" },
+    {
+      "type": "p",
+      "text": "REST APIs are straightforward, cache well, and are easy to understand. GraphQL shines when clients need flexible queries over complex, related data. I help you pick the right approach for your use case rather than defaulting to whichever is trendier."
+    },
+    { "type": "h2", "text": "Security is not optional" },
+    {
+      "type": "p",
+      "text": "Every API I build includes input validation on all endpoints, parameterised queries to prevent SQL injection, rate limiting per IP and per user, and JWT or session-based authentication depending on the client type. These are defaults, not extras."
+    },
+    { "type": "h2", "text": "Database design" },
+    {
+      "type": "p",
+      "text": "A poorly designed schema causes performance problems that are expensive to fix later. I model data carefully upfront, write migrations rather than manual schema changes, and index queries that will run at scale."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "PostgreSQL with Prisma ORM for relational data",
+        "MongoDB with Mongoose for document-oriented data",
+        "Redis for caching and session storage",
+        "Full-text search via PostgreSQL or dedicated Meilisearch instance"
+      ]
+    }
+  ],
+  "benefits": [
+    { "title": "Type-safe end to end", "description": "Shared TypeScript types between frontend and backend eliminate entire classes of runtime errors." },
+    { "title": "Built for the real world", "description": "Proper error handling, input validation, and rate limiting protect your API from day one." },
+    { "title": "Documentation included", "description": "Every API ships with OpenAPI / Swagger documentation so your team and future integrations are never left guessing." },
+    { "title": "Observability baked in", "description": "Structured logging and request tracing make debugging in production straightforward rather than painful." }
+  ],
+  "whyMe": "Backend work that nobody notices is the best backend work — it just runs. I have designed APIs for products serving thousands of users and know what it takes to keep them stable under load. I write tests, document assumptions, and hand over systems that your team can confidently maintain."
+}

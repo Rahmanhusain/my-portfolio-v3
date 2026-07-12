@@ -1,0 +1,44 @@
+{
+  "number": "06",
+  "slug": "hosting-deployment",
+  "title": "Hosting & Deployment",
+  "shortDesc": "Production-grade deployments on reliable infrastructure, with CI/CD and monitoring included.",
+  "description": "Deploying a web application is about more than uploading files. I set up production environments on Vercel, Netlify, AWS, or DigitalOcean depending on your needs, along with CI/CD pipelines so every commit to main is tested and deployed automatically.",
+  "bannerImage": "/services/hosting-deployment.jpg",
+  "bannerAlt": "Cloud infrastructure diagram showing CI/CD pipeline from code commit to production",
+  "keywords": ["web hosting services", "deployment setup", "CI/CD pipeline", "Vercel deployment", "cloud hosting developer"],
+  "body": [
+    { "type": "h2", "text": "Choosing the right platform" },
+    {
+      "type": "p",
+      "text": "Vercel is the obvious choice for Next.js projects — it handles edge caching, preview deployments, and environment management with almost no configuration. For projects that need more control (background workers, custom networking, large file storage), a VPS on DigitalOcean or a managed container service on AWS is usually the better fit."
+    },
+    { "type": "h2", "text": "CI/CD that actually saves time" },
+    {
+      "type": "p",
+      "text": "A good pipeline does more than deploy. It runs your test suite, checks types, lints your code, and only deploys if everything passes. I set up GitHub Actions workflows that give you fast feedback on every pull request and automatic deployments on merge."
+    },
+    { "type": "h2", "text": "Observability from day one" },
+    {
+      "type": "ul",
+      "items": [
+        "Uptime monitoring with Betterstack or UptimeRobot — alerts before users notice",
+        "Error tracking with Sentry — full stack traces with source maps",
+        "Performance monitoring — real user metrics, not just Lighthouse scores",
+        "Log aggregation — structured logs searchable across deployments"
+      ]
+    },
+    { "type": "h2", "text": "Environment management" },
+    {
+      "type": "p",
+      "text": "Environment variables, secrets, and configuration drift are a common source of production incidents. I document every variable, separate concerns between development, staging, and production environments, and ensure secrets are never committed to source control."
+    }
+  ],
+  "benefits": [
+    { "title": "Zero-downtime deployments", "description": "Atomic deployments and rollback capability mean a bad push never takes your site offline." },
+    { "title": "Automated testing in CI", "description": "Every push runs your test suite before reaching production — catching regressions before your users do." },
+    { "title": "Monitoring and alerts", "description": "Uptime monitoring and error tracking are set up from day one so you know about issues before your users report them." },
+    { "title": "Infrastructure as code", "description": "Environment configuration lives in version control, making it reproducible and disaster-recovery-ready." }
+  ],
+  "whyMe": "I have deployed and maintained applications ranging from simple marketing sites to data-intensive platforms with millions of monthly requests. I choose the right infrastructure for your scale and budget rather than defaulting to the most expensive option, and I document everything so your team is never dependent on me for operational knowledge."
+}

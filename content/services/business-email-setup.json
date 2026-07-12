@@ -1,0 +1,39 @@
+{
+  "number": "05",
+  "slug": "business-email-setup",
+  "title": "Business Email Setup",
+  "shortDesc": "Professional branded email on your domain, configured correctly and secured from the start.",
+  "description": "A business email address on your own domain builds trust with clients and protects your brand. I handle the full setup — DNS records, mail provider configuration, SPF, DKIM, and DMARC — so your emails reach the inbox rather than the spam folder every time.",
+  "bannerImage": "/services/business-email.jpg",
+  "bannerAlt": "Email client showing a professional branded inbox on a custom domain",
+  "keywords": ["business email setup", "custom domain email", "professional email configuration", "SPF DKIM DMARC setup", "Google Workspace setup"],
+  "body": [
+    { "type": "h2", "text": "Why email deliverability matters" },
+    {
+      "type": "p",
+      "text": "A misconfigured email domain does not just look unprofessional — it gets your messages silently dropped into spam folders, or rejected outright. SPF, DKIM, and DMARC are the three DNS records that tell receiving servers your domain is legitimate. Getting them right is not optional."
+    },
+    { "type": "h2", "text": "Providers I work with" },
+    {
+      "type": "ul",
+      "items": [
+        "Google Workspace (Gmail with your domain) — best for teams already in the Google ecosystem",
+        "Microsoft 365 (Outlook with your domain) — preferred for businesses using Office tools",
+        "Zoho Mail — a cost-effective option for smaller teams",
+        "Custom SMTP with Postfix or similar — for full self-hosted control"
+      ]
+    },
+    { "type": "h2", "text": "What the setup includes" },
+    {
+      "type": "p",
+      "text": "I configure your MX, SPF, DKIM, and DMARC records, verify delivery with a test send to multiple providers, and document every record I created so you can manage your domain confidently in the future. If you need email forwarding, aliases, or shared inboxes, those are included."
+    }
+  ],
+  "benefits": [
+    { "title": "Inbox deliverability", "description": "Properly configured SPF, DKIM, and DMARC records mean your emails land in inboxes, not spam folders." },
+    { "title": "Professional brand image", "description": "A branded email address signals legitimacy to clients and partners in a way free webmail cannot." },
+    { "title": "Secure by default", "description": "Email security settings are configured to prevent spoofing and phishing attacks on your domain from day one." },
+    { "title": "Works with your existing tools", "description": "Compatible with Google Workspace, Microsoft 365, or any IMAP provider — your team keeps the apps they prefer." }
+  ],
+  "whyMe": "Email setup sounds simple until a misconfigured DNS record sends every message to spam. I have set up email infrastructure for dozens of businesses and know the pitfalls. I also test deliverability after setup, so you have confidence before sending your first important message."
+}

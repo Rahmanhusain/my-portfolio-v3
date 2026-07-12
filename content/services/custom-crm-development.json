@@ -1,0 +1,41 @@
+{
+  "number": "04",
+  "slug": "custom-crm-development",
+  "title": "Custom CRM Development",
+  "shortDesc": "Tailored CRM systems built around your workflow — not the other way around.",
+  "description": "Off-the-shelf CRM tools are built for the average business, which means they rarely fit anyone perfectly. I build custom CRM systems tailored to your exact workflow — the right data fields, the right automations, the right integrations. The result is a tool your team actually wants to use, built on a stack you own.",
+  "bannerImage": "/services/crm-development.jpg",
+  "bannerAlt": "Dashboard interface showing customer pipeline, analytics, and contact management",
+  "keywords": ["custom CRM development", "bespoke CRM software", "CRM developer", "custom business software", "workflow automation"],
+  "body": [
+    { "type": "h2", "text": "Why off-the-shelf CRMs often fail" },
+    {
+      "type": "p",
+      "text": "Generic CRM platforms are designed to cover every possible business model, which means they are optimised for none of them. You end up paying for features you will never use while workarounding the ones that almost fit. A custom-built system gives you exactly what you need — nothing more, nothing less."
+    },
+    { "type": "h2", "text": "Common features I build" },
+    {
+      "type": "ul",
+      "items": [
+        "Contact and company management with custom fields",
+        "Pipeline stages that match your actual sales or delivery process",
+        "Automated follow-up reminders and task assignments",
+        "Email and calendar integrations (Gmail, Outlook)",
+        "Reporting dashboards with the metrics your team actually tracks",
+        "Role-based access so each team member sees what they need"
+      ]
+    },
+    { "type": "h2", "text": "Built to evolve" },
+    {
+      "type": "p",
+      "text": "Businesses change. A custom CRM built with a clean architecture is easy to extend — adding a new pipeline stage, a new report, or a new integration is a manageable task rather than a project overhaul."
+    }
+  ],
+  "benefits": [
+    { "title": "Built around your process", "description": "No forcing your workflow into someone else's opinionated structure — the CRM adapts to how your team works." },
+    { "title": "Own your data", "description": "All your customer data lives in a database you control, with no third-party platform fees or data-export restrictions." },
+    { "title": "Integrates with your stack", "description": "Custom webhooks and integrations connect your CRM to the tools you already use — email, billing, support, and more." },
+    { "title": "Grows with your business", "description": "Adding new fields, reports, or automations is straightforward because the codebase is clean and well-documented." }
+  ],
+  "whyMe": "I have built internal tools and CRMs for businesses across sales, logistics, and professional services. I start by understanding your team's actual day-to-day before writing a line of code, which means the system I deliver is one your people will adopt immediately rather than work around."
+}

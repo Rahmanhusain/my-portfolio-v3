@@ -1,0 +1,53 @@
+{
+  "slug": "building-performant-animations-with-gsap",
+  "title": "Building Performant Animations with GSAP and React",
+  "description": "A deep dive into crafting smooth, GPU-accelerated animations using GSAP ScrollTrigger inside Next.js App Router components — without memory leaks or layout thrash.",
+  "date": "June 12, 2025",
+  "updatedAt": "2025-06-12",
+  "readTime": "8 min read",
+  "tags": ["GSAP", "React", "Animation", "Performance"],
+  "keywords": ["GSAP animation React", "ScrollTrigger Next.js", "web animation performance", "useGSAP hook", "GPU-accelerated animations"],
+  "bannerImage": "/blogpostimages/banner.webp",
+  "bannerAlt": "Abstract animation curves representing smooth GSAP-powered motion on a dark background",
+  "body": [
+    {
+      "type": "p",
+      "text": "GSAP is the gold standard for web animations. Paired with React's component model and the useGSAP hook from @gsap/react, you get a powerful, leak-free animation system that plays nicely with the Next.js App Router."
+    },
+    { "type": "h2", "text": "Why useGSAP Over a Plain useEffect?" },
+    {
+      "type": "p",
+      "text": "A standard useEffect that creates a GSAP tween will not clean up properly when the component unmounts during navigation. The useGSAP hook solves this — it automatically reverts all tweens and ScrollTriggers registered inside it when the component leaves the tree."
+    },
+    { "type": "h2", "text": "Basic Setup" },
+    {
+      "type": "code",
+      "lang": "tsx",
+      "code": "import { useRef } from 'react';\nimport { useGSAP } from '@gsap/react';\nimport { gsap } from '@/lib/gsap';\n\nexport default function AnimatedSection() {\n  const containerRef = useRef<HTMLDivElement>(null);\n\n  useGSAP(() => {\n    gsap.from('.fade-in', {\n      y: 40,\n      opacity: 0,\n      stagger: 0.1,\n      scrollTrigger: {\n        trigger: containerRef.current,\n        start: 'top 80%',\n      },\n    });\n  }, { scope: containerRef });\n\n  return <div ref={containerRef}>...</div>;\n}"
+    },
+    {
+      "type": "p",
+      "text": "Scoping animations to a container ref prevents GSAP from querying elements outside the component — important when you have multiple instances on the same page."
+    },
+    { "type": "h2", "text": "Keeping ScrollTrigger in Sync with Lenis" },
+    {
+      "type": "p",
+      "text": "If you use Lenis for smooth scrolling, ScrollTrigger's scroll proxy needs to read from Lenis instead of the native scroll position. Set up scrollerProxy in your SmoothScrollProvider and call ScrollTrigger.refresh() after layout is fully painted."
+    },
+    { "type": "h2", "text": "Performance Tips" },
+    {
+      "type": "ul",
+      "items": [
+        "Animate only transform and opacity — these stay on the compositor thread and avoid layout recalculation.",
+        "Set will-change: transform on elements before animation begins, then clear it afterward.",
+        "Use gsap.set() instead of gsap.to() when you want an immediate state change with no duration.",
+        "Batch DOM reads before writes inside your animation callbacks to avoid forced reflows."
+      ]
+    },
+    { "type": "h2", "text": "Debugging" },
+    {
+      "type": "p",
+      "text": "GSAP DevTools is free for local development. It provides a timeline panel in Chrome DevTools where you can scrub, slow down, and inspect every tween registered on the page."
+    }
+  ]
+}
