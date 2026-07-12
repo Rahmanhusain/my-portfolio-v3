@@ -87,3 +87,11 @@ section {
 .cards-responsive {
   width: 100%;
 }
+
+/* Fluid font scaling — desktop only (1024px+).
+   Keeps mobile/tablet at the browser default (16px). */
+/* @media (min-width: 1024px) {
+  html {
+    font-size: clamp(10px, 0.85vw, 16px);
+  }
+} */
