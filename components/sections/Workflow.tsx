@@ -1,13 +1,15 @@
 'use client';
 
 import { useRef } from 'react';
-import { gsap } from '@/lib/gsap';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { useGSAP } from '@gsap/react';
 import SectionHeading from '@/components/ui/SectionHeading';
+import { CodeIcon, LifebuoyIcon, PenIcon, RocketIcon, SearchIcon } from '../icons';
 
 interface WorkflowStep {
   title: string;
   description: string;
+  icon: React.ReactNode;
 }
 
 const steps: WorkflowStep[] = [
@@ -15,32 +17,49 @@ const steps: WorkflowStep[] = [
     title: 'Discovery',
     description:
       'We start with a call to define your goals, constraints, and what success looks like — so the work is aimed at outcomes, not just features.',
+    icon: (
+     <SearchIcon className='w-5 h-5' strokeWidth='2' />
+    ),
   },
   {
     title: 'Design',
     description:
       'I design the interface and experience, share it for review, and iterate until it feels right before a single line of production code is written.',
+    icon: (
+    <PenIcon className='w-4 h-4' strokeWidth='2'/>
+    ),
   },
   {
     title: 'Build',
     description:
       'I develop with a clean, typed, well-documented codebase. You get progress updates and a working preview at each milestone.',
+    icon: (
+      <CodeIcon className='w-5 h-5' strokeWidth='2'/>
+    ),
   },
   {
     title: 'Launch',
     description:
       'I handle deployment, performance, and accessibility checks, then ship your product to a reliable, fast hosting environment.',
+    icon: (
+      <RocketIcon className='w-5 h-5' strokeWidth='2'/>
+    ),
   },
   {
     title: 'Support',
     description:
       'After launch I stay involved — the first 30 days include free fixes, and I remain available for improvements as you grow.',
+    icon: (
+     <LifebuoyIcon className='w-5 h-5' strokeWidth='2'/>
+    ),
   },
 ];
 
+const ACTIVE_GLOW = '0 0 0 6px #0a0a0a, 0 0 18px 2px rgba(250,250,250,0.35)';
+const REST_SHADOW = '0 0 0 6px #0a0a0a';
+
 export default function Workflow() {
   const sectionRef = useRef<HTMLElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -49,61 +68,111 @@ export default function Workflow() {
       ).matches;
 
       const rows = gsap.utils.toArray<HTMLElement>('.workflow-row');
-      const dots = gsap.utils.toArray<HTMLElement>('.workflow-dot');
-      const line = lineRef.current;
+
+      // Activate / deactivate a node dot (filled + glow when reached).
+      const setDotActive = (dot: Element | null, active: boolean) => {
+        if (!dot) return;
+        const state = active ? '1' : '0';
+        if ((dot as HTMLElement).dataset.active === state) return; // no-op if unchanged
+        (dot as HTMLElement).dataset.active = state;
+        gsap.to(dot, {
+          backgroundColor: active ? '#EEF2FF' : '#0a0a0a',
+          borderColor: active ? '#fafafa' : '#3a3a3a',
+          color: active ? '#0a0a0a' : '#fafafa',
+          boxShadow: active ? ACTIVE_GLOW : REST_SHADOW,
+          duration: 0.3,
+          ease: 'power2.out',
+        });
+      };
 
       if (prefersReducedMotion) {
-        gsap.set([rows, dots], { opacity: 1, y: 0, scale: 1 });
-        if (line) gsap.set(line, { scaleY: 1 });
+        rows.forEach((row) => {
+          const dot = row.querySelector('.workflow-dot');
+          const connector = row.querySelector('.workflow-connector');
+          const content = row.querySelector('.workflow-content');
+          const segment = row.querySelector('.workflow-segment');
+          gsap.set([dot, content], { opacity: 1, y: 0, scale: 1 });
+          if (connector) gsap.set(connector, { scaleX: 1, opacity: 1 });
+          if (segment) gsap.set(segment, { scaleY: 1 });
+          if (dot)
+            gsap.set(dot, {
+              backgroundColor: '#fafafa',
+              borderColor: '#fafafa',
+              color: '#0a0a0a',
+            });
+        });
         return;
       }
 
-      // The connecting line "draws" itself top-to-bottom as you scroll.
-      if (line) {
+      // Reveal each node, its branch, and its card as it enters view.
+      rows.forEach((row) => {
+        const dot = row.querySelector('.workflow-dot');
+        const connector = row.querySelector('.workflow-connector');
+        const content = row.querySelector('.workflow-content');
+
+        gsap.set(dot, { scale: 0, opacity: 0 });
+        gsap.set(connector, { scaleX: 0, opacity: 0 });
+        gsap.set(content, { opacity: 0, y: 28 });
+
+        gsap
+          .timeline({ scrollTrigger: { trigger: row, start: 'top 78%' } })
+          .to(dot, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(2.2)' })
+          .to(
+            connector,
+            { scaleX: 1, opacity: 1, duration: 0.4, ease: 'power2.out' },
+            '-=0.15'
+          )
+          .to(
+            content,
+            { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+            '-=0.35'
+          );
+      });
+
+      // Each segment fills node -> node on scroll down, unfills on scroll up.
+      // As a segment completes, the node it reaches lights up.
+      rows.forEach((row, i) => {
+        const segment = row.querySelector('.workflow-segment');
+        if (!segment) return; // last node has no outgoing segment
+
+        const fromDot = row.querySelector('.workflow-dot');
+        const toDot = rows[i + 1]?.querySelector('.workflow-dot');
+
+        gsap.set(segment, { scaleY: 0 });
+
         gsap.fromTo(
-          line,
+          segment,
           { scaleY: 0 },
           {
             scaleY: 1,
             ease: 'none',
             scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top 55%',
-              end: 'bottom 75%',
+              trigger: row,
+              start: 'top 58%',
+              end: 'bottom 58%',
               scrub: 0.5,
+              // light the origin node once the segment starts drawing
+              onEnter: () => setDotActive(fromDot, true),
+              onLeaveBack: () => setDotActive(fromDot, false),
+              // light the destination node once the segment is essentially full
+              onUpdate: (self) => {
+                setDotActive(toDot ?? null, self.progress > 0.9);
+              },
             },
           }
         );
-      }
-
-      // Each node + its content reveal step-by-step as the line reaches them.
-      rows.forEach((row, i) => {
-        const dot = dots[i];
-        const content = row.querySelector('.workflow-content');
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: row,
-            start: 'top 78%',
-          },
-        });
-
-        if (dot) {
-          tl.fromTo(
-            dot,
-            { scale: 0, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(2)' }
-          );
-        }
-        if (content) {
-          tl.fromTo(
-            content,
-            { opacity: 0, y: 24 },
-            { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-            '-=0.2'
-          );
-        }
       });
+
+      // First node lights up as soon as its row is reached.
+      const firstDot = rows[0]?.querySelector('.workflow-dot');
+      if (firstDot) {
+        ScrollTrigger.create({
+          trigger: rows[0],
+          start: 'top 70%',
+          onEnter: () => setDotActive(firstDot, true),
+          onLeaveBack: () => setDotActive(firstDot, false),
+        });
+      }
     },
     { scope: sectionRef }
   );
@@ -122,53 +191,89 @@ export default function Workflow() {
           description="No black boxes. Every project moves through the same five connected stages — you always know where things stand."
         />
 
-        {/* Node graph */}
-        <ol className="relative mt-8">
-          {/* Vertical rail (track) */}
-          <div
-            aria-hidden="true"
-            className="absolute top-2 bottom-2 left-[15px] md:left-1/2 md:-translate-x-1/2 w-px bg-[#242424]"
-          />
-          {/* Animated draw-line over the rail */}
-          <div
-            ref={lineRef}
-            aria-hidden="true"
-            className="absolute top-2 bottom-2 left-[15px] md:left-1/2 md:-translate-x-1/2 w-px origin-top bg-gradient-to-b from-[#fafafa] via-[#fafafa] to-[#8a8a8a]"
-          />
-
-          {steps.map((step, i) => (
-            <li
-              key={step.title}
-              className={`workflow-row relative flex items-start gap-6 pb-14 last:pb-0 md:gap-0 ${
-                i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-              }`}
-            >
-              {/* Node dot on the rail */}
-              <div className="relative z-10 shrink-0 md:absolute md:left-1/2 md:-translate-x-1/2">
-                <span className="workflow-dot flex h-8 w-8 items-center justify-center rounded-full border border-[#3a3a3a] bg-[#0a0a0a] text-xs font-semibold text-[#fafafa] shadow-[0_0_0_6px_#0a0a0a]">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-              </div>
-
-              {/* Content card, alternating sides on desktop */}
-              <div
-                className={`workflow-content flex-1 md:w-[calc(50%-2.5rem)] md:flex-none ${
-                  i % 2 === 0
-                    ? 'md:pr-12 md:text-right'
-                    : 'md:pl-12 md:ml-auto'
-                }`}
+        {/* Node graph — each node is joined to the next by its own segment */}
+        <ol className="relative mt-10">
+          {steps.map((step, i) => {
+            const isLeft = i % 2 === 0; // desktop: even = left card, odd = right card
+            const isLast = i === steps.length - 1;
+            return (
+              <li
+                key={step.title}
+                className="workflow-row relative pl-16 pb-12 last:pb-0 md:pl-0"
               >
-                <div className="rounded-2xl border border-[#242424] bg-[#141414] p-6 transition-colors duration-300 hover:border-[#3a3a3a]">
-                  <h3 className="font-display text-lg font-semibold text-[#fafafa] mb-2 tracking-tight">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-[#8a8a8a] leading-relaxed">
-                    {step.description}
-                  </p>
+                {/* Segment: line from THIS node down to the NEXT node */}
+                {!isLast && (
+                  <>
+                    {/* faint track */}
+                    <span
+                      aria-hidden="true"
+                      className="absolute top-5 h-full w-px -translate-x-1/2 left-5 md:left-1/2 bg-[#242424]"
+                    />
+                    {/* white fill that grows toward the next node on scroll */}
+                    <span
+                      aria-hidden="true"
+                      className="workflow-segment absolute top-5 h-full w-px -translate-x-1/2 left-5 md:left-1/2 origin-top bg-gradient-to-b from-[#fafafa] to-[#cfcfcf]"
+                    />
+                  </>
+                )}
+
+                {/* Node dot */}
+                <span
+                  className="workflow-dot absolute z-10 top-0 left-5 md:left-1/2 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-[#3a3a3a] bg-[#0a0a0a] text-[#fafafa]"
+                  style={{ boxShadow: REST_SHADOW }}
+                >
+                  {step.icon}
+                </span>
+
+                {/* Horizontal branch connecting the rail to the card */}
+                <span
+                  aria-hidden="true"
+                  className={[
+                    'workflow-connector absolute top-5 h-px bg-gradient-to-r from-[#3a3a3a] to-transparent',
+                    // mobile: from dot toward the card on the right
+                    'left-10 w-6 origin-left',
+                    // desktop: point from center rail toward whichever side the card is
+                    isLeft
+                      ? 'md:left-auto md:right-1/2 md:w-10 md:origin-right md:bg-gradient-to-l'
+                      : 'md:left-1/2 md:w-10 md:origin-left md:bg-gradient-to-r',
+                  ].join(' ')}
+                />
+
+                {/* Content card, alternating sides on desktop */}
+                <div
+                  className={[
+                    'workflow-content',
+                    'md:w-[calc(50%-2.75rem)]',
+                    isLeft ? 'md:mr-auto md:pr-2' : 'md:ml-auto md:pl-2',
+                  ].join(' ')}
+                >
+                  <div className="rounded-2xl border border-[#242424] bg-[#141414] p-6 transition-colors duration-300 hover:border-[#3a3a3a]">
+                    <p
+                      className={`text-[11px] font-semibold uppercase tracking-widest text-[#5a5a5a] mb-2 ${
+                        isLeft ? 'md:text-right' : ''
+                      }`}
+                    >
+                      Step {String(i + 1).padStart(2, '0')}
+                    </p>
+                    <h3
+                      className={`font-display text-lg font-semibold text-[#fafafa] mb-2 tracking-tight ${
+                        isLeft ? 'md:text-right' : ''
+                      }`}
+                    >
+                      {step.title}
+                    </h3>
+                    <p
+                      className={`text-sm text-[#8a8a8a] leading-relaxed ${
+                        isLeft ? 'md:text-right' : ''
+                      }`}
+                    >
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ol>
       </div>
     </section>
