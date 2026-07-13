@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { services } from '@/lib/data/services';
 import { siteUrl } from '@/lib/seo';
 import { renderBlock } from '@/lib/content-blocks';
+import Faq from '@/components/sections/Faq';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -222,6 +223,7 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
           )}
+          <Faq />
         </div>
       </div>
     </>
