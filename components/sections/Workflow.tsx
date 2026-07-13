@@ -18,7 +18,7 @@ const steps: WorkflowStep[] = [
     description:
       'We start with a call to define your goals, constraints, and what success looks like — so the work is aimed at outcomes, not just features.',
     icon: (
-     <SearchIcon className='w-5 h-5' strokeWidth='2' />
+     <SearchIcon className='w-5 h-5' strokeWidth='1.5' />
     ),
   },
   {
@@ -26,7 +26,7 @@ const steps: WorkflowStep[] = [
     description:
       'I design the interface and experience, share it for review, and iterate until it feels right before a single line of production code is written.',
     icon: (
-    <PenIcon className='w-4 h-4' strokeWidth='2'/>
+    <PenIcon className='w-4 h-4' strokeWidth='1.5'/>
     ),
   },
   {
@@ -34,7 +34,7 @@ const steps: WorkflowStep[] = [
     description:
       'I develop with a clean, typed, well-documented codebase. You get progress updates and a working preview at each milestone.',
     icon: (
-      <CodeIcon className='w-5 h-5' strokeWidth='2'/>
+      <CodeIcon className='w-5 h-5' strokeWidth='1.5'/>
     ),
   },
   {
@@ -42,7 +42,7 @@ const steps: WorkflowStep[] = [
     description:
       'I handle deployment, performance, and accessibility checks, then ship your product to a reliable, fast hosting environment.',
     icon: (
-      <RocketIcon className='w-5 h-5' strokeWidth='2'/>
+      <RocketIcon className='w-5 h-5' strokeWidth='1.5'/>
     ),
   },
   {
@@ -50,7 +50,7 @@ const steps: WorkflowStep[] = [
     description:
       'After launch I stay involved — the first 30 days include free fixes, and I remain available for improvements as you grow.',
     icon: (
-     <LifebuoyIcon className='w-5 h-5' strokeWidth='2'/>
+     <LifebuoyIcon className='w-5 h-5' strokeWidth='1.5'/>
     ),
   },
 ];
@@ -70,20 +70,20 @@ export default function Workflow() {
       const rows = gsap.utils.toArray<HTMLElement>('.workflow-row');
 
       // Activate / deactivate a node dot (filled + glow when reached).
-      const setDotActive = (dot: Element | null, active: boolean) => {
-        if (!dot) return;
-        const state = active ? '1' : '0';
-        if ((dot as HTMLElement).dataset.active === state) return; // no-op if unchanged
-        (dot as HTMLElement).dataset.active = state;
-        gsap.to(dot, {
-          backgroundColor: active ? '#EEF2FF' : '#0a0a0a',
-          borderColor: active ? '#fafafa' : '#3a3a3a',
-          color: active ? '#0a0a0a' : '#fafafa',
-          boxShadow: active ? ACTIVE_GLOW : REST_SHADOW,
-          duration: 0.3,
-          ease: 'power2.out',
-        });
-      };
+      // const setDotActive = (dot: Element | null, active: boolean) => {
+      //   if (!dot) return;
+      //   const state = active ? '1' : '0';
+      //   if ((dot as HTMLElement).dataset.active === state) return; // no-op if unchanged
+      //   (dot as HTMLElement).dataset.active = state;
+      //   gsap.to(dot, {
+      //     backgroundColor: active ? '#EEF2FF' : '#0a0a0a',
+      //     borderColor: active ? '#fafafa' : '#3a3a3a',
+      //     color: active ? '#0a0a0a' : '#fafafa',
+      //     boxShadow: active ? ACTIVE_GLOW : REST_SHADOW,  
+      //     duration: 0.3,
+      //     ease: 'power2.out',
+      //   });
+      // };
 
       if (prefersReducedMotion) {
         rows.forEach((row) => {
@@ -152,12 +152,12 @@ export default function Workflow() {
               end: 'bottom 58%',
               scrub: 0.5,
               // light the origin node once the segment starts drawing
-              onEnter: () => setDotActive(fromDot, true),
-              onLeaveBack: () => setDotActive(fromDot, false),
+              // onEnter: () => setDotActive(fromDot, true),
+              // onLeaveBack: () => setDotActive(fromDot, false),
               // light the destination node once the segment is essentially full
-              onUpdate: (self) => {
-                setDotActive(toDot ?? null, self.progress > 0.9);
-              },
+              // onUpdate: (self) => {
+              //   setDotActive(toDot ?? null, self.progress > 0.9);
+              // },
             },
           }
         );
@@ -169,8 +169,8 @@ export default function Workflow() {
         ScrollTrigger.create({
           trigger: rows[0],
           start: 'top 70%',
-          onEnter: () => setDotActive(firstDot, true),
-          onLeaveBack: () => setDotActive(firstDot, false),
+          // onEnter: () => setDotActive(firstDot, true),
+          // onLeaveBack: () => setDotActive(firstDot, false),
         });
       }
     },
@@ -199,76 +199,87 @@ export default function Workflow() {
             return (
               <li
                 key={step.title}
-                className="workflow-row relative pl-16 pb-12 last:pb-0 md:pl-0"
+                className="workflow-row relative pb-12 last:pb-0"
               >
-                {/* Segment: line from THIS node down to the NEXT node */}
-                {!isLast && (
-                  <>
-                    {/* faint track */}
-                    <span
-                      aria-hidden="true"
-                      className="absolute top-5 h-full w-px -translate-x-1/2 left-5 md:left-1/2 bg-[#242424]"
-                    />
-                    {/* white fill that grows toward the next node on scroll */}
-                    <span
-                      aria-hidden="true"
-                      className="workflow-segment absolute top-5 h-full w-px -translate-x-1/2 left-5 md:left-1/2 origin-top bg-gradient-to-b from-[#fafafa] to-[#cfcfcf]"
-                    />
-                  </>
-                )}
+                {/* Wrapper sized to the card so the rail nodes centre on the card */}
+                <div className="relative pl-16 md:pl-0">
+                  {/* Segment: line from THIS node down to the NEXT node */}
+                  {!isLast && (
+                    <>
+                      {/* faint track */}
+                      <span
+                        aria-hidden="true"
+                        style={{ top: '50%', height: 'calc(100% + 3rem)' }}
+                        className="absolute w-px -translate-x-1/2 left-5 md:left-1/2 bg-[#242424]"
+                      />
+                      {/* white fill that grows toward the next node on scroll */}
+                      <span
+                        aria-hidden="true"
+                        style={{ top: '50%', height: 'calc(100% + 3rem)' }}
+                        className="workflow-segment absolute w-px -translate-x-1/2 left-5 md:left-1/2 origin-top bg-gradient-to-b from-[#fafafa] to-[#cfcfcf]"
+                      />
+                    </>
+                  )}
 
-                {/* Node dot */}
-                <span
-                  className="workflow-dot absolute z-10 top-0 left-5 md:left-1/2 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-[#3a3a3a] bg-[#0a0a0a] text-[#fafafa]"
-                  style={{ boxShadow: REST_SHADOW }}
-                >
-                  {step.icon}
-                </span>
+                  {/* Node dot — centred vertically on the card */}
+                  <span
+                    className="workflow-dot absolute z-10 top-1/2 left-5 md:left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#3a3a3a] bg-[#0a0a0a] text-[#fafafa]"
+                    style={{ boxShadow: REST_SHADOW }}
+                  >
+                    {step.icon}
+                  </span>
 
-                {/* Horizontal branch connecting the rail to the card */}
-                <span
-                  aria-hidden="true"
-                  className={[
-                    'workflow-connector absolute top-5 h-px bg-gradient-to-r from-[#3a3a3a] to-transparent',
-                    // mobile: from dot toward the card on the right
-                    'left-10 w-6 origin-left',
-                    // desktop: point from center rail toward whichever side the card is
-                    isLeft
-                      ? 'md:left-auto md:right-1/2 md:w-10 md:origin-right md:bg-gradient-to-l'
-                      : 'md:left-1/2 md:w-10 md:origin-left md:bg-gradient-to-r',
-                  ].join(' ')}
-                />
+                  {/* Horizontal branch connecting the rail to the card */}
+                  <span
+                    aria-hidden="true"
+                    className={[
+                      'workflow-connector absolute top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-[#3a3a3a] to-transparent',
+                      // mobile: from dot toward the card on the right
+                      'left-10 w-6 origin-left',
+                      // desktop: point from center rail toward whichever side the card is
+                      isLeft
+                        ? 'md:left-auto md:right-1/2 md:w-10 md:origin-right md:bg-gradient-to-l'
+                        : 'md:left-1/2 md:w-10 md:origin-left md:bg-gradient-to-r',
+                    ].join(' ')}
+                  />
 
-                {/* Content card, alternating sides on desktop */}
-                <div
-                  className={[
-                    'workflow-content',
-                    'md:w-[calc(50%-2.75rem)]',
-                    isLeft ? 'md:mr-auto md:pr-2' : 'md:ml-auto md:pl-2',
-                  ].join(' ')}
-                >
-                  <div className="rounded-2xl border border-[#242424] bg-[#141414] p-6 transition-colors duration-300 hover:border-[#3a3a3a]">
-                    <p
-                      className={`text-[11px] font-semibold uppercase tracking-widest text-[#5a5a5a] mb-2 ${
-                        isLeft ? 'md:text-right' : ''
-                      }`}
-                    >
-                      Step {String(i + 1).padStart(2, '0')}
-                    </p>
-                    <h3
-                      className={`font-display text-lg font-semibold text-[#fafafa] mb-2 tracking-tight ${
-                        isLeft ? 'md:text-right' : ''
-                      }`}
-                    >
-                      {step.title}
-                    </h3>
-                    <p
-                      className={`text-sm text-[#8a8a8a] leading-relaxed ${
-                        isLeft ? 'md:text-right' : ''
-                      }`}
-                    >
-                      {step.description}
-                    </p>
+                  {/* Content card, alternating sides on desktop */}
+                  <div
+                    className={[
+                      'workflow-content',
+                      'md:w-[calc(50%-2.75rem)]',
+                      isLeft ? 'md:mr-auto md:pr-2' : 'md:ml-auto md:pl-2',
+                    ].join(' ')}
+                  >
+                    <div className="relative overflow-hidden rounded-2xl border border-[#242424] bg-gradient-to-b from-[#191919] to-[#101010] p-6 transition-colors duration-300 hover:border-[#3a3a3a]">
+                      {/* Large low-opacity step number, tucked in the corner opposite the text */}
+                      <span
+                        aria-hidden="true"
+                        style={{ color: 'rgba(250,250,250,0.07)' }}
+                        className={[
+                          'pointer-events-none absolute select-none font-display text-4xl font-bold leading-none',
+                          isLeft ? 'top-2 right-3 md:left-2 md:right-auto' : 'top-2 right-3',
+                        ].join(' ')}
+                      >
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <div className="relative">
+                        <h3
+                          className={`font-display text-lg font-semibold text-[#fafafa] mb-2 tracking-tight ${
+                            isLeft ? 'md:text-right' : ''
+                          }`}
+                        >
+                          {step.title}
+                        </h3>
+                        <p
+                          className={`text-sm text-[#8a8a8a] leading-relaxed ${
+                            isLeft ? 'md:text-right' : ''
+                          }`}
+                        >
+                          {step.description}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </li>
