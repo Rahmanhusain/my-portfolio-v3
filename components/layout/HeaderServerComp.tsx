@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { site } from '@/lib/site';
 
 const navLinks = [
   { label: 'Services', href: '/services' },
@@ -67,10 +69,12 @@ export default function Header() {
         {/* Right — CTA */}
         <div className="flex justify-end">
           <a
-            href="mailto:hello@yourname.dev"
+            href={site.bookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-4 py-2 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
           >
-            Hire me
+            Book a call
           </a>
         </div>
       </div>
@@ -82,13 +86,13 @@ export default function Header() {
           scrolled || menuOpen ? 'bg-[#0a0a0a]/85 backdrop-blur-2xl' : '',
         ].join(' ')}
       >
-        <a
+        <Link
           href="/"
           aria-label="Home"
           className="font-display font-bold text-[#fafafa] text-base tracking-tight"
         >
           Rahman<span className="text-white/30">.</span>
-        </a>
+        </Link>
 
         {/* Hamburger */}
         <button
@@ -132,11 +136,13 @@ export default function Header() {
             </a>
           ))}
           <a
-            href="mailto:hello@yourname.dev"
+            href={site.bookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={() => setMenuOpen(false)}
             className="mt-4 mb-1 flex items-center justify-center gap-2 text-sm font-semibold text-[#0a0a0a] bg-[#fafafa] px-5 py-3 rounded-full"
           >
-            Hire me
+            Book a call
           </a>
         </nav>
       </div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { services } from '@/lib/data/services';
 import { siteUrl } from '@/lib/seo';
+import { site } from '@/lib/site';
 import Faq from '@/components/sections/Faq';
 
 export const metadata: Metadata = {
@@ -117,10 +118,12 @@ export default function ServicesPage() {
               </p>
             </div>
             <a
-              href="mailto:hello@yourname.dev"
+              href={site.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-6 py-3 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
             >
-              Get in Touch
+              Book a free 20-min discovery call
             </a>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { locationLabel } from '@/lib/site';
 
 const socialLinks = [
   { label: 'GitHub', href: 'https://github.com/rahman' },
@@ -18,6 +19,9 @@ export default function Footer() {
           </p>
           <p className="text-xs text-[#8a8a8a]">
             © {year} — All rights reserved.
+          </p>
+          <p className="text-xs text-[#8a8a8a] mt-1">
+            {locationLabel}
           </p>
         </div>
 

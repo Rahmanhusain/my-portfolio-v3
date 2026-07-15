@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import SectionHeading from '@/components/ui/SectionHeading';
 import MagneticButton from '@/components/ui/MagneticButton';
+import { site, locationLabel } from '@/lib/site';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -128,6 +129,18 @@ export default function Contact() {
                 </span>
                 linkedin.com/in/rahman
               </a>
+            </div>
+
+            {/* Response-time promise + location — removes friction before booking */}
+            <div className="mt-8 space-y-3">
+              <div className="flex items-center gap-2.5 text-sm text-[#a3a3a3]">
+                <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-400" />
+                </span>
+                {site.responseTime}.
+              </div>
+              <p className="text-sm text-[#8a8a8a]">{locationLabel}</p>
             </div>
           </div>
 
