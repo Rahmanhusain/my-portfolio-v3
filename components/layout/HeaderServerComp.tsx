@@ -33,7 +33,7 @@ export default function Header() {
       <div
         className={[
           'hidden md:grid grid-cols-3 items-center px-8 h-[58px] transition-all duration-500',
-          scrolled ? 'bg-[#0a0a0a]/75 backdrop-blur-2xl' : '',
+          scrolled ? 'bg-[#0a0a0a]/75 backdrop-blur-3xl' : '',
         ].join(' ')}
       >
         {/* Left — logo */}

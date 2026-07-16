@@ -204,7 +204,13 @@ The filename **must exactly match** the `slug` field inside the file.
         "Step two — design and build",
         "Step three — review and launch"
       ]
-    }
+    },
+     {
+      "type": "image",
+      "src": "/rahman.jpeg",
+      "alt": "Diagram showing the component tree",
+      "caption": "Optional caption shown below the image"
+    },
   ],
   "benefits": [
     {

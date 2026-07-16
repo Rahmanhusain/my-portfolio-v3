@@ -6,7 +6,13 @@
   "description": "A business email address on your own domain builds trust with clients and protects your brand. I handle the full setup — DNS records, mail provider configuration, SPF, DKIM, and DMARC — so your emails reach the inbox rather than the spam folder every time.",
   "bannerImage": "/services/business-email.jpg",
   "bannerAlt": "Email client showing a professional branded inbox on a custom domain",
-  "keywords": ["business email setup", "custom domain email", "professional email configuration", "SPF DKIM DMARC setup", "Google Workspace setup"],
+  "keywords": [
+    "business email setup",
+    "custom domain email",
+    "professional email configuration",
+    "SPF DKIM DMARC setup",
+    "Google Workspace setup"
+  ],
   "body": [
     { "type": "h2", "text": "Why email deliverability matters" },
     {
@@ -30,10 +36,22 @@
     }
   ],
   "benefits": [
-    { "title": "Inbox deliverability", "description": "Properly configured SPF, DKIM, and DMARC records mean your emails land in inboxes, not spam folders." },
-    { "title": "Professional brand image", "description": "A branded email address signals legitimacy to clients and partners in a way free webmail cannot." },
-    { "title": "Secure by default", "description": "Email security settings are configured to prevent spoofing and phishing attacks on your domain from day one." },
-    { "title": "Works with your existing tools", "description": "Compatible with Google Workspace, Microsoft 365, or any IMAP provider — your team keeps the apps they prefer." }
+    {
+      "title": "Inbox deliverability",
+      "description": "Properly configured SPF, DKIM, and DMARC records mean your emails land in inboxes, not spam folders."
+    },
+    {
+      "title": "Professional brand image",
+      "description": "A branded email address signals legitimacy to clients and partners in a way free webmail cannot."
+    },
+    {
+      "title": "Secure by default",
+      "description": "Email security settings are configured to prevent spoofing and phishing attacks on your domain from day one."
+    },
+    {
+      "title": "Works with your existing tools",
+      "description": "Compatible with Google Workspace, Microsoft 365, or any IMAP provider — your team keeps the apps they prefer."
+    }
   ],
   "whyMe": "Email setup sounds simple until a misconfigured DNS record sends every message to spam. I have set up email infrastructure for dozens of businesses and know the pitfalls. I also test deliverability after setup, so you have confidence before sending your first important message."
 }
