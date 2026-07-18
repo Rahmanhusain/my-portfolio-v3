@@ -119,7 +119,7 @@ export default function ServicesPage() {
             </div>
             <BookingTrigger
               source="services"
-              className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-6 py-3 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
+              className="cursor-pointer shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-6 py-3 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
             >
               Book a free 30-min discovery call
             </BookingTrigger>

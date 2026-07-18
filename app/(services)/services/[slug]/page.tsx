@@ -77,7 +77,7 @@ export default async function ServicePage({ params }: Props) {
   };
 
   // Sibling services for internal linking (exclude current)
-  const related = services.filter((s) => s.slug !== slug).slice(0, 3);
+  const related = services.filter((s) => s.slug !== slug).slice(0);
 
   return (
     <>
