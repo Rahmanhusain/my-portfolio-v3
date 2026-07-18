@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Inter_Tight, Dancing_Script } from 'next/font/google';
 import './globals.css';
 import BookingModalProvider from '@/components/ui/BookingModalProvider';
+import ContactFormS from '@/components/ui/ContactFormS';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -120,6 +121,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         <BookingModalProvider>{children}</BookingModalProvider>
+        <ContactFormS />
       </body>
     </html>
   );
