@@ -5,7 +5,7 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import MagneticButton from "@/components/ui/MagneticButton";
 import RotatingFloatingCards from "../ui/RoatatingFloatingCards";
-import { site } from "@/lib/site";
+import BookingTrigger from "@/components/ui/BookingTrigger";
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -147,15 +147,12 @@ export default function Hero() {
             >
               Get in Touch
             </MagneticButton>
-            <MagneticButton
-              as="a"
-              href={site.bookingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] md:text-sm px-5 py-2.5 bg-white/10 hover:bg-white"
+            <BookingTrigger
+              source="hero"
+              className="text-[11px] md:text-sm px-5 py-2.5 bg-white/10 hover:bg-white cursor-pointer"
             >
               Book a Call
-            </MagneticButton>
+            </BookingTrigger>
           </div>
 
           {/* Scroll cue */}

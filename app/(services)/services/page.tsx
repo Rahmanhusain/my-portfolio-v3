@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { services } from '@/lib/data/services';
 import { siteUrl } from '@/lib/seo';
-import { site } from '@/lib/site';
 import Faq from '@/components/sections/Faq';
+import BookingTrigger from '@/components/ui/BookingTrigger';
 
 export const metadata: Metadata = {
   title: 'Services — Full-Stack Web Development',
@@ -117,14 +117,12 @@ export default function ServicesPage() {
                 Drop me a message and we can figure it out together.
               </p>
             </div>
-            <a
-              href={site.bookingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <BookingTrigger
+              source="services"
               className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-6 py-3 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
             >
-              Book a free 20-min discovery call
-            </a>
+              Book a free 30-min discovery call
+            </BookingTrigger>
           </div>
         </div>
       </div>

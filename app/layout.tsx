@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Inter_Tight, Dancing_Script } from 'next/font/google';
 import './globals.css';
+import BookingModalProvider from '@/components/ui/BookingModalProvider';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -118,7 +119,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        {children}
+        <BookingModalProvider>{children}</BookingModalProvider>
       </body>
     </html>
   );
