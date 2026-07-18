@@ -134,6 +134,38 @@ function CatSvg() {
         fill="none"
         strokeLinecap="round"
       />
+      {/* rose held in paw */}
+      <g>
+        {/* stem */}
+        <path
+          d="M150 206 q4 -12 14 -22"
+          stroke="#5b9a5b"
+          strokeWidth="4"
+          fill="none"
+          strokeLinecap="round"
+        />
+        {/* leaf */}
+        <path d="M158 192 q16 -3 20 9 q-16 5 -20 -9 z" fill="#6fb36f" />
+        {/* bloom */}
+        <g className="cat-rose">
+          <circle cx="166" cy="182" r="15" fill="#e2455c" />
+          <path
+            d="M166 182 C 162 177, 171 175, 172 181 C 173 188, 159 189, 159 181 C 159 173, 174 171, 176 182"
+            fill="none"
+            stroke="#a82c3e"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <circle cx="166" cy="182" r="3" fill="#a82c3e" />
+        </g>
+        {/* paw gripping the stem */}
+        <g>
+          <ellipse cx="146" cy="214" rx="22" ry="13" fill="#f7f1ea" />
+          <circle cx="133" cy="205" r="5.5" fill="#f7f1ea" />
+          <circle cx="146" cy="202" r="5.5" fill="#f7f1ea" />
+          <circle cx="159" cy="205" r="5.5" fill="#f7f1ea" />
+        </g>
+      </g>
       {/* whiskers */}
       <g stroke="#cbb9a8" strokeWidth="2" strokeLinecap="round">
         <path d="M58 134 L18 128" />

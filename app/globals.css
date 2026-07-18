@@ -181,6 +181,22 @@ section {
   }
 }
 
+/* rose sways gently while held */
+.cat-rose {
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+  animation: cat-rose-sway 4s ease-in-out infinite;
+}
+@keyframes cat-rose-sway {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
 /* signature heartbeat */
 .love-heartbeat {
   animation: love-beat 1.5s ease-in-out infinite;
@@ -215,6 +231,7 @@ section {
   .cat-bob,
   .cat-eyes,
   .cat-ears-tw,
+  .cat-rose,
   .love-heartbeat {
     animation: none;
   }
