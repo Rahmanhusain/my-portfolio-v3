@@ -31,6 +31,8 @@ import apiBackend from '@/content/services/api-backend-development.json';
 import crm        from '@/content/services/custom-crm-development.json';
 import email      from '@/content/services/business-email-setup.json';
 import hosting    from '@/content/services/hosting-deployment.json';
+import automation from '@/content/services/automation-agent-development.json';
+import ecommerce from '@/content/services/e-commerce-solutions.json';
 
 // Ordered by service number
 export const services: Service[] = [
@@ -40,4 +42,6 @@ export const services: Service[] = [
   crm,
   email,
   hosting,
+  automation,
+  ecommerce,
 ] as Service[];

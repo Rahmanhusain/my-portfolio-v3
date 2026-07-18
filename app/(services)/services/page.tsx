@@ -6,7 +6,7 @@ import Faq from '@/components/sections/Faq';
 import BookingTrigger from '@/components/ui/BookingTrigger';
 
 export const metadata: Metadata = {
-  title: 'Services — Full-Stack Web Development',
+  title: 'Services — Software Development',
   description:
     'Professional web development, UI/UX design, API development, custom CRM, business email, and hosting services. Crafted for startups and growing businesses.',
   keywords: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: `${siteUrl}/services` },
   openGraph: {
-    title: 'Services — Full-Stack Web Development by Rahman',
+    title: 'Services — Software Development by Rahman',
     description:
       'End-to-end web development, design, and infrastructure services for businesses that care about quality.',
     url: `${siteUrl}/services`,
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Services — Full-Stack Web Development by Rahman',
+    title: 'Services — Software Development by Rahman',
     description:
       'End-to-end web development, design, and infrastructure services for businesses that care about quality.',
   },
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'Services — Rahman Full-Stack Developer',
+  name: 'Services — Rahman Software Developer',
   description: metadata.description,
   url: `${siteUrl}/services`,
   itemListElement: services.map((s, i) => ({

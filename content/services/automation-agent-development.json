@@ -1,0 +1,31 @@
+{
+  "number": "07",
+  "slug": "automation-agent-development",
+  "title": "Automation & Agent Development",
+  "shortDesc": "Custom workflows and AI agents that cut busywork — connect your tools, automate repetitive tasks, and let software do the heavy lifting.",
+  "description": "I build automation that actually fits your business. From simple integrations to multi-step workflows in n8n and custom AI agents powered by large language models, I connect the tools you already use and remove the manual busywork. The result is fewer dropped tasks, faster turnaround, and more time spent on work that matters.",
+  "bannerImage": "/blogpostimages/banner.webp",
+  "bannerAlt": "Flowchart illustrating an automated workflow connecting multiple business tools",
+  "keywords": ["business automation services", "AI agent development", "n8n workflow automation", "LLM agents", "Zapier Make integration", "process automation"],
+  "body": [
+    { "type": "h2", "text": "What we can automate" },
+    { "type": "p", "text": "If a task is repetitive, rule-based, or lives across more than one app, it can probably be automated. Common wins include lead capture to CRM, invoice and payment reminders, content repurposing, support triage, and scheduled reporting." },
+    { "type": "h2", "text": "Off-the-shelf vs. custom" },
+    { "type": "p", "text": "Tools like Zapier and Make cover a lot out of the box. When you need logic, branching, or AI decision-making they can't express, I write a custom workflow or agent — often a hybrid that keeps the simple parts in a no-code tool and pushes the complex parts to code." },
+    { "type": "ul", "items": [
+      "Workflow builders: n8n, Make, Zapier",
+      "AI agents: LLM-powered assistants with tool use and memory",
+      "Integrations: CRM, email, calendars, spreadsheets, Slack, databases",
+      "Error handling, logging, and monitoring so failures are visible"
+    ] },
+    { "type": "h2", "text": "What you get" },
+    { "type": "p", "text": "A documented workflow you can see and trust, a handover session, and a 30-day window for tweaks as real usage reveals edge cases. You keep ownership of every credential and integration." }
+  ],
+  "benefits": [
+    { "title": "Reclaimed hours", "description": "The average client gets back several hours a week the moment repetitive admin moves off their plate." },
+    { "title": "Fewer dropped tasks", "description": "Automations don't forget follow-ups or skip steps — every run follows the same logic." },
+    { "title": "AI where it helps", "description": "Agents handle classification, drafting, and decisioning so a human only steps in for judgement calls." },
+    { "title": "You stay in control", "description": "Clear logging and a handover mean you understand exactly what runs and can adjust it later." }
+  ],
+  "whyMe": "I combine production software engineering with a practical eye for process. That means automations I build are reliable and observable, not fragile glue that breaks the first time an API changes. You get something that keeps working after launch."
+}

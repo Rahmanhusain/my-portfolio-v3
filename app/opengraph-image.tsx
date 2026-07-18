@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 // Route segment config
-export const alt = 'Rahman — Full-Stack Developer building fast, accessible web products';
+export const alt = 'Rahman — Software Developer building fast, accessible web products';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -34,7 +34,7 @@ export default function OpengraphImage() {
             color: '#8a8a8a',
           }}
         >
-          Full-Stack Developer
+          Software Developer
         </div>
 
         {/* headline */}

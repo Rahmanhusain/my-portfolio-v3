@@ -8,9 +8,9 @@ import { useScrollReveal } from "@/lib/useScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 const stats = [
-  { value: "4+", label: "Years experience" },
-  { value: "30+", label: "Projects shipped" },
-  { value: "15+", label: "Happy clients" },
+  { value: "100%", label: "On-time delivery" },
+  { value: "5+", label: "Services offered" },
+  { value: "100%", label: "Transparency" },
 ];
 
 const IMG_SHADOW_REST =
@@ -224,7 +224,7 @@ export default function About() {
                 >
                   <Image
                     src="/rahman.jpeg"
-                    alt="Rahman — Full-Stack Developer"
+                    alt="Rahman — Software Developer"
                     fill
                     className="object-cover object-center"
                     sizes="(max-width: 640px) 288px, (max-width: 768px) 320px, (max-width: 1024px) 352px, 384px"
@@ -242,7 +242,7 @@ export default function About() {
 
             <div ref={bioRef} className="space-y-4 text-muted leading-relaxed">
               <p className="about-bio-line">
-                I&apos;m a Full-Stack Developer based in Delhi, specializing in
+                I&apos;m a Software Developer based in Delhi, specializing in
                 building fast, accessible, and beautifully crafted web
                 experiences. I work across the entire stack — from designing
                 pixel-perfect interfaces to architecting scalable backend

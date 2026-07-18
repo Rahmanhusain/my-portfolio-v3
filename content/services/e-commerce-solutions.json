@@ -1,0 +1,31 @@
+{
+  "number": "08",
+  "slug": "e-commerce-solutions",
+  "title": "E-Commerce Solutions",
+  "shortDesc": "Online stores and selling flows that convert — from storefront setup to payments, carts, and fulfilment integrations.",
+  "description": "I build e-commerce that sells. Whether you need a polished Shopify store, a WooCommerce site, or a custom headless storefront, I handle the storefront, product catalogue, cart and checkout, and the payment and fulfilment integrations that make it actually work. The focus is on speed, trust signals, and a checkout that doesn't lose customers.",
+  "bannerImage": "/blogpostimages/banner.webp",
+  "bannerAlt": "E-commerce storefront showing products, cart, and checkout on a laptop",
+  "keywords": ["e-commerce development", "Shopify developer", "WooCommerce development", "online store development", "headless commerce", "payment integration"],
+  "body": [
+    { "type": "h2", "text": "What I can build" },
+    { "type": "p", "text": "Storefront setup and theme work on Shopify or WooCommerce, custom product pages, variant and inventory modelling, cart and checkout flows, discount and coupon logic, and integrations with payment gateways, shipping, and tax tools." },
+    { "type": "h2", "text": "Platform vs. custom" },
+    { "type": "p", "text": "For most small and mid-size stores, Shopify or WooCommerce gets you to market fast with a huge app ecosystem. When you need a bespoke buying experience, unusual catalogue rules, or tight integration with internal systems, a headless storefront on Next.js with a commerce backend gives you full control." },
+    { "type": "ul", "items": [
+      "Platforms: Shopify, WooCommerce, BigCommerce",
+      "Headless: Next.js storefront with commerce APIs",
+      "Payments: Stripe, Razorpay, PayPal, and local gateways",
+      "Ops: shipping, tax, inventory, and email/SMS notifications"
+    ] },
+    { "type": "h2", "text": "What you get" },
+    { "type": "p", "text": "A store that loads fast and is easy to run day to day, documented admin workflows, and a 30-day window for tweaks after launch. You keep full access to the admin and all credentials." }
+  ],
+  "benefits": [
+    { "title": "Built to convert", "description": "Clear product pages, a low-friction cart, and a trustworthy checkout are designed in from the start — not patched on later." },
+    { "title": "Fast storefronts", "description": "Optimised images, caching, and clean code keep load times down, which directly protects conversion rates." },
+    { "title": "Payments that work", "description": "Reliable gateway and tax/shipping integrations mean fewer failed orders and fewer support tickets." },
+    { "title": "You stay in control", "description": "Full admin access, clean documentation, and a handover session so your team can run the store confidently." }
+  ],
+  "whyMe": "I treat an online store as a product, not just a website — performance, checkout friction, and trust all affect revenue. I build stores that are fast, reliable, and straightforward for you to operate after launch."
+}

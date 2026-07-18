@@ -131,7 +131,7 @@ export default function Hero() {
         <div className="flex flex-col items-center gap-3.5 py-6 md:py-8">
           <div ref={labelRef}>
             <p className="text-center text-[#8a8a8a] text-[11px] md:text-sm leading-relaxed max-w-[280px] md:max-w-md">
-              Full-Stack Developer crafting fast, accessible, and beautifully
+              Software Developer crafting fast, accessible, and beautifully
               designed web products — from pixel-perfect UIs to scalable APIs.
             </p>
           </div>

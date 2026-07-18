@@ -8,7 +8,7 @@ const sortedPosts = [...posts].sort(
 );
 
 export const metadata: Metadata = {
-  title: 'Blog — Web Development Insights',
+  title: 'Blog — Web Development Insights by Rahman',
   description:
     'Articles on React, Next.js, GSAP, Tailwind CSS, and modern web development. Practical guides written by a full-stack developer.',
   keywords: [

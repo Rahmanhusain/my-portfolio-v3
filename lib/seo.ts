@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
-const siteName = 'Rahman — Full-Stack Developer';
+const siteName = 'Rahman — Software Developer';
 const defaultDescription =
-  'Full-Stack Developer building fast, accessible, and beautifully crafted web products. Available for freelance.';
+  'Software Developer building fast, accessible, and beautifully crafted web products. Available for freelance.';
 
 export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
   return {
