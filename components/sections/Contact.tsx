@@ -12,13 +12,14 @@ type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 interface FormData {
   name: string;
   email: string;
+  phone: string;
   message: string;
 }
 
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null);
   const [status, setStatus] = useState<FormStatus>('idle');
-  const [form, setForm] = useState<FormData>({ name: '', email: '', message: '' });
+  const [form, setForm] = useState<FormData>({ name: '', email: '', phone: '', message: '' });
   const [errors, setErrors] = useState<Partial<FormData>>({});
 
   useGSAP(
@@ -47,6 +48,14 @@ export default function Contact() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = 'Enter a valid email.';
     }
+    if (!form.phone.trim()) {
+      newErrors.phone = 'Phone number is required.';
+    } else {
+      const digits = form.phone.replace(/\D/g, '');
+      if (digits.length < 8 || digits.length > 15) {
+        newErrors.phone = 'Enter a valid phone number (with country code).';
+      }
+    }
     if (!form.message.trim()) newErrors.message = 'Message is required.';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -64,7 +73,7 @@ export default function Contact() {
       });
       if (!res.ok) throw new Error('Failed');
       setStatus('success');
-      setForm({ name: '', email: '', message: '' });
+      setForm({ name: '', email: '', phone: '', message: '' });
     } catch {
       setStatus('error');
     }
@@ -188,6 +197,29 @@ export default function Contact() {
               {errors.email && (
                 <p id="email-error" className="text-xs text-red-400 mt-1.5">
                   {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="block text-xs text-[#8a8a8a] mb-1.5">
+                Phone number
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                name="phone"
+                autoComplete="tel"
+                placeholder="+91 98765 43210"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className={inputClass}
+                aria-describedby={errors.phone ? 'phone-error' : undefined}
+                aria-invalid={!!errors.phone}
+              />
+              {errors.phone && (
+                <p id="phone-error" className="text-xs text-red-400 mt-1.5">
+                  {errors.phone}
                 </p>
               )}
             </div>

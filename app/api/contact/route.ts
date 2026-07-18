@@ -3,20 +3,26 @@ import { NextRequest } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, message } = body as {
+    const { name, email, phone, message } = body as {
       name?: string;
       email?: string;
+      phone?: string;
       message?: string;
     };
 
     // Basic server-side validation
-    if (!name?.trim() || !email?.trim() || !message?.trim()) {
+    if (!name?.trim() || !email?.trim() || !phone?.trim() || !message?.trim()) {
       return Response.json({ error: 'All fields are required.' }, { status: 400 });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return Response.json({ error: 'Invalid email address.' }, { status: 400 });
+    }
+
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 8 || phoneDigits.length > 15) {
+      return Response.json({ error: 'Invalid phone number.' }, { status: 400 });
     }
 
     // TODO: wire up Resend / Nodemailer
@@ -33,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // For now, log in dev and return success
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Contact Form]', { name, email, message });
+      console.log('[Contact Form]', { name, email, phone, message });
     }
 
     return Response.json({ success: true }, { status: 200 });
