@@ -3,250 +3,184 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
- * A hidden, cat-themed "I love you" reveal for Iqra.
+ * A hidden, cat-themed "I love you" surprise for Iqra.
  *
- * Listens globally (but ignores form fields) for the typed phrase
- * "i love you" — case-insensitive, with or without spaces. When matched it
- * reveals a cute animated card and plays a gentle romantic loop synthesized
- * with the Web Audio API (no asset file required). Nothing renders until
- * triggered, so it stays completely invisible in the UI.
+ * Listens globally (but ignores form fields) for a typed secret phrase. The
+ * phrase itself is never shipped to the browser — it lives in the server-only
+ * `CAT_SECRET_PHRASE` env var, and the client only ever receives its SHA-256
+ * hash (via `/api/secret`) to match keystrokes against. When matched, a
+ * cute cat appears at the cursor, trails the mouse, and reacts to movement:
+ * at rest it shows "i Love you iqra babu"; while the mouse moves it switches
+ * to "cutieeeeeeee" with an excited face. Nothing renders until triggered, so
+ * the page's server-rendered HTML (and therefore SEO) is untouched.
  */
 
-const SPACED = 'i love you';
-const COMPACT = 'iloveyou';
-
-interface Heart {
-  left: number;
-  delay: number;
-  dur: number;
-  scale: number;
-  rot: number;
-  char: string;
+/** SHA-256 → lowercase hex, using the browser's Web Crypto (secure contexts). */
+async function sha256Hex(input: string) {
+  const data = new TextEncoder().encode(input);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
-const HEART_CHARS = ['💗', '💕', '💖', '🐾', '🌸', '❤️', '🐱', '🐾'];
-
-function makeHearts(): Heart[] {
-  return Array.from({ length: 18 }, (_, i) => ({
-    left: (i * 5.5 + Math.random() * 4) % 100,
-    delay: Math.random() * 7,
-    dur: 7 + Math.random() * 6,
-    scale: 0.7 + Math.random() * 0.9,
-    rot: Math.random() * 60 - 30,
-    char: HEART_CHARS[i % HEART_CHARS.length],
-  }));
-}
-
-/* ── Romantic loop (synthesized, no audio asset) ───────────────── */
-const NOTE: Record<string, number> = {
-  C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.0, A3: 220.0, B3: 246.94,
-  C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.0, A4: 440.0, B4: 493.88,
-  C5: 523.25, D5: 587.33, E5: 659.25,
-};
-// Warm pad per 2s segment — I–vi–IV–V in C major.
-const PAD: string[][] = [
-  ['C3', 'G3', 'C4', 'E4'],
-  ['A3', 'E4', 'A4'],
-  ['F3', 'C4', 'F4'],
-  ['G3', 'D4', 'G4', 'B4'],
-];
-// Melody: [note, beatIndex (0..15), durationInBeats].
-const MELODY: [string, number, number][] = [
-  ['E4', 0, 1], ['G4', 1, 1], ['E4', 2, 1], ['C4', 3, 1],
-  ['A4', 4, 1], ['C5', 5, 1], ['A4', 6, 1], ['G4', 7, 1],
-  ['F4', 8, 1], ['A4', 9, 1], ['F4', 10, 1], ['D4', 11, 1],
-  ['G4', 12, 1], ['B4', 13, 1], ['G4', 14, 1], ['D4', 15, 1],
-];
-const BEAT = 0.5; // seconds
-const LOOP = 8; // seconds (16 beats)
-
-function playNote(
-  ctx: AudioContext,
-  freq: number,
-  start: number,
-  dur: number,
-  type: OscillatorType,
-  peak: number,
-  voices: Set<OscillatorNode>,
-) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  const attack = type === 'sine' ? 0.02 : 0.05;
-  gain.gain.setValueAtTime(0.0001, start);
-  gain.gain.linearRampToValueAtTime(peak, start + attack);
-  gain.gain.exponentialRampToValueAtTime(0.0001, start + dur + (type === 'triangle' ? 0.4 : 0.2));
-  osc.connect(gain).connect(ctx.destination);
-  osc.start(start);
-  osc.stop(start + dur + 0.5);
-  voices.add(osc);
-  osc.onended = () => {
-    try {
-      osc.disconnect();
-      gain.disconnect();
-    } catch {
-      /* already torn down */
-    }
-    voices.delete(osc);
-  };
-}
-
-function scheduleLoop(ctx: AudioContext, startTime: number, voices: Set<OscillatorNode>) {
-  PAD.forEach((chord, seg) => {
-    const start = startTime + seg * 2;
-    chord.forEach((n) => playNote(ctx, NOTE[n], start, 2.0, 'triangle', 0.05, voices));
-  });
-  MELODY.forEach(([n, beat, dur]) => {
-    playNote(ctx, NOTE[n], startTime + beat * BEAT, dur * BEAT, 'sine', 0.14, voices);
-  });
-}
-
-function CatSvg() {
+function CatCursorSvg({ moving }: { moving: boolean }) {
   return (
     <svg viewBox="0 0 240 240" className="h-full w-full" aria-hidden="true">
-      {/* ears (twitch on hover) */}
-      <g className="cat-ears group-hover:cat-ears-tw">
-        <path d="M58 78 L36 16 L98 54 Z" fill="#f7f1ea" />
-        <path d="M182 78 L204 16 L142 54 Z" fill="#f7f1ea" />
-        <path d="M56 66 L46 30 L84 56 Z" fill="#ffb3c6" />
-        <path d="M184 66 L194 30 L156 56 Z" fill="#ffb3c6" />
-      </g>
+      {/* ears */}
+      <path d="M62 74 L40 12 L104 52 Z" fill="#f7f1ea" />
+      <path d="M178 74 L200 12 L136 52 Z" fill="#f7f1ea" />
+      <path d="M60 62 L48 26 L94 54 Z" fill="#ffb3c6" />
+      <path d="M180 62 L192 26 L146 54 Z" fill="#ffb3c6" />
       {/* head */}
-      <ellipse cx="120" cy="134" rx="80" ry="72" fill="#f7f1ea" />
+      <ellipse cx="120" cy="126" rx="82" ry="74" fill="#f7f1ea" />
       {/* blush */}
-      <ellipse cx="74" cy="152" rx="15" ry="9" fill="#ffb3c6" opacity="0.7" />
-      <ellipse cx="166" cy="152" rx="15" ry="9" fill="#ffb3c6" opacity="0.7" />
+      <ellipse cx="72" cy="146" rx={moving ? 17 : 15} ry={moving ? 11 : 9} fill="#ffb3c6" opacity={moving ? 0.85 : 0.7} />
+      <ellipse cx="168" cy="146" rx={moving ? 17 : 15} ry={moving ? 11 : 9} fill="#ffb3c6" opacity={moving ? 0.85 : 0.7} />
       {/* eyes */}
-      <g className="cat-eyes">
-        <ellipse cx="92" cy="124" rx="11" ry="14" fill="#2b2b2b" />
-        <ellipse cx="148" cy="124" rx="11" ry="14" fill="#2b2b2b" />
-        <circle cx="96" cy="119" r="3.6" fill="#ffffff" />
-        <circle cx="152" cy="119" r="3.6" fill="#ffffff" />
-      </g>
+      {moving ? (
+        <g stroke="#2b2b2b" strokeWidth="4" strokeLinecap="round" fill="none">
+          <path d="M82 128 Q92 110 102 128" />
+          <path d="M138 128 Q148 110 158 128" />
+        </g>
+      ) : (
+        <g className="cat-eyes">
+          <ellipse cx="92" cy="126" rx="11" ry="14" fill="#2b2b2b" />
+          <ellipse cx="148" cy="126" rx="11" ry="14" fill="#2b2b2b" />
+          <circle cx="96" cy="121" r="3.6" fill="#ffffff" />
+          <circle cx="152" cy="121" r="3.6" fill="#ffffff" />
+        </g>
+      )}
       {/* nose */}
       <path d="M120 142 l-7 7 h14 z" fill="#ff8fab" />
       {/* mouth */}
-      <path
-        d="M120 149 q-10 10 -20 2 M120 149 q10 10 20 2"
-        stroke="#2b2b2b"
-        strokeWidth="2.5"
-        fill="none"
-        strokeLinecap="round"
-      />
-      {/* rose held in paw */}
-      <g>
-        {/* stem */}
+      {moving ? (
+        <g>
+          <path d="M110 150 Q120 166 130 150 Z" fill="#7a2e3a" />
+          <path d="M115 156 Q120 165 125 156 Q120 161 115 156 Z" fill="#ff8fab" />
+        </g>
+      ) : (
         <path
-          d="M150 206 q4 -12 14 -22"
-          stroke="#5b9a5b"
-          strokeWidth="4"
+          d="M120 149 q-10 10 -20 2 M120 149 q10 10 20 2"
+          stroke="#2b2b2b"
+          strokeWidth="2.5"
           fill="none"
           strokeLinecap="round"
         />
+      )}
+      {/* whiskers */}
+      <g stroke="#cbb9a8" strokeWidth="2" strokeLinecap="round">
+        <path d="M52 128 L14 122" />
+        <path d="M52 136 L16 138" />
+        <path d="M188 128 L226 122" />
+        <path d="M188 136 L224 138" />
+      </g>
+      {/* rose held up beside the cheek */}
+      <g>
+        {/* stem */}
+        <path d="M186 210 q-4 -30 -14 -52" stroke="#5b9a5b" strokeWidth="4" fill="none" strokeLinecap="round" />
         {/* leaf */}
-        <path d="M158 192 q16 -3 20 9 q-16 5 -20 -9 z" fill="#6fb36f" />
+        <path d="M178 176 q-16 -2 -20 10 q16 6 20 -10 z" fill="#6fb36f" />
         {/* bloom */}
         <g className="cat-rose">
-          <circle cx="166" cy="182" r="15" fill="#e2455c" />
+          <circle cx="172" cy="156" r="16" fill="#e2455c" />
           <path
-            d="M166 182 C 162 177, 171 175, 172 181 C 173 188, 159 189, 159 181 C 159 173, 174 171, 176 182"
+            d="M172 156 C168 151, 177 149, 178 155 C179 162, 165 163, 165 155 C165 147, 180 145, 182 156"
             fill="none"
             stroke="#a82c3e"
             strokeWidth="2"
             strokeLinecap="round"
           />
-          <circle cx="166" cy="182" r="3" fill="#a82c3e" />
+          <circle cx="172" cy="156" r="3" fill="#a82c3e" />
         </g>
-        {/* paw gripping the stem */}
-        <g>
-          <ellipse cx="146" cy="214" rx="22" ry="13" fill="#f7f1ea" />
-          <circle cx="133" cy="205" r="5.5" fill="#f7f1ea" />
-          <circle cx="146" cy="202" r="5.5" fill="#f7f1ea" />
-          <circle cx="159" cy="205" r="5.5" fill="#f7f1ea" />
-        </g>
-      </g>
-      {/* whiskers */}
-      <g stroke="#cbb9a8" strokeWidth="2" strokeLinecap="round">
-        <path d="M58 134 L18 128" />
-        <path d="M58 142 L20 144" />
-        <path d="M182 134 L222 128" />
-        <path d="M182 142 L220 144" />
+        {/* little paw gripping the stem */}
+        <ellipse cx="188" cy="212" rx="15" ry="11" fill="#f7f1ea" />
+        <circle cx="182" cy="216" r="3" fill="#ffb3c6" />
+        <circle cx="189" cy="217" r="3" fill="#ffb3c6" />
+        <circle cx="196" cy="216" r="3" fill="#ffb3c6" />
       </g>
     </svg>
   );
 }
 
 export default function ContactFormS() {
-  const [open, setOpen] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [hearts, setHearts] = useState<Heart[]>([]);
+  const [active, setActive] = useState(false);
+  const [moving, setMoving] = useState(false);
 
+  const isActiveRef = useRef(false);
+  const catRef = useRef<HTMLDivElement>(null);
+  const positionRef = useRef({ x: 0, y: 0 });
+  const targetRef = useRef({ x: 0, y: 0 });
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const rafRef = useRef<number | null>(null);
+  const moveTimer = useRef<number | null>(null);
+  const movingRef = useRef(false);
   const bufferRef = useRef('');
   const resetTimer = useRef<number | null>(null);
-  const isOpenRef = useRef(false);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const songState = useRef<{ voices: Set<OscillatorNode>; timer: number } | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const lastFocusedRef = useRef<HTMLElement | null>(null);
-
-  const ensureCtx = useCallback(() => {
-    if (!audioCtxRef.current) {
-      const Ctor =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext?: typeof AudioContext })
-          .webkitAudioContext;
-      if (!Ctor) return null;
-      audioCtxRef.current = new Ctor();
-    }
-    return audioCtxRef.current;
-  }, []);
-
-  const startSong = useCallback(() => {
-    const ctx = audioCtxRef.current;
-    if (!ctx || songState.current) return;
-    const voices = new Set<OscillatorNode>();
-    const startTime = ctx.currentTime + 0.1;
-    scheduleLoop(ctx, startTime, voices);
-    let next = startTime + LOOP;
-    const timer = window.setInterval(() => {
-      if (!songState.current) return;
-      scheduleLoop(ctx, next, voices);
-      next += LOOP;
-    }, LOOP * 1000);
-    songState.current = { voices, timer };
-  }, []);
-
-  const stopSong = useCallback(() => {
-    const s = songState.current;
-    if (!s) return;
-    clearInterval(s.timer);
-    s.voices.forEach((v) => {
-      try {
-        v.stop();
-      } catch {
-        /* already stopped */
-      }
-    });
-    songState.current = null;
-  }, []);
+  const secretRef = useRef<{ hash: string; length: number } | null>(null);
 
   const close = useCallback(() => {
-    isOpenRef.current = false;
-    setOpen(false);
+    if (!isActiveRef.current) return;
+    isActiveRef.current = false;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (moveTimer.current) clearTimeout(moveTimer.current);
+    movingRef.current = false;
+    setMoving(false);
+    setActive(false);
   }, []);
 
-  const trigger = useCallback(() => {
-    if (isOpenRef.current) return;
-    isOpenRef.current = true;
-    const ctx = ensureCtx();
-    if (ctx) void ctx.resume();
-    setHearts(makeHearts());
-    setOpen(true);
-  }, [ensureCtx]);
+  const startLoop = useCallback(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const step = () => {
+      const p = positionRef.current;
+      const t = targetRef.current;
+      const f = reduce ? 1 : 0.2;
+      p.x += (t.x - p.x) * f;
+      p.y += (t.y - p.y) * f;
+      if (catRef.current) {
+        catRef.current.style.transform = `translate(${p.x}px, ${p.y}px)`;
+      }
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+  }, []);
 
-  /* Global keystroke detection — matches "i love you" (case-insensitive,
-     with or without spaces). Ignored while typing in a field or while open. */
+  const activate = useCallback(() => {
+    if (isActiveRef.current) return;
+    isActiveRef.current = true;
+    const m =
+      mouseRef.current.x || mouseRef.current.y
+        ? mouseRef.current
+        : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    targetRef.current = { ...m };
+    positionRef.current = { ...m };
+    if (catRef.current) {
+      catRef.current.style.transform = `translate(${m.x}px, ${m.y}px)`;
+    }
+    setMoving(false);
+    startLoop();
+    setActive(true);
+  }, [startLoop]);
+
+  /* Fetch the trigger's hash (never the plaintext) once on mount. */
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/secret')
+      .then((r) => r.json())
+      .then((d: { hash?: string; length?: number }) => {
+        if (!cancelled && d?.hash && d?.length) {
+          secretRef.current = { hash: d.hash, length: d.length };
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  /* Global keystroke detection — matches the secret phrase (case-insensitive,
+     spaces ignored) by comparing a rolling hash to the server-provided one.
+     Ignored while typing in a field or while active. */
   useEffect(() => {
     const clearReset = () => {
       if (resetTimer.current) {
@@ -255,8 +189,10 @@ export default function ContactFormS() {
       }
     };
     const onKey = (e: KeyboardEvent) => {
-      if (isOpenRef.current) return;
+      if (isActiveRef.current) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const secret = secretRef.current;
+      if (!secret) return; // hash not loaded yet
       const t = e.target as HTMLElement | null;
       const tag = t?.tagName;
       if (
@@ -273,24 +209,31 @@ export default function ContactFormS() {
         return;
       }
       if (!/^[a-z ]$/.test(key)) {
-        // any off-phrase key resets the armed buffer
         bufferRef.current = '';
         clearReset();
         return;
       }
-      // Space scrolls the page by default — suppress it only once we're
-      // capturing the phrase, so normal space-scrolling still works.
-      if (key === ' ' && bufferRef.current.length > 0) e.preventDefault();
-      bufferRef.current = (bufferRef.current + key).slice(-SPACED.length);
+      if (key === ' ') {
+        // Space scrolls the page by default — suppress it only once we're
+        // capturing the phrase, so normal space-scrolling still works.
+        // Spaces aren't part of the compared (compact) buffer.
+        if (bufferRef.current.length > 0) e.preventDefault();
+      } else {
+        bufferRef.current = (bufferRef.current + key).slice(-secret.length);
+      }
       clearReset();
       resetTimer.current = window.setTimeout(() => {
         bufferRef.current = '';
       }, 2000);
-      const compact = bufferRef.current.replace(/\s+/g, '');
-      if (bufferRef.current === SPACED || compact.endsWith(COMPACT)) {
-        bufferRef.current = '';
-        clearReset();
-        trigger();
+      if (bufferRef.current.length === secret.length) {
+        const candidate = bufferRef.current;
+        sha256Hex(candidate).then((h) => {
+          if (h === secret.hash && !isActiveRef.current) {
+            bufferRef.current = '';
+            clearReset();
+            activate();
+          }
+        });
       }
     };
     const onBlur = () => {
@@ -304,152 +247,71 @@ export default function ContactFormS() {
       window.removeEventListener('blur', onBlur);
       clearReset();
     };
-  }, [trigger]);
+  }, [activate]);
 
-  /* Body scroll lock + focus handling while open. */
+  /* Track the mouse: always remember position (for spawn point), and while
+     active update the target + toggle the "moving" expression at the edges
+     (not on every pixel) to avoid render storms. */
   useEffect(() => {
-    if (!open) {
-      lastFocusedRef.current?.focus?.();
-      return;
-    }
-    lastFocusedRef.current = document.activeElement as HTMLElement | null;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    const t = setTimeout(() => dialogRef.current?.focus(), 60);
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      clearTimeout(t);
+    const onMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
+      if (!isActiveRef.current) return;
+      targetRef.current = { x: e.clientX, y: e.clientY };
+      if (!movingRef.current) {
+        movingRef.current = true;
+        setMoving(true);
+      }
+      if (moveTimer.current) clearTimeout(moveTimer.current);
+      moveTimer.current = window.setTimeout(() => {
+        movingRef.current = false;
+        setMoving(false);
+      }, 450);
     };
-  }, [open]);
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
 
-  /* Escape to close. */
+  /* Dismiss on Escape or click anywhere. */
   useEffect(() => {
-    if (!open) return;
+    if (!active) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         close();
       }
     };
+    const onClick = () => close();
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open, close]);
+    document.addEventListener('click', onClick);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('click', onClick);
+    };
+  }, [active, close]);
 
-  /* Romantic loop follows open + mute state. */
-  useEffect(() => {
-    if (!open) return;
-    if (!muted) startSong();
-    return () => stopSong();
-  }, [open, muted, startSong, stopSong]);
-
-  if (!open) return null;
+  if (!active) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-5">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-gradient-to-b from-[#1a0e16]/85 to-[#0a0a0a]/85 backdrop-blur-md"
-        onClick={close}
-        aria-hidden="true"
-      />
-
-      {/* Floating hearts */}
-      <div
-        className="love-hearts pointer-events-none absolute inset-0 overflow-hidden"
-        aria-hidden="true"
-      >
-        {hearts.map((h, i) => (
+    <div
+      ref={catRef}
+      className="fixed left-0 top-0 z-[200] pointer-events-none will-change-transform"
+      aria-hidden="true"
+    >
+      <div className="relative" style={{ transform: 'translate(-50%, -90%)' }}>
+        {/* speech bubble */}
+        <div className="absolute bottom-full left-1/2 mb-3 -translate-x-1/2 whitespace-nowrap rounded-2xl bg-gradient-to-br from-[#fff0f5] to-[#ffe0ec] px-5 py-2.5 text-lg font-bold text-[#c2185b] shadow-xl ring-1 ring-[#ffb3c6]/60">
           <span
-            key={i}
-            className="love-heart text-2xl md:text-3xl"
-            style={
-              {
-                left: `${h.left}%`,
-                animationDelay: `${h.delay}s`,
-                animationDuration: `${h.dur}s`,
-                '--r': `${h.rot}deg`,
-                transform: `scale(${h.scale})`,
-              } as React.CSSProperties
-            }
+            key={moving ? 'move' : 'rest'}
+            className="love-bubble-text"
+            style={{ fontFamily: 'var(--font-cursive), cursive' }}
           >
-            {h.char}
+            {moving ? '😽 cutieeee.... 💕✨' : '💖 I Love You Iqra Babu 🌹'}
           </span>
-        ))}
-      </div>
-
-      {/* Card */}
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="love-title"
-        tabIndex={-1}
-        className="love-card group relative w-full max-w-md rounded-[28px] border border-[#ff8fab]/30 bg-[#141414] p-8 text-center shadow-2xl shadow-[#ff8fab]/10 outline-none"
-      >
-        <button
-          type="button"
-          onClick={close}
-          aria-label="Close"
-          className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-lg text-[#8a8a8a] transition-colors hover:bg-white/[0.06] hover:text-[#fafafa]"
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-
-        {/* hover-only sparkle hearts */}
-        <span className="love-hover-heart pointer-events-none absolute left-1/2 top-1 -translate-x-1/2 text-xl opacity-0 transition-all duration-300 group-hover:translate-y-1 group-hover:opacity-100">
-          💞
-        </span>
-        <span className="love-hover-heart pointer-events-none absolute left-[20%] top-10 text-base opacity-0 transition-all delay-75 duration-300 group-hover:opacity-100">
-          🐾
-        </span>
-        <span className="love-hover-heart pointer-events-none absolute right-[20%] top-10 text-base opacity-0 transition-all delay-75 duration-300 group-hover:opacity-100">
-          💗
-        </span>
-
-        <div className="cat-bob mx-auto -mt-2 w-36">
-          <div className="transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105">
-            <CatSvg />
-          </div>
+          <span className="absolute left-1/2 top-full -translate-x-1/2 border-[10px] border-transparent border-t-[#ffe0ec]" />
         </div>
-
-        <p className="mt-2 text-xs font-medium uppercase tracking-[0.3em] text-[#ff8fab]">
-          a little secret 🐾
-        </p>
-
-        <h2
-          id="love-title"
-          className="font-cursive text-4xl leading-tight text-[#fafafa] md:text-5xl"
-        >
-          I love you, Iqra
-        </h2>
-
-        <p className="mt-4 text-sm leading-relaxed text-[#a8a8a8]">
-          Every line of code I write is a tiny love letter to you. You make my
-          whole world brighter. 💗
-        </p>
-
-        <p className="love-heartbeat mt-4 font-cursive text-lg text-[#ff8fab]">
-          — Rahman
-        </p>
-
-        <div className="mt-6 flex items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => setMuted((m) => !m)}
-            className="cursor-pointer rounded-full border border-[#242424] px-4 py-2.5 text-sm font-medium text-[#8a8a8a] transition hover:text-[#fafafa] active:scale-95"
-            aria-pressed={muted}
-          >
-            {muted ? '🔇 sound off' : '🔊 sound on'}
-          </button>
-          <button
-            type="button"
-            onClick={close}
-            className="cursor-pointer rounded-full border border-[#fafafa] bg-[#fafafa] px-6 py-2.5 text-sm font-semibold text-[#0a0a0a] transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] active:scale-95"
-          >
-            close 💕
-          </button>
+        {/* cat */}
+        <div className="cat-bob mx-auto w-24">
+          <CatCursorSvg moving={moving} />
         </div>
       </div>
     </div>

@@ -184,7 +184,7 @@ export default function Workflow() {
       className="py-32 md:py-40 border-t border-[#242424]"
       aria-labelledby="workflow-heading"
     >
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6">
         <SectionHeading
           eyebrow="How I work"
           title="A clear process, start to finish."
@@ -192,7 +192,7 @@ export default function Workflow() {
         />
 
         {/* Node graph — each node is joined to the next by its own segment */}
-        <ol className="relative mt-10">
+        <ol className="relative mt-10 max-w-4xl mx-auto">
           {steps.map((step, i) => {
             const isLeft = i % 2 === 0; // desktop: even = left card, odd = right card
             const isLast = i === steps.length - 1;
