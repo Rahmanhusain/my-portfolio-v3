@@ -104,7 +104,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       <article className="min-h-screen pb-20">
         {/* Banner image */}
-        <div className="relative w-full sm:aspect-21/4.5 aspect-21/8 max-h-100  overflow-hidden bg-bg">
+        <div className="relative w-full sm:aspect-21/4.5 aspect-21/8 max-h-80  overflow-hidden bg-bg">
           <Image
             src={post.bannerImage}
             alt={post.bannerAlt}

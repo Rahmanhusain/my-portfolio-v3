@@ -1,0 +1,208 @@
+{
+  "slug": "gsap-animation-react-nextjs-guide",
+  "title": "GSAP Animation in React: The Practical Next.js Guide",
+  "description": "Learn how to use GSAP animation in React and Next.js the right way, with cleanup, ScrollTrigger setup, and honest performance lessons from a client rebuild.",
+  "date": "July 01, 2026",
+  "updatedAt": "2026-07-02",
+  "readTime": "9 min read",
+  "tags": [
+    "GSAP",
+    "React",
+    "Next.js",
+    "Animation",
+    "Performance"
+  ],
+  "keywords": [
+    "GSAP animation React",
+    "GSAP ScrollTrigger Next.js",
+    "React animation library",
+    "GSAP vs Framer Motion",
+    "useGSAP hook"
+  ],
+  "bannerImage": "/blogpostimages/gsap.png",
+  "bannerAlt": "GSAP animation React Next.js code editor showing a ScrollTrigger timeline for a landing page hero section",
+  "body": [
+    {
+      "type": "h2",
+      "text": "Why I Went Back to GSAP After Two Years of Framer Motion"
+    },
+    {
+      "type": "p",
+      "text": "GSAP animation in React was not my first choice on a client project last spring. I had been leaning on Framer Motion for almost everything, and honestly it felt like the safer, more React native option. Then the client asked for a scroll driven product tour with pinned sections, and Framer Motion's scroll utilities started fighting me. I rewrote the whole tour with GSAP and ScrollTrigger in about a day, and it has not glitched once since."
+    },
+    {
+      "type": "p",
+      "text": "If you build marketing sites, product tours, or portfolio pieces where the animation is the pitch, this guide walks through the setup I actually use in Next.js 15 with the App Router, the cleanup mistake that cost me a Saturday, and when I would still reach for something lighter than GSAP."
+    },
+    {
+      "type": "h2",
+      "text": "Key Takeaways"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "GSAP animation in React needs a cleanup step, or timelines stack up on every re-render and hot reload.",
+        "The official @gsap/react package ships a useGSAP hook that handles that cleanup for you.",
+        "ScrollTrigger is the reason most agencies pick GSAP over CSS scroll animations for pinned sections.",
+        "GSAP is not always the right tool. For a simple fade in on scroll, CSS or Framer Motion is lighter and easier to maintain."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Setting Up GSAP Animation in React With Next.js"
+    },
+    {
+      "type": "p",
+      "text": "First, install the core library and the React hook helper. GSAP itself is framework agnostic, which is part of why it still holds up years after libraries like Velocity.js faded out."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "npm install gsap @gsap/react"
+    },
+    {
+      "type": "p",
+      "text": "Because GSAP touches the DOM directly, every animation has to live inside a Client Component. Add \"use client\" at the top of the file, then use useGSAP instead of a raw useEffect. The hook, documented on the <a href=\"https://gsap.com/resources/React\">official GSAP React resources page</a>, automatically reverts tweens when the component unmounts."
+    },
+    {
+      "type": "code",
+      "lang": "tsx",
+      "code": "\"use client\";\n\nimport { useRef } from \"react\";\nimport { useGSAP } from \"@gsap/react\";\nimport gsap from \"gsap\";\n\nexport default function Hero() {\n  const container = useRef<HTMLDivElement>(null);\n\n  useGSAP(\n    () => {\n      gsap.from(\".hero-line\", {\n        y: 40,\n        opacity: 0,\n        stagger: 0.12,\n        duration: 0.8,\n        ease: \"power3.out\",\n      });\n    },\n    { scope: container }\n  );\n\n  return (\n    <div ref={container}>\n      <h1 className=\"hero-line\">We build interfaces that move.</h1>\n      <p className=\"hero-line\">Next.js, React, and a bit of GSAP.</p>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "p",
+      "text": "The scope option is doing real work here. It scopes gsap.utils.toArray and any selector text queries to that container, so two Hero components on the same page do not accidentally animate each other's elements. I did not know that the first time I used GSAP in a Next.js app, and I paid for it with duplicate class names colliding across routes."
+    },
+    {
+      "type": "h2",
+      "text": "Adding ScrollTrigger Without Breaking the App Router"
+    },
+    {
+      "type": "p",
+      "text": "ScrollTrigger is a separate GSAP plugin, and it has to be registered once before you use it. In Next.js, I register it inside the same client file where I build the timeline, guarded so it only runs in the browser."
+    },
+    {
+      "type": "code",
+      "lang": "tsx",
+      "code": "\"use client\";\n\nimport { useRef } from \"react\";\nimport { useGSAP } from \"@gsap/react\";\nimport gsap from \"gsap\";\nimport { ScrollTrigger } from \"gsap/ScrollTrigger\";\n\ngsap.registerPlugin(ScrollTrigger);\n\nexport default function ProductTour() {\n  const container = useRef<HTMLDivElement>(null);\n\n  useGSAP(\n    () => {\n      const panels = gsap.utils.toArray<HTMLElement>(\".panel\");\n\n      panels.forEach((panel) => {\n        gsap.to(panel, {\n          opacity: 1,\n          scrollTrigger: {\n            trigger: panel,\n            start: \"top 80%\",\n            end: \"top 30%\",\n            scrub: true,\n          },\n        });\n      });\n    },\n    { scope: container }\n  );\n\n  return <div ref={container}>{/* panel markup */}</div>;\n}"
+    },
+    {
+      "type": "p",
+      "text": "This is the pattern I used for the pinned product tour I mentioned earlier. Each panel fades and slides in as the user scrolls past it, and scrub ties the animation progress directly to scroll position instead of just triggering once. That single option is the main reason ScrollTrigger keeps winning client pitches over CSS scroll-driven animations, which the <a href=\"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll-driven_animations\">MDN scroll-driven animations docs</a> confirm still have patchy browser support in 2026."
+    },
+    {
+      "type": "h3",
+      "text": "The Mistake That Cost Me a Saturday"
+    },
+    {
+      "type": "p",
+      "text": "Before I understood useGSAP, I was calling gsap.to inside a plain useEffect with an empty dependency array. That worked fine on first load, but Next.js fast refresh during development kept re-running the effect without cleaning up the old ScrollTrigger instances. The page started scrolling in slow motion after a few edits, and I genuinely thought GSAP was buggy. It was not. I just was not calling ScrollTrigger.getAll().forEach(t => t.kill()) or using the hook that does it for me."
+    },
+    {
+      "type": "h2",
+      "text": "GSAP Animation in React vs Framer Motion vs Plain CSS"
+    },
+    {
+      "type": "p",
+      "text": "Clients rarely care which library I pick, but they do care about smoothness and load time, so this is the honest comparison I give when someone asks why a project needs GSAP instead of what came free with their design system."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Tool",
+        "Best for",
+        "Learning curve",
+        "Bundle impact"
+      ],
+      "rows": [
+        [
+          "Plain CSS",
+          "Simple fades, hovers, basic transitions",
+          "Low",
+          "None, it ships with the browser"
+        ],
+        [
+          "Framer Motion",
+          "React component transitions, layout animation",
+          "Medium",
+          "Moderate, tied to React lifecycle"
+        ],
+        [
+          "GSAP + ScrollTrigger",
+          "Pinned sections, scrubbed timelines, complex sequencing",
+          "Medium to high",
+          "Small core, plugins loaded as needed"
+        ]
+      ],
+      "caption": "A rough guide I use when scoping animation work for clients"
+    },
+    {
+      "type": "p",
+      "text": "For a typical marketing site, I will start with CSS and only bring in GSAP once a section needs pinning, scrubbing, or a timeline with more than three or four coordinated moving parts. Reaching for GSAP on a simple fade in is overkill, and I will say that to a client even when it means less billable setup work."
+    },
+    {
+      "type": "h2",
+      "text": "Performance Notes From a Real Project"
+    },
+    {
+      "type": "p",
+      "text": "On the rebuild I keep referencing, Lighthouse flagged our first ScrollTrigger pass for layout thrashing because I was animating top and left instead of transform. Switching every tween to x and y properties, which GSAP maps to translate3d under the hood, brought our Cumulative Layout Shift score back under control and the scroll felt noticeably smoother on a mid-range Android phone we tested with."
+    },
+    {
+      "type": "p",
+      "text": "That fix sounds small written out like this, but it took real debugging with the Chrome performance panel open, watching paint flashes light up the whole hero section on every scroll tick. Worth it, though. The client's bounce rate on that landing page dropped a little in the weeks after launch, and I would rather spend an afternoon on transform properties than ship something that looks janky on the exact phones most of their visitors actually use."
+    },
+    {
+      "type": "ol",
+      "items": [
+        "Animate transform properties (x, y, scale, rotation) instead of top, left, or width whenever possible.",
+        "Kill or revert ScrollTrigger instances on unmount, either through useGSAP or manually in a cleanup function.",
+        "Use gsap.context or the scope option so selector-based animations do not leak across components.",
+        "Test on a real mid-range phone, not just your dev machine, before you tell a client the animation is done."
+      ]
+    },
+    {
+      "type": "p",
+      "text": "If your project needs this kind of scroll storytelling built into a production Next.js app rather than a demo, that is the kind of work I take on through my <a href=\"/services/web-app-development\">web app development services</a>, usually paired with a pass on the visual system through <a href=\"/services/ui-ux-design\">UI/UX design</a> so the motion actually matches the brand instead of feeling bolted on."
+    },
+    {
+      "type": "hr"
+    },
+    {
+      "type": "h2",
+      "text": "FAQ"
+    },
+    {
+      "type": "h3",
+      "text": "Is GSAP still worth learning in 2026 with CSS scroll animations improving?"
+    },
+    {
+      "type": "p",
+      "text": "Yes, mainly because of browser support and control. CSS scroll-driven animations are improving but still inconsistent across browsers, and GSAP gives you scrubbing, pinning, and timeline sequencing that plain CSS cannot match yet for complex, client-facing work."
+    },
+    {
+      "type": "h3",
+      "text": "Can I use GSAP with React Server Components?"
+    },
+    {
+      "type": "p",
+      "text": "Not directly. GSAP needs the DOM, so any component using gsap or useGSAP must include \"use client\" at the top. Keep the animated piece as a small client component and let the rest of the page stay server rendered for better performance."
+    },
+    {
+      "type": "h3",
+      "text": "Does GSAP animation in React slow down page load?"
+    },
+    {
+      "type": "p",
+      "text": "The core GSAP library is small, and plugins like ScrollTrigger load only when imported, so the impact is usually minor. The bigger risk to load time is animating too many DOM nodes at once, not GSAP's own file size."
+    },
+    {
+      "type": "h3",
+      "text": "What is the difference between useGSAP and useEffect for animations?"
+    },
+    {
+      "type": "p",
+      "text": "useGSAP, from the official @gsap/react package, automatically reverts and cleans up your animations on unmount and re-render. A plain useEffect leaves that cleanup to you, and skipping it is the most common cause of duplicated or slowed down animations in a React app."
+    }
+  ]
+}

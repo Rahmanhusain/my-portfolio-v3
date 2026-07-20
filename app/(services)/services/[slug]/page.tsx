@@ -92,7 +92,7 @@ export default async function ServicePage({ params }: Props) {
 
       <div className="min-h-screen pb-20">
         {/* Banner */}
-        <div className="relative w-full sm:aspect-21/4.5 aspect-21/8 max-h-100  overflow-hidden bg-bg">
+        <div className="relative w-full sm:aspect-21/4.5 aspect-21/8 max-h-80  overflow-hidden bg-bg">
           <Image
             src={service.bannerImage}
             alt={service.bannerAlt}

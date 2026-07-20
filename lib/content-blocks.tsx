@@ -13,33 +13,38 @@ function safeHref(href: string): string | null {
 }
 
 function renderRich(text: string): ReactNode[] {
+  const md = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const html = /<a\s+[^>]*href=(["'])([^"']+)\1[^>]*>([^<]*)<\/a>/gi;
+  const matches: { index: number; end: number; label: string; href: string }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = md.exec(text)) !== null) {
+    const href = safeHref(m[2]);
+    if (href) matches.push({ index: m.index, end: m.index + m[0].length, label: m[1], href });
+  }
+  while ((m = html.exec(text)) !== null) {
+    const href = safeHref(m[2]);
+    if (href) matches.push({ index: m.index, end: m.index + m[0].length, label: m[3], href });
+  }
+  matches.sort((a, b) => a.index - b.index);
+
+  const cls = 'text-[#fafafa] underline underline-offset-2 hover:text-[#ffb3c6] transition-colors';
   const nodes: ReactNode[] = [];
-  const re = /\[([^\]]+)\]\(([^)]+)\)/g;
   let last = 0;
   let key = 0;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(text)) !== null) {
-    if (match.index > last) nodes.push(text.slice(last, match.index));
-    const label = match[1];
-    const href = safeHref(match[2]);
-    if (href) {
-      const cls =
-        'text-[#fafafa] underline underline-offset-2 hover:text-[#ffb3c6] transition-colors';
-      nodes.push(
-        href.startsWith('http') ? (
-          <a key={key++} href={href} target="_blank" rel="noopener noreferrer" className={cls}>
-            {label}
-          </a>
-        ) : (
-          <Link key={key++} href={href} className={cls}>
-            {label}
-          </Link>
-        ),
-      );
-    } else {
-      nodes.push(match[0]);
-    }
-    last = re.lastIndex;
+  for (const mt of matches) {
+    if (mt.index > last) nodes.push(text.slice(last, mt.index));
+    nodes.push(
+      mt.href.startsWith('http') ? (
+        <a key={key++} href={mt.href} target="_blank" rel="noopener noreferrer" className={cls}>
+          {mt.label}
+        </a>
+      ) : (
+        <Link key={key++} href={mt.href} className={cls}>
+          {mt.label}
+        </Link>
+      ),
+    );
+    last = mt.end;
   }
   if (last < text.length) nodes.push(text.slice(last));
   return nodes;

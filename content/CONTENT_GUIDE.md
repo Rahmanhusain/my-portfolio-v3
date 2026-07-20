@@ -272,22 +272,23 @@ blocks. Every block is a JSON object with a `"type"` field.
 ### Inline links (backlinks / anchors)
 
 You can embed a link inside any **text** field — a paragraph, a list item,
-a table cell, or a caption — using simple markdown-style syntax:
+a table cell, or a caption — using a normal HTML anchor tag:
 
 ```
-[label](/path)
+<a href="/services/web-app-development">web development services</a>
 ```
 
 - **Internal paths** (starting with `/`, e.g. `/services/web-app-development`)
   render as fast Next.js links and are great for internal backlinks / SEO.
 - **`https://` URLs** render as external links that open in a new tab.
-- Any other scheme (`javascript:`, `mailto:`, lone brackets, etc.) is
-  ignored and shown as plain text, so it is always safe.
+- Any other scheme (`javascript:`, `mailto:`, etc.) is ignored and shown
+  as plain text, so it is always safe.
+- Markdown-style `[label](/path)` also works as a shortcut.
 
 Example inside a paragraph block:
 
 ```json
-{ "type": "p", "text": "I build production apps — see my [web development services](/services/web-app-development) for the full process." }
+{ "type": "p", "text": "I build production apps — see my <a href=\"/services/web-app-development\">web development services</a> for the full process." }
 ```
 
 Use this to cross-link posts and services (and cite external sources) without

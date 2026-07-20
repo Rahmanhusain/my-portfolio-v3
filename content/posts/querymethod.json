@@ -1,0 +1,190 @@
+{
+  "slug": "http-query-method-explained",
+  "title": "The New HTTP QUERY Method Explained (RFC 10008)",
+  "description": "The HTTP QUERY method (RFC 10008) finally gives APIs a safe, cacheable way to send complex, structured search filters without breaking REST semantics.",
+  "date": "July 14, 2026",
+  "updatedAt": "2026-07-14",
+  "readTime": "9 min read",
+  "tags": [
+    "HTTP",
+    "API Design",
+    "REST",
+    "Next.js",
+    "Backend"
+  ],
+  "keywords": [
+    "HTTP QUERY method",
+    "RFC 10008",
+    "safe idempotent HTTP method",
+    "GET vs POST vs QUERY",
+    "REST API search endpoint"
+  ],
+  "bannerImage": "/blogpostimages/query.png",
+  "bannerAlt": "the new HTTP QUERY method",
+  "body": [
+    {
+      "type": "h2",
+      "text": "Why I care about the HTTP QUERY method"
+    },
+    {
+      "type": "p",
+      "text": "Two years ago I built a POST /search endpoint for a client's furniture marketplace. Nested filters, price ranges, a geo radius, availability flags, the whole thing. It worked fine in the demo. Then traffic grew, the client added a CDN in front of the API, and search got noticeably slower under load because every single request skipped the cache entirely. That was my mistake: I knew POST wasn't cacheable by intermediaries, and I built a workaround with custom Cache-Control headers and a hand rolled ETag scheme anyway, betting the CDN would respect it. It didn't, not reliably. I spent a weekend debugging stale results before admitting the real problem was the method, not my headers."
+    },
+    {
+      "type": "p",
+      "text": "That story is why the <a href=\"https://www.rfc-editor.org/info/rfc10008\">HTTP QUERY method</a> caught my attention the moment it shipped. In June 2026 the IETF published RFC 10008, the first new standard HTTP method since PATCH landed in 2010. It is built for exactly the situation I was in: a read operation whose parameters are too big or too structured for a URL, but that still needs to behave like GET, not POST."
+    },
+    {
+      "type": "h2",
+      "text": "What the HTTP QUERY method actually is"
+    },
+    {
+      "type": "p",
+      "text": "QUERY is a safe, idempotent HTTP method that carries a request body, the same way POST does, but without POST's write semantics. Per the specification, a QUERY request asks the target to process the enclosed content and respond with the result, similar to POST, except it can be automatically retried or restarted without worrying about partial state changes. RFC 10008 was authored by Julian Reschke, James Snell of Cloudflare, and Mike Bishop of Akamai, which tells you something about who is motivated to see this succeed: the people who run the caching infrastructure of a huge chunk of the internet."
+    },
+    {
+      "type": "p",
+      "text": "The gap it closes is one every backend developer has hit. GET is the semantically correct choice for a read: it is safe, idempotent, and cacheable. But GET has no defined meaning for a request body, so complex filters have to live in the query string, where you run into length limits across proxies, ugly encoding, and search parameters landing in access logs and browser history. POST fixes the body problem and creates a new one: proxies and CDNs cannot cache it, and retrying a failed POST safely is never guaranteed, because HTTP has no way to know the request didn't change something."
+    },
+    {
+      "type": "h3",
+      "text": "GET vs POST vs QUERY, side by side"
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Property",
+        "GET",
+        "POST",
+        "QUERY"
+      ],
+      "rows": [
+        [
+          "Request body",
+          "Undefined, often stripped",
+          "Yes",
+          "Yes"
+        ],
+        [
+          "Safe (no side effects)",
+          "Yes",
+          "No",
+          "Yes"
+        ],
+        [
+          "Idempotent",
+          "Yes",
+          "No",
+          "Yes"
+        ],
+        [
+          "Cacheable by proxies/CDNs",
+          "Yes",
+          "No",
+          "Yes, by design"
+        ],
+        [
+          "Good for large/nested filters",
+          "No",
+          "Yes",
+          "Yes"
+        ]
+      ],
+      "caption": "Where QUERY sits between the two methods most APIs already overload"
+    },
+    {
+      "type": "h2",
+      "text": "A minimal example"
+    },
+    {
+      "type": "p",
+      "text": "Both axios and the native fetch() function already let you send arbitrary HTTP methods, so you can experiment with QUERY today if you control the server too. Here is the pattern I now use on client projects, including a fallback for servers that do not support QUERY yet."
+    },
+    {
+      "type": "code",
+      "lang": "ts",
+      "code": "async function searchProducts(filters: Record<string, unknown>) {\n  const body = JSON.stringify(filters);\n  const headers = { \"Content-Type\": \"application/json\" };\n\n  let response = await fetch(\"/api/products\", {\n    method: \"QUERY\",\n    headers,\n    body,\n  });\n\n  if (response.status === 405) {\n    // Server doesn't understand QUERY yet, fall back to POST\n    response = await fetch(\"/api/products\", {\n      method: \"POST\",\n      headers,\n      body,\n    });\n  }\n\n  return response.json();\n}"
+    },
+    {
+      "type": "p",
+      "text": "One detail that trips people up: QUERY is not on the fetch spec's list of CORS safelisted methods. Any cross-origin QUERY call from the browser triggers a preflight OPTIONS request first, exactly like a custom method would. If your API and your frontend share an origin, that's a non issue. If they don't, budget for the extra round trip, and check the <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API\">Fetch API docs</a> before you assume QUERY behaves like GET everywhere."
+    },
+    {
+      "type": "h2",
+      "text": "Where support actually stands in mid-2026"
+    },
+    {
+      "type": "p",
+      "text": "This is the part most coverage glosses over, so I'll be blunt about it. Node.js has parsed QUERY natively since early 2024, well before the RFC was final, and OpenAPI 3.2 documents it as a first class method. .NET 10, released as an LTS build in November 2025, ships QUERY support on both the client (HttpMethod.Query) and server side, which makes it one of the earliest production ready platforms for this. Spring's story is messier: an issue requesting QUERY support sat open for roughly two years, then got superseded by a pull request the same week the RFC published, but as of early July 2026 Spring's RequestMethod enum still doesn't include it. Rails is still at the discussion stage. Browsers are evaluating, not shipping."
+    },
+    {
+      "type": "p",
+      "text": "That last point matters most if you're building for the public web with <a href=\"/services/web-app-development\">a Next.js or React frontend</a>. Until browsers ship native support, and until the WAFs, reverse proxies, and API gateways in front of your app stop whitelisting a fixed set of methods, relying on QUERY for production traffic without a fallback is premature. I'm not saying skip it. I'm saying build the fallback first, the same way I do progressive enhancement for any browser API that isn't universal yet."
+    },
+    {
+      "type": "h2",
+      "text": "How I'm rolling this out for clients"
+    },
+    {
+      "type": "ol",
+      "items": [
+        "Audit existing POST endpoints that only read data. Those are your QUERY candidates.",
+        "Add QUERY handling server side alongside the existing POST route, not instead of it.",
+        "Check every WAF, reverse proxy, and API gateway in the request path for a method whitelist that would silently reject QUERY.",
+        "Ship the client with a QUERY-first, POST-fallback pattern like the one above.",
+        "Leave caching headers alone for now. Don't assume a CDN caches QUERY responses just because the spec allows it; verify with your specific provider first."
+      ]
+    },
+    {
+      "type": "p",
+      "text": "For the client whose search endpoint gave me that bad weekend, this is exactly the migration path I've since scheduled: QUERY internally, POST fallback externally, and a real conversation with their CDN provider before flipping any caching behavior on. If you're weighing a similar move for a search-heavy API, this is the kind of infrastructure decision I help clients think through as part of <a href=\"/services/api-development\">API design and development work</a>, alongside the frontend that consumes it."
+    },
+    {
+      "type": "h2",
+      "text": "The security tradeoff nobody mentions enough"
+    },
+    {
+      "type": "p",
+      "text": "Moving filter data out of the URL and into a QUERY body is a genuine win for logging hygiene. Query strings show up in server access logs, browser history, and referrer headers by default, and sensitive filters, like a customer's email or an account number used as a search parameter, have leaked that way more than once in projects I've inherited. A body doesn't get logged the same way. But the RFC is explicit that this protection has a limit: if your server responds to a QUERY with a Location or Content-Location header pointing at a URI that encodes the same sensitive filter, you've just moved the leak, not fixed it. If you're migrating a search endpoint that touches anything remotely sensitive, audit what your redirect and location headers actually contain, not just the request body."
+    },
+    {
+      "type": "hr"
+    },
+    {
+      "type": "h2",
+      "text": "FAQ"
+    },
+    {
+      "type": "h3",
+      "text": "Is the HTTP QUERY method safe to use in production right now?"
+    },
+    {
+      "type": "p",
+      "text": "It depends on your stack. Server side, Node.js and .NET 10 already support it well. Client side, browsers haven't shipped native support yet, so any browser facing use needs a POST fallback like the one shown above until that changes."
+    },
+    {
+      "type": "h3",
+      "text": "Does QUERY replace GET or POST entirely?"
+    },
+    {
+      "type": "p",
+      "text": "No. GET still works fine for simple lookups with a handful of parameters. POST is still correct for anything that changes state. QUERY fills the specific gap where a read needs a structured body, which GET can't reliably carry and POST can't cache."
+    },
+    {
+      "type": "h3",
+      "text": "Why does QUERY trigger a CORS preflight when GET doesn't?"
+    },
+    {
+      "type": "p",
+      "text": "QUERY isn't on the fetch spec's safelisted method list, so cross-origin browser requests using it always trigger a preflight OPTIONS call first, the same as any custom or non-standard method would."
+    },
+    {
+      "type": "h3",
+      "text": "Where can I read the actual specification?"
+    },
+    {
+      "type": "p",
+      "text": "RFC 10008, published by the IETF HTTPBIS working group in June 2026, is the official reference. It's a short read compared to most HTTP RFCs and worth it if you're designing a search heavy API. For more posts like this, check out the rest of the <a href=\"/blog\">blog</a>."
+    }
+  ]
+}
