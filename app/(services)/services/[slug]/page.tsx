@@ -223,7 +223,7 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
           )}
-          <Faq />
+          <Faq faqs={service.faq} />
         </div>
       </div>
     </>

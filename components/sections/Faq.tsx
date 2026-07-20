@@ -1,10 +1,11 @@
-import { faqs } from '@/lib/data/faqs';
+import { faqs as globalFaqs, type Faq } from '@/lib/data/faqs';
 
-export default function Faq() {
+export default function Faq({ faqs }: { faqs?: Faq[] }) {
+  const items = faqs && faqs.length > 0 ? faqs : globalFaqs;
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: faqs.map((faq) => ({
+    mainEntity: items.map((faq) => ({
       '@type': 'Question',
       name: faq.question,
       acceptedAnswer: {
@@ -44,7 +45,7 @@ export default function Faq() {
           </header>
 
           <div className="border-t border-[#242424]">
-            {faqs.map((faq) => (
+            {items.map((faq) => (
               <details
                 key={faq.question}
                 className="group border-b border-[#242424]"

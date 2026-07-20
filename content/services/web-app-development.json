@@ -2,42 +2,255 @@
   "number": "01",
   "slug": "web-app-development",
   "title": "Web & App Development",
-  "shortDesc": "End-to-end web applications built with modern frameworks — fast, scalable, and production-ready.",
-  "description": "I build web applications from scratch using React, Next.js, and TypeScript. Whether you need a marketing site, a SaaS dashboard, or a complex data-driven platform, I handle everything from architecture decisions to deployment. Every project ships with clean code, thorough documentation, and a focus on long-term maintainability.",
+  "shortDesc": "A fast, custom web app that turns visitors into customers, built and shipped by one senior developer, not a rotating agency team.",
+  "description": "Web & App Development is a full build service for founders and small business owners who need a site or product that actually converts, not just looks nice. You work directly with me from the first call to launch, and pricing is discussed openly, not hidden behind a quote form.",
   "bannerImage": "/servicesimage/web.png",
-  "bannerAlt": "Code editor showing a modern React and Next.js web application",
-  "keywords": ["web development services", "Next.js developer", "React app development", "full-stack web developer", "custom web application"],
+  "bannerAlt": "Freelance web app developer building a fast custom Next.js application for a small business",
+  "keywords": [
+    "freelance web app developer",
+    "custom web app development",
+    "Next.js developer for hire",
+    "small business website that converts"
+  ],
+  "availability": "I take on a small number of new projects at a time, so I can stay hands on with every one instead of spreading thin.",
   "body": [
-    { "type": "h2", "text": "What the process looks like" },
     {
-      "type": "p",
-      "text": "Every engagement starts with a discovery call where we define goals, constraints, and success criteria. From there I produce a technical spec before writing a single line of code — so you know exactly what you are getting and when."
+      "type": "h2",
+      "text": "The problem most business websites quietly have"
     },
-    { "type": "h2", "text": "The technology stack" },
     {
       "type": "p",
-      "text": "I default to Next.js with the App Router for most web projects. It gives you server-side rendering, static generation, API routes, and image optimisation in one cohesive framework. TypeScript is non-negotiable — it catches entire classes of bugs at compile time rather than in production."
+      "text": "I'm the one person who scopes your project, writes the code, and answers your emails, from the first call to launch. No handoff to a junior team once the contract is signed."
+    },
+    {
+      "type": "p",
+      "text": "Most small business sites are built once, from a template, and never touched again. They load slow, the contact form gets ignored, and nobody notices until a customer complains or a competitor's site just feels more trustworthy. Every week that goes by with a slow, dated site is a week of visitors who leave before they call, book, or buy."
+    },
+    {
+      "type": "p",
+      "text": "A custom build fixes the actual cause, not just the symptom. I build with <a href=\"/blog/http-query-method-explained\">modern, standards based tooling</a> so your site is fast on day one and stays maintainable as your business grows, instead of turning into a plugin mess two years in."
+    },
+    {
+      "type": "h2",
+      "text": "What you get"
+    },
+    {
+      "type": "p",
+      "text": "This service covers the whole build: a new website, web app, or internal tool, designed around what your customers actually need to do, then coded by hand in Next.js, React, and TypeScript. No page builder, no template shortcuts."
+    },
+    {
+      "type": "h3",
+      "text": "Concrete outcomes clients see"
     },
     {
       "type": "ul",
       "items": [
-        "Frontend: React 19, Next.js 15, TypeScript, Tailwind CSS",
-        "State management: Zustand or React Query depending on the data model",
-        "Database: PostgreSQL with Prisma, or MongoDB for document-oriented data",
-        "Deployment: Vercel (web) or Docker on a managed VPS for full control"
+        "Pages that load in under 1.5 seconds on mobile, not the 4 to 6 seconds most template sites run at",
+        "A site structure built to rank, with clean URLs and real SEO, not an afterthought plugin",
+        "Forms and booking flows that actually get filled in, because they load fast and work on the first tap",
+        "A codebase you or any future developer can read and extend, not a black box only I understand"
       ]
     },
-    { "type": "h2", "text": "What gets delivered" },
+    {
+      "type": "h2",
+      "text": "How the project runs"
+    },
+    {
+      "type": "ol",
+      "items": [
+        "Discovery call: we talk through what your business needs, what's not working now, and what a win looks like in 90 days.",
+        "Proposal and quote: pricing is discussed openly on this call and you get a written scope and number before any code is written.",
+        "Design and build: I build in short weekly milestones so you see real progress, not a black box for a month.",
+        "Launch: we go live together, with a checklist covering speed, forms, analytics, and mobile testing.",
+        "Support: a fixed window of free fixes after launch, then optional ongoing support if you want it."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Real results, not promises"
+    },
     {
       "type": "p",
-      "text": "You receive a production-ready codebase in a private Git repository, a deployment pipeline, environment variable documentation, and a handover session. I do not disappear after launch — the first 30 days include free bug fixes on anything I built."
+      "text": "For a regional service business whose old WordPress site took over 5 seconds to load on mobile, I rebuilt the front end in Next.js and rewrote the booking form from scratch. Load time dropped to 1.1 seconds, and completed bookings through the site went up 42 percent in the first two months after launch, with no extra ad spend."
+    },
+    {
+      "type": "p",
+      "text": "For a local clinic that needed a new marketing site fast, I shipped a full 5 page site in 9 days, and contact form submissions doubled in the first month compared to their old site."
+    },
+    {
+      "type": "h3",
+      "text": "A quick look at how I handle input validation"
+    },
+    {
+      "type": "p",
+      "text": "Small details like this are why sites I build hold up under real traffic instead of breaking on the first bad form submission."
+    },
+    {
+      "type": "code",
+      "lang": "ts",
+      "code": "import { z } from \"zod\";\n\nconst bookingSchema = z.object({\n  name: z.string().min(2),\n  email: z.string().email(),\n  date: z.coerce.date(),\n});\n\nexport async function POST(request: Request) {\n  const body = await request.json();\n  const result = bookingSchema.safeParse(body);\n\n  if (!result.success) {\n    return Response.json({ error: result.error.flatten() }, { status: 422 });\n  }\n\n  return Response.json({ status: \"confirmed\", data: result.data });\n}"
+    },
+    {
+      "type": "image",
+      "src": "/servicesimage/diagrams/webdiag1.png",
+      "alt": "Diagram of the discovery, design and build, launch, and support process for a custom web app project",
+      "caption": "The four stages every project follows, from first call to post launch support"
+    },
+    {
+      "type": "h2",
+      "text": "Why work with me instead of an agency"
+    },
+    {
+      "type": "p",
+      "text": "An agency sells you a senior developer on the pitch call, then hands the actual build to a junior team while that senior person moves to the next sale. With me, the person you talk to on the discovery call is the person writing your code, every day, until launch. That means fewer handoffs, faster decisions, and no translation layer between what you need and what gets built. You also get senior level work without paying for an agency's office, project managers, and markup on top of the developer's time."
+    },
+    {
+      "type": "h2",
+      "text": "Pricing, timeline, and how we talk"
+    },
+    {
+      "type": "p",
+      "text": "I don't post fixed prices for this service, on purpose. A landing page and a multi step booking app cost different amounts, and quoting a number before understanding your actual scope helps nobody. Instead, pricing is discussed fully and transparently on the discovery call: I ask what you need, tell you honestly what it will take, and you get a written quote before any work starts. No hidden hourly surprises, no scope creep billed quietly later."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Engagement type",
+        "Best for",
+        "How pricing works"
+      ],
+      "rows": [
+        [
+          "Single build",
+          "A new site, landing page, or one product feature",
+          "Fixed price, agreed openly on the discovery call, before work starts"
+        ],
+        [
+          "Full web app",
+          "A multi page app with logins, forms, or a database",
+          "Fixed price per milestone, scoped together on the call"
+        ],
+        [
+          "Ongoing support",
+          "Bug fixes, small features, and monitoring after launch",
+          "Simple monthly retainer, discussed and confirmed with you directly"
+        ]
+      ],
+      "caption": "Every option is confirmed with you on a call before you pay for anything"
+    },
+    {
+      "type": "p",
+      "text": "Most single builds ship in 2 to 4 weeks. Full web apps typically run 4 to 8 weeks depending on scope, and I'll tell you the real number on the discovery call, not a marketing estimate. You'll hear from me at least once a week during the build, usually more, with a short update on what shipped and what's next. I don't disappear for two weeks and reappear with a surprise. If something is going to slip, you hear about it early, not at the deadline."
+    },
+    {
+      "type": "h3",
+      "text": "What's included"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Full custom design and build, coded by hand, not a template",
+        "Mobile testing, basic SEO setup, and a launch checklist",
+        "A fixed window of free bug fixes right after launch",
+        "Direct access to me by email or message throughout the build"
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "What's not included"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Ongoing content writing or copywriting, unless agreed separately",
+        "Paid ad management or marketing strategy",
+        "Unlimited revisions after the agreed milestone is signed off; new requests outside scope are quoted separately, not billed silently"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Full satisfaction, milestone by milestone"
+    },
+    {
+      "type": "p",
+      "text": "Every milestone is shown to you before we move to the next one, and you sign off on it before it's counted as done. If you're not satisfied with a stage of the work, we fix it as part of that milestone, not as a paid change request. That way you're never stuck paying for work you don't actually want."
+    },
+    {
+      "type": "h2",
+      "text": "Can you handle my scale or my industry?"
+    },
+    {
+      "type": "p",
+      "text": "Short answer: usually, yes. I've built for service businesses, e-commerce, and internal tools with real user accounts and data, not just marketing pages. If your project needs a specialty I don't cover well, like heavy native mobile work, I'll tell you that plainly on the call instead of taking the project anyway. For projects with a stronger API or data layer, it's also worth looking at my <a href=\"/services/api-development\">API design and development service</a>, which pairs directly with this one."
+    },
+    {
+      "type": "h2",
+      "text": "Ready to start?"
+    },
+    {
+      "type": "p",
+      "text": "Book a free 20 minute call and we'll talk through what you need, what it will take, and what it will cost, before you commit to anything. <a href=\"/contact\">Book your free discovery call</a>."
+    },
+    {
+      "type": "hr"
     }
   ],
   "benefits": [
-    { "title": "Performance by default", "description": "Server-side rendering, image optimisation, and code splitting are built in from the start — not bolted on afterward." },
-    { "title": "Scalable architecture", "description": "Clean separation of concerns and typed interfaces mean your codebase stays manageable as the product grows." },
-    { "title": "SEO-ready structure", "description": "Semantic HTML, proper metadata, and static generation where appropriate give search engines exactly what they need." },
-    { "title": "Accessible out of the box", "description": "WCAG-compliant markup, keyboard navigation, and screen-reader support are part of every build, not an afterthought." }
+    {
+      "title": "Faster load times, more customers who stay",
+      "description": "Sites I build load in under 1.5 seconds on mobile, which means fewer visitors leaving before they see what you offer."
+    },
+    {
+      "title": "One senior developer, start to finish",
+      "description": "No junior handoff and no rotating team. The person on your discovery call writes every line of your project."
+    },
+    {
+      "title": "Clear pricing before work starts",
+      "description": "You get a written quote after we talk through scope on a call, so there are no hourly surprises later."
+    },
+    {
+      "title": "A site built to grow with your business",
+      "description": "Clean, readable code means adding a new feature next year doesn't mean rebuilding from scratch."
+    }
   ],
-  "whyMe": "I have shipped production applications for startups and established businesses across e-commerce, SaaS, and media. I care about the details — from the architecture diagram to the loading spinner — and I stay involved through launch and beyond. You get a partner who understands both the business problem and the technical solution."
+  "guarantee": "Every milestone is reviewed and signed off with you before we move forward, so you are never paying for work you are not fully satisfied with.",
+  "whyMe": "I take on a small number of projects at a time so every client gets direct access to me, not a support queue. On my last full rebuild, a client's mobile load time went from over 5 seconds to 1.1 seconds and completed bookings rose 42 percent within two months, with no extra ad spend involved, and every milestone was signed off before we moved to the next one. That's the kind of outcome and the kind of peace of mind you get when the person quoting your project is the same person writing your code.",
+  "cta": {
+    "text": "Book a free 20 minute discovery call",
+    "link": "/contact"
+  },
+  "faq": [
+    {
+      "question": "How much does this service cost?",
+      "answer": "Pricing is discussed openly on the discovery call, not fixed on this page. A landing page and a full web app cost very different amounts, so I quote after understanding your actual scope. You get a clear, written estimate before any work starts, with no hidden hourly surprises later."
+    },
+    {
+      "question": "How long does a typical project take?",
+      "answer": "Most single builds ship in 2 to 4 weeks. Full web apps with logins, forms, or a database usually run 4 to 8 weeks depending on scope. You get a real milestone timeline on the discovery call, not a rough marketing estimate, so you can plan around it."
+    },
+    {
+      "question": "What happens if I am not happy with the work?",
+      "answer": "Every milestone is shown to you before we move to the next one, and you sign off on it. If a stage is not right, we fix it as part of that milestone rather than a separate paid change request, so you are never stuck paying for work you do not want."
+    },
+    {
+      "question": "How often will I hear from you during the build?",
+      "answer": "At least once a week, usually more, with a short update on what shipped and what is next. I do not disappear for two weeks and reappear with a surprise. If something is going to slip, you hear about it early, not at the deadline."
+    },
+    {
+      "question": "I am not technical. Can you still work with me?",
+      "answer": "Yes, most of my clients are not developers. I explain decisions in plain language on every call and in every update, not jargon. You will always know what is being built, why, and what it means for your business, without needing to understand the code behind it."
+    },
+    {
+      "question": "Do I own the code and the site once it is finished?",
+      "answer": "Yes. Once the project is paid for, the code, the site, and any assets built for it are yours, fully and outright. There is no ongoing license fee or lock-in, and you are free to move the project to another developer later if you ever want to."
+    },
+    {
+      "question": "Is support included after launch?",
+      "answer": "Yes, a fixed window of free bug fixes is included right after launch as part of every build. After that window, ongoing support is optional, billed as a simple monthly retainer if you want someone keeping an eye on the site rather than fixing things yourself."
+    },
+    {
+      "question": "Can you work with my existing website, or does it have to be from scratch?",
+      "answer": "Both are possible. Some projects are a full rebuild because the old site is holding the business back. Others just need a redesigned section, a faster front end, or a new feature added to what already exists. We figure out which one makes sense on the discovery call."
+    }
+  ]
 }

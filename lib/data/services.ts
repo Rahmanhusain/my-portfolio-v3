@@ -8,6 +8,11 @@ export interface ServiceBenefit {
   description: string;
 }
 
+export interface ServiceFaq {
+  question: string;
+  answer:   string;
+}
+
 export interface Service {
   number:      string;
   slug:        string;
@@ -19,6 +24,7 @@ export interface Service {
   keywords:    string[];
   benefits:    ServiceBenefit[];
   whyMe:       string;
+  faq?:        ServiceFaq[];
   body:        ContentBlock[];
 }
 

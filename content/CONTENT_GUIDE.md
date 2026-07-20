@@ -157,6 +157,7 @@ The filename **must exactly match** the `slug` field inside the file.
 | `body`        | ContentBlock[]     | ✅       | Rich content rendered between the lead paragraph and the benefits grid. See Part 3. |
 | `benefits`    | ServiceBenefit[]   | ✅       | Array of `{ "title": "...", "description": "..." }` objects. Rendered as a 2-column card grid. |
 | `whyMe`       | string             | ✅       | Single paragraph for the "Why work with me" section. |
+| `faq`         | ServiceFaq[]     | ⚠️       | Optional array of `{ "question": "...", "answer": "..." }` objects. Rendered as the **per-service** FAQ section (overrides the global FAQ when present). |
 
 ---
 
@@ -230,7 +231,17 @@ The filename **must exactly match** the `slug` field inside the file.
       "description": "One or two sentences explaining this specific benefit clearly."
     }
   ],
-  "whyMe": "A single paragraph explaining why a client should choose you specifically for this service. Be concrete — reference relevant experience, outcomes, or your approach."
+  "whyMe": "A single paragraph explaining why a client should choose you specifically for this service. Be concrete — reference relevant experience, outcomes, or your approach.",
+  "faq": [
+    {
+      "question": "How much does this service cost?",
+      "answer": "Pricing depends on scope. Small projects start from a fixed fee; larger builds are quoted after a discovery call. You always get a clear written estimate before work begins."
+    },
+    {
+      "question": "How long does a typical project take?",
+      "answer": "Most builds ship in 2–4 weeks. I share a milestone timeline up front so you always know what is happening and when."
+    }
+  ]
 }
 ```
 
