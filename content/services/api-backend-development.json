@@ -4,7 +4,7 @@
   "title": "API & Backend Development",
   "shortDesc": "Robust REST and GraphQL APIs, database design, and cloud infrastructure that scale with your product.",
   "description": "A strong frontend is only as good as the backend behind it. I design and build REST and GraphQL APIs using Node.js, with PostgreSQL or MongoDB depending on your data model. Authentication, rate limiting, caching, and deployment are all handled so your backend is reliable, secure, and ready for growth.",
-  "bannerImage": "/services/api-backend.jpg",
+  "bannerImage": "/servicesimage/api.png",
   "bannerAlt": "Terminal window showing API routes and database schema for a Node.js application",
   "keywords": ["API development services", "Node.js backend developer", "REST API development", "GraphQL API", "backend as a service"],
   "body": [

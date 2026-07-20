@@ -4,7 +4,7 @@
   "title": "Automation & Agent Development",
   "shortDesc": "Custom workflows and AI agents that cut busywork — connect your tools, automate repetitive tasks, and let software do the heavy lifting.",
   "description": "I build automation that actually fits your business. From simple integrations to multi-step workflows in n8n and custom AI agents powered by large language models, I connect the tools you already use and remove the manual busywork. The result is fewer dropped tasks, faster turnaround, and more time spent on work that matters.",
-  "bannerImage": "/blogpostimages/banner.webp",
+  "bannerImage": "/servicesimage/agent.png",
   "bannerAlt": "Flowchart illustrating an automated workflow connecting multiple business tools",
   "keywords": ["business automation services", "AI agent development", "n8n workflow automation", "LLM agents", "Zapier Make integration", "process automation"],
   "body": [

@@ -4,7 +4,7 @@
   "title": "Hosting & Deployment",
   "shortDesc": "Production-grade deployments on reliable infrastructure, with CI/CD and monitoring included.",
   "description": "Deploying a web application is about more than uploading files. I set up production environments on Vercel, Netlify, AWS, or DigitalOcean depending on your needs, along with CI/CD pipelines so every commit to main is tested and deployed automatically.",
-  "bannerImage": "/services/hosting-deployment.jpg",
+  "bannerImage": "/servicesimage/hosting.png",
   "bannerAlt": "Cloud infrastructure diagram showing CI/CD pipeline from code commit to production",
   "keywords": ["web hosting services", "deployment setup", "CI/CD pipeline", "Vercel deployment", "cloud hosting developer"],
   "body": [

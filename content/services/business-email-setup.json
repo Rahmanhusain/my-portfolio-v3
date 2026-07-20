@@ -1,10 +1,10 @@
 {
   "number": "05",
-  "slug": "business-email-setup",
-  "title": "Business Email Setup",
+  "slug": "custom-email-setup",
+  "title": "Custom Email Setup",
   "shortDesc": "Professional branded email on your domain, configured correctly and secured from the start.",
   "description": "A business email address on your own domain builds trust with clients and protects your brand. I handle the full setup — DNS records, mail provider configuration, SPF, DKIM, and DMARC — so your emails reach the inbox rather than the spam folder every time.",
-  "bannerImage": "/services/business-email.jpg",
+  "bannerImage": "/servicesimage/emails.png",
   "bannerAlt": "Email client showing a professional branded inbox on a custom domain",
   "keywords": [
     "business email setup",

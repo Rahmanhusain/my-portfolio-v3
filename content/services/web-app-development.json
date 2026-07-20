@@ -4,7 +4,7 @@
   "title": "Web & App Development",
   "shortDesc": "End-to-end web applications built with modern frameworks — fast, scalable, and production-ready.",
   "description": "I build web applications from scratch using React, Next.js, and TypeScript. Whether you need a marketing site, a SaaS dashboard, or a complex data-driven platform, I handle everything from architecture decisions to deployment. Every project ships with clean code, thorough documentation, and a focus on long-term maintainability.",
-  "bannerImage": "/blogpostimages/banner.webp",
+  "bannerImage": "/servicesimage/web.png",
   "bannerAlt": "Code editor showing a modern React and Next.js web application",
   "keywords": ["web development services", "Next.js developer", "React app development", "full-stack web developer", "custom web application"],
   "body": [

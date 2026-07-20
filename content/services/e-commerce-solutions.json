@@ -1,10 +1,10 @@
 {
   "number": "08",
-  "slug": "e-commerce-solutions",
-  "title": "E-Commerce Solutions",
+  "slug": "b2b-e-commerce-solutions",
+  "title": "B2B E-Commerce Solutions",
   "shortDesc": "Online stores and selling flows that convert — from storefront setup to payments, carts, and fulfilment integrations.",
   "description": "I build e-commerce that sells. Whether you need a polished Shopify store, a WooCommerce site, or a custom headless storefront, I handle the storefront, product catalogue, cart and checkout, and the payment and fulfilment integrations that make it actually work. The focus is on speed, trust signals, and a checkout that doesn't lose customers.",
-  "bannerImage": "/blogpostimages/banner.webp",
+  "bannerImage": "/servicesimage/b2becommerce.png",
   "bannerAlt": "E-commerce storefront showing products, cart, and checkout on a laptop",
   "keywords": ["e-commerce development", "Shopify developer", "WooCommerce development", "online store development", "headless commerce", "payment integration"],
   "body": [
