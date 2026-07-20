@@ -1,4 +1,49 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import type { ReactNode } from 'react';
+
+/* Inline markdown-style links: [label](/path) or [label](https://...).
+   Internal paths render as fast Next.js <Link>s; http(s) URLs render as
+   external <a> (new tab). Any other scheme is left as plain text. */
+function safeHref(href: string): string | null {
+  const h = href.trim();
+  if (h.startsWith('/') || h.startsWith('#')) return h;
+  if (/^https?:\/\//i.test(h)) return h;
+  return null;
+}
+
+function renderRich(text: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let last = 0;
+  let key = 0;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text)) !== null) {
+    if (match.index > last) nodes.push(text.slice(last, match.index));
+    const label = match[1];
+    const href = safeHref(match[2]);
+    if (href) {
+      const cls =
+        'text-[#fafafa] underline underline-offset-2 hover:text-[#ffb3c6] transition-colors';
+      nodes.push(
+        href.startsWith('http') ? (
+          <a key={key++} href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+            {label}
+          </a>
+        ) : (
+          <Link key={key++} href={href} className={cls}>
+            {label}
+          </Link>
+        ),
+      );
+    } else {
+      nodes.push(match[0]);
+    }
+    last = re.lastIndex;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
 
 // ─── Block types ─────────────────────────────────────────────────────────────
 
@@ -10,6 +55,7 @@ export type ContentBlock =
   | { type: 'ol';    items: string[] }
   | { type: 'code';  lang: string; code: string }
   | { type: 'image'; src: string; alt: string; caption?: string }
+  | { type: 'table'; headers: string[]; rows: string[][]; caption?: string }
   | { type: 'hr' };
 
 // ─── Renderer ────────────────────────────────────────────────────────────────
@@ -22,7 +68,7 @@ export function renderBlock(block: ContentBlock, i: number) {
           key={i}
           className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mt-10 mb-4"
         >
-          {block.text}
+          {renderRich(block.text)}
         </h2>
       );
 
@@ -32,14 +78,14 @@ export function renderBlock(block: ContentBlock, i: number) {
           key={i}
           className="font-display text-xl font-semibold text-[#fafafa] tracking-tight mt-7 mb-3"
         >
-          {block.text}
+          {renderRich(block.text)}
         </h3>
       );
 
     case 'p':
       return (
         <p key={i} className="text-[#8a8a8a] leading-relaxed mb-5">
-          {block.text}
+          {renderRich(block.text)}
         </p>
       );
 
@@ -51,7 +97,7 @@ export function renderBlock(block: ContentBlock, i: number) {
         >
           {block.items.map((item, j) => (
             <li key={j} className="text-sm text-[#8a8a8a] leading-relaxed">
-              {item}
+              {renderRich(item)}
             </li>
           ))}
         </ul>
@@ -65,7 +111,7 @@ export function renderBlock(block: ContentBlock, i: number) {
         >
           {block.items.map((item, j) => (
             <li key={j} className="text-sm text-[#8a8a8a] leading-relaxed">
-              {item}
+              {renderRich(item)}
             </li>
           ))}
         </ol>
@@ -104,7 +150,51 @@ export function renderBlock(block: ContentBlock, i: number) {
           </div>
           {block.caption && (
             <figcaption className="text-xs text-[#8a8a8a] text-center mt-3">
-              {block.caption}
+              {renderRich(block.caption)}
+            </figcaption>
+          )}
+        </figure>
+      );
+
+    case 'table':
+      return (
+        <figure key={i} className="mb-6">
+          <div className="overflow-x-auto rounded-xl border border-[#242424]">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr>
+                  {block.headers.map((h, j) => (
+                    <th
+                      key={j}
+                      className="bg-[#141414] px-4 py-3 text-left font-semibold text-[#fafafa] whitespace-nowrap border-b border-[#242424]"
+                    >
+                      {renderRich(h)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {block.rows.map((row, r) => (
+                  <tr
+                    key={r}
+                    className="odd:bg-[#0a0a0a] even:bg-[#0d0d0d] hover:bg-[#161616] transition-colors"
+                  >
+                    {row.map((cell, c) => (
+                      <td
+                        key={c}
+                        className="px-4 py-3 text-[#8a8a8a] align-top border-b border-[#242424]"
+                      >
+                        {renderRich(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {block.caption && (
+            <figcaption className="text-xs text-[#8a8a8a] text-center mt-3">
+              {renderRich(block.caption)}
             </figcaption>
           )}
         </figure>

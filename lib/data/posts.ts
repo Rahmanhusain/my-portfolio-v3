@@ -26,7 +26,7 @@ export interface Post extends Omit<PostRaw, 'updatedAt'> {
 // ─── Load from JSON files ────────────────────────────────────────────────────
 // Import each file explicitly — Next.js static analysis needs literal paths.
 
-import gsapPost        from '@/content/posts/building-performant-animations-with-gsap.json';
+import kimivsfable5        from '@/content/posts/kimik3vsfable5.json';
 import seoPost         from '@/content/posts/next-js-app-router-seo-checklist.json';
 import tailwindPost    from '@/content/posts/tailwind-css-v4-what-changed.json';
 
@@ -36,7 +36,7 @@ function hydrate(raw: PostRaw): Post {
 
 // Sorted newest-first so callers can simply slice(0, n)
 export const posts: Post[] = [
-  hydrate(gsapPost     as PostRaw),
+  hydrate(kimivsfable5 as PostRaw),
   hydrate(seoPost      as PostRaw),
   hydrate(tailwindPost as PostRaw),
 ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());

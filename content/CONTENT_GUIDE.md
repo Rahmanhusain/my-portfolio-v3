@@ -269,6 +269,30 @@ The service will automatically appear:
 Both posts and services share the same `body` array made up of typed content
 blocks. Every block is a JSON object with a `"type"` field.
 
+### Inline links (backlinks / anchors)
+
+You can embed a link inside any **text** field — a paragraph, a list item,
+a table cell, or a caption — using simple markdown-style syntax:
+
+```
+[label](/path)
+```
+
+- **Internal paths** (starting with `/`, e.g. `/services/web-app-development`)
+  render as fast Next.js links and are great for internal backlinks / SEO.
+- **`https://` URLs** render as external links that open in a new tab.
+- Any other scheme (`javascript:`, `mailto:`, lone brackets, etc.) is
+  ignored and shown as plain text, so it is always safe.
+
+Example inside a paragraph block:
+
+```json
+{ "type": "p", "text": "I build production apps — see my [web development services](/services/web-app-development) for the full process." }
+```
+
+Use this to cross-link posts and services (and cite external sources) without
+needing a dedicated link block.
+
 ---
 
 ### `h2` — Section heading
@@ -373,6 +397,32 @@ Renders a full-width image with optional caption. Images must be placed in the
 - `src` — path from `public/`, e.g. `/blog/my-diagram.jpg`
 - `alt` — always required, describe what is in the image
 - `caption` — optional, omit the key entirely if not needed
+
+---
+
+### `table` — Comparison / data table
+
+Renders a styled, responsive table — useful for feature comparisons, pricing
+tiers, pros/cons, or any side-by-side data. It scrolls horizontally on small
+screens, so columns never get crushed.
+
+```json
+{
+  "type": "table",
+  "headers": ["Plan", "Best for", "Price"],
+  "rows": [
+    ["Starter", "Landing pages", "$500"],
+    ["Pro", "Web apps", "$2,000+"],
+    ["Custom", "Full platforms", "Quote"]
+  ],
+  "caption": "Optional caption shown below the table"
+}
+```
+
+- `headers` — array of column titles (strings). One entry per column.
+- `rows` — array of rows; each row is an array of cell strings. Every row must
+  have the same number of cells as `headers`.
+- `caption` — optional, omit the key entirely if not needed.
 
 ---
 
