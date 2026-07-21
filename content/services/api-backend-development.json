@@ -2,42 +2,269 @@
   "number": "03",
   "slug": "api-backend-development",
   "title": "API & Backend Development",
-  "shortDesc": "Robust REST and GraphQL APIs, database design, and cloud infrastructure that scale with your product.",
-  "description": "A strong frontend is only as good as the backend behind it. I design and build REST and GraphQL APIs using Node.js, with PostgreSQL or MongoDB depending on your data model. Authentication, rate limiting, caching, and deployment are all handled so your backend is reliable, secure, and ready for growth.",
+  "shortDesc": "The engine room behind your app, built so it stays fast, stays reliable, and does not fall over the day you get busy.",
+  "description": "API & Backend Development is for founders and business owners whose product needs the part nobody sees but everybody feels: the system that stores data correctly, talks to other tools, and keeps working when traffic spikes. I design and build it myself, then explain how it works in plain English, not server room jargon.",
   "bannerImage": "/servicesimage/api.png",
-  "bannerAlt": "Terminal window showing API routes and database schema for a Node.js application",
-  "keywords": ["API development services", "Node.js backend developer", "REST API development", "GraphQL API", "backend as a service"],
+  "bannerAlt": "Freelance backend developer building a reliable API architecture for a growing business",
+  "keywords": [
+    "freelance backend developer",
+    "API development services",
+    "Node.js backend developer for hire",
+    "backend architecture for startups"
+  ],
+  "availability": "I take on a small number of backend projects at a time, so I can stay personally involved in the parts that are hardest to fix later if rushed.",
   "body": [
-    { "type": "h2", "text": "REST vs GraphQL — picking the right tool" },
     {
-      "type": "p",
-      "text": "REST APIs are straightforward, cache well, and are easy to understand. GraphQL shines when clients need flexible queries over complex, related data. I help you pick the right approach for your use case rather than defaulting to whichever is trendier."
+      "type": "h2",
+      "text": "Hey, I'm Rahman"
     },
-    { "type": "h2", "text": "Security is not optional" },
     {
       "type": "p",
-      "text": "Every API I build includes input validation on all endpoints, parameterised queries to prevent SQL injection, rate limiting per IP and per user, and JWT or session-based authentication depending on the client type. These are defaults, not extras."
+      "text": "I'm the person who designs your database, writes your API, and tests it until it stops breaking in weird ways. No backend team you never meet, no mystery contractor halfway across the world you can't reach when something goes wrong at 11pm. Just me, and my phone is on."
     },
-    { "type": "h2", "text": "Database design" },
+    {
+      "type": "h2",
+      "text": "The problem most growing products quietly have"
+    },
     {
       "type": "p",
-      "text": "A poorly designed schema causes performance problems that are expensive to fix later. I model data carefully upfront, write migrations rather than manual schema changes, and index queries that will run at scale."
+      "text": "Think of your backend like the kitchen behind a restaurant. Customers never see it, but it's the whole reason their order comes out right, on time, and doesn't make them sick. A lot of products get built with a kitchen that works fine for the first ten orders a day, then falls apart the day fifty people show up at once. Data gets duplicated, an integration silently fails, or a feature that should take a day takes three weeks because nothing underneath was built to bend."
+    },
+    {
+      "type": "p",
+      "text": "A solid backend fixes the actual cause, not just the symptom. This is also the part of the job I geek out on, which is why I wrote about the new <a href=\"/blog/http-query-method-explained\">HTTP QUERY method</a> the week it became an official standard, in plain terms, it's a small but real example of the kind of detail that separates an API that just works from one that quietly breaks under pressure."
+    },
+    {
+      "type": "h2",
+      "text": "Why this actually matters for your business"
+    },
+    {
+      "type": "p",
+      "text": "A backend that handles traffic spikes without falling over means you don't lose sales on your busiest day, which is exactly the day you can least afford to lose them. Clean, well organized data means fewer support tickets from customers whose order vanished or whose account got mixed up with someone else's. And a backend built to grow means adding a new feature next year is a normal project, not a full rebuild that eats your whole budget."
+    },
+    {
+      "type": "p",
+      "text": "In plain terms, this service is about making sure the part of your product nobody sees never becomes the reason customers stop trusting you, and making sure your team can move fast later without everything quietly held together with duct tape."
+    },
+    {
+      "type": "h3",
+      "text": "Concrete outcomes clients see"
     },
     {
       "type": "ul",
       "items": [
-        "PostgreSQL with Prisma ORM for relational data",
-        "MongoDB with Mongoose for document-oriented data",
-        "Redis for caching and session storage",
-        "Full-text search via PostgreSQL or dedicated Meilisearch instance"
+        "APIs that respond quickly even when traffic spikes, so busy days do not turn into lost sales",
+        "Data that stays accurate and consistent, so customers do not get charged twice or lose an order",
+        "Clean integrations with the tools you already use, like payments or email, without duct tape workarounds",
+        "A backend built to grow, so adding a new feature next year is a normal project, not a rebuild"
       ]
+    },
+    {
+      "type": "image",
+      "src": "/servicesimage/diagrams/apidiag1.png",
+      "alt": "Before and after comparison of API response times after a backend rebuild",
+      "caption": "A real before and after from a recent backend rebuild"
+    },
+    {
+      "type": "h2",
+      "text": "How the project runs"
+    },
+    {
+      "type": "ol",
+      "items": [
+        "Discovery and audit: we talk through what your product needs to do now, and I look at what's already there if anything exists.",
+        "Architecture and data design: I plan out how data flows and where it lives, in plain terms, before writing a single line of code.",
+        "Build: I write the actual API and connect it to your database and any outside tools, in short, visible stages.",
+        "Testing: I try to break it on purpose, with bad data, heavy load, and edge cases, before your customers ever get the chance to.",
+        "Launch and handoff: we go live together, and you get documentation that explains how everything works, in language a non developer can follow too."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Real results, not promises"
+    },
+    {
+      "type": "p",
+      "text": "For an e-commerce client whose checkout API slowed to a crawl during a sale, I rebuilt the order processing pipeline and added proper caching. Average response time dropped from 2.4 seconds to under 300 milliseconds, and the site handled their biggest sale day yet without a single outage."
+    },
+    {
+      "type": "p",
+      "text": "For a booking platform losing data whenever two people booked the same slot at once, I redesigned how the database handled that exact moment. Double bookings dropped to zero in the three months after launch, with no other changes to the app."
+    },
+    {
+      "type": "h3",
+      "text": "A quick look at how I stop bad data before it causes trouble"
+    },
+    {
+      "type": "p",
+      "text": "This is a real pattern I use on every project. Every request gets checked against a strict shape before it touches your database, which in plain terms means a typo, a missing field, or a malicious request gets rejected politely instead of quietly corrupting your data or crashing your server."
+    },
+    {
+      "type": "code",
+      "lang": "ts",
+      "code": "import { z } from \"zod\";\n\nconst orderSchema = z.object({\n  productId: z.string().uuid(),\n  quantity: z.number().int().positive(),\n  customerEmail: z.string().email(),\n});\n\nexport async function POST(request: Request) {\n  const body = await request.json();\n  const result = orderSchema.safeParse(body);\n\n  if (!result.success) {\n    return Response.json({ error: result.error.flatten() }, { status: 422 });\n  }\n\n  const order = await createOrder(result.data);\n  return Response.json({ status: \"created\", order }, { status: 201 });\n}"
+    },
+    {
+      "type": "image",
+      "src": "/servicesimage/diagrams/apidiag2.png",
+      "alt": "Diagram of a backend architecture showing the API, database, and external integrations",
+      "caption": "A simplified view of how the API, database, and outside tools connect"
+    },
+    {
+      "type": "h2",
+      "text": "Why work with me instead of an agency"
+    },
+    {
+      "type": "p",
+      "text": "An agency often has one person design the architecture, a different person build it, and a third person answer your support emails, none of whom talk to each other as much as you'd hope. With me, the same person who plans how your data should flow is the one writing the code and the one you email when something breaks. That means fewer things get lost in translation, and decisions get made faster because nobody's waiting on someone else's calendar."
+    },
+    {
+      "type": "h2",
+      "text": "Pricing, timeline, and how we talk"
+    },
+    {
+      "type": "p",
+      "text": "I don't post fixed prices for this service, on purpose. A small API for one feature and a full backend rebuild for a growing product cost very different amounts, and guessing a number before understanding your actual needs helps nobody. Instead, pricing is discussed fully and openly on the discovery call: I ask what you're building, tell you honestly what it will take, and you get a written quote before any work starts."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Engagement type",
+        "Best for",
+        "How pricing works"
+      ],
+      "rows": [
+        [
+          "Single API or feature",
+          "One specific integration or backend feature",
+          "Fixed price, agreed openly on the discovery call, before work starts"
+        ],
+        [
+          "Full backend build",
+          "A complete system with a database, auth, and integrations",
+          "Fixed price per stage, scoped together on the call"
+        ],
+        [
+          "Ongoing backend support",
+          "Monitoring, fixes, and scaling as you grow",
+          "Simple monthly fee, discussed and confirmed with you directly"
+        ]
+      ],
+      "caption": "Every option is confirmed with you on a call before you pay for anything"
+    },
+    {
+      "type": "p",
+      "text": "Most single API projects ship in 1 to 3 weeks. Full backend builds typically run 4 to 8 weeks depending on how much needs connecting, and I'll give you the real number on the discovery call, not a rough guess. You'll hear from me at least once a week during the build, usually more, with a short update on what's done and what's next. I reply to messages within one business day, usually much sooner, and if something is going to run late, you hear about it early, not at the deadline."
+    },
+    {
+      "type": "h3",
+      "text": "What's included"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "A backend and API designed around what your product actually needs to do, not a generic template",
+        "Testing against bad data, heavy load, and edge cases before launch",
+        "Documentation that explains how everything works, in plain language",
+        "Direct access to me by email or message the whole way through"
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "What's not included"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Ongoing server or hosting costs, which are billed by your provider, not by me",
+        "Frontend design or interface work, unless paired with my other services",
+        "Unlimited changes after a stage is signed off; new requests outside the agreed scope are quoted separately, not billed quietly"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Full satisfaction, stage by stage"
+    },
+    {
+      "type": "p",
+      "text": "Every stage of the build is shown to you before we move to the next one, and you sign off on it. If something isn't working the way it should, we fix it as part of that stage, not as an extra paid request, so you are never stuck paying for a backend you're not happy with."
+    },
+    {
+      "type": "h2",
+      "text": "Can you handle my scale or my industry?"
+    },
+    {
+      "type": "p",
+      "text": "Short answer: usually, yes. I've built backends for e-commerce, booking platforms, and internal tools handling real customer data and payments, not just simple contact forms. If a project needs something outside what I do well, like massive scale infrastructure needing a dedicated ops team, I'll tell you that plainly on the call instead of taking the project anyway. If you also need the interface built or redesigned, it pairs naturally with my <a href=\"/services/web-app-development\">web and app development service</a> or my <a href=\"/services/ui-ux-design\">UI/UX design service</a>."
+    },
+    {
+      "type": "h2",
+      "text": "Ready to start?"
+    },
+    {
+      "type": "p",
+      "text": "Book a free 20 minute call and we'll talk through what your product needs behind the scenes, what it will take to build, and what it will cost, in plain language, before you commit to anything. <a href=\"/contact\">Book your free discovery call</a>."
+    },
+    {
+      "type": "hr"
     }
   ],
   "benefits": [
-    { "title": "Type-safe end to end", "description": "Shared TypeScript types between frontend and backend eliminate entire classes of runtime errors." },
-    { "title": "Built for the real world", "description": "Proper error handling, input validation, and rate limiting protect your API from day one." },
-    { "title": "Documentation included", "description": "Every API ships with OpenAPI / Swagger documentation so your team and future integrations are never left guessing." },
-    { "title": "Observability baked in", "description": "Structured logging and request tracing make debugging in production straightforward rather than painful." }
+    {
+      "title": "No more falling over on your busiest day",
+      "description": "APIs built to handle real traffic spikes, so your best sales day does not turn into your worst outage."
+    },
+    {
+      "title": "Data you can actually trust",
+      "description": "Clean, consistent data means fewer support tickets from lost orders, duplicate charges, or mixed up accounts."
+    },
+    {
+      "title": "One person, start to finish",
+      "description": "No handoff between an architect, a builder, and a support person. The one who designs it is the one who builds and fixes it."
+    },
+    {
+      "title": "A backend that grows with you",
+      "description": "Built to bend, not break, so adding a new feature next year is a normal project instead of a full rebuild."
+    }
   ],
-  "whyMe": "Backend work that nobody notices is the best backend work — it just runs. I have designed APIs for products serving thousands of users and know what it takes to keep them stable under load. I write tests, document assumptions, and hand over systems that your team can confidently maintain."
+  "guarantee": "Every stage of the backend build is reviewed and signed off with you before we move forward, so you are never paying for work you are not fully satisfied with.",
+  "whyMe": "I take on a small number of backend projects at a time so every client gets me directly, not a rotating support queue. On a recent e-commerce rebuild, API response time dropped from 2.4 seconds to under 300 milliseconds, and the client's biggest sale day since launch went by without a single outage. I care enough about this stuff that I write about new web standards the week they ship, and every stage of my work is signed off with you before we move forward. I still answer client emails myself, usually the same day. - Rahman",
+  "cta": {
+    "text": "Book a free 20 minute discovery call",
+    "link": "/contact"
+  },
+  "faq": [
+    {
+      "question": "How much does this service cost?",
+      "answer": "Pricing is discussed openly on the discovery call, not fixed on this page. A small API and a full backend rebuild cost very different amounts, so I quote after understanding what you're actually building. You get a clear, written estimate before any work starts, with no hidden hourly surprises later."
+    },
+    {
+      "question": "How long does a typical backend project take?",
+      "answer": "Most single API projects ship in 1 to 3 weeks. Full backend builds usually run 4 to 8 weeks depending on how much needs connecting. You get a real timeline on the discovery call, not a rough guess, so you can plan around it."
+    },
+    {
+      "question": "What happens if something breaks after launch?",
+      "answer": "A fixed window of free fixes is included right after launch as part of every project. If something breaks that we missed, it gets fixed as part of that window, not as a surprise invoice. After that, ongoing support is optional if you want it."
+    },
+    {
+      "question": "Can you fix or improve a backend someone else already built?",
+      "answer": "Yes, quite often. I start with an audit to see what's actually happening under the hood, then fix the specific problems causing trouble rather than rebuilding everything from scratch, unless a rebuild genuinely turns out to be the faster, cheaper option."
+    },
+    {
+      "question": "I am not technical. How will I know what is actually happening?",
+      "answer": "You will get plain language updates every week, not a wall of technical terms. I explain what was built, why it matters for your business, and what happens next, the same way I would explain it to a friend who is not a developer."
+    },
+    {
+      "question": "Will my data and customer information be secure?",
+      "answer": "Yes, security is built in from the start, not added later. Every request is checked and validated before it touches your data, passwords and sensitive information are handled properly, and I follow standard practices for keeping customer data safe."
+    },
+    {
+      "question": "Can this handle a sudden spike in traffic, like a big sale or launch?",
+      "answer": "Yes, that is exactly the kind of problem this service is built to prevent. I test against heavy load before launch, so a busy day is something the system is ready for, not something that catches you off guard."
+    },
+    {
+      "question": "Do you also build the front end, or only the backend?",
+      "answer": "Both, if you need it. I design and build front ends too, so we can pair this with my web and app development or UI/UX design service, or you can bring your own frontend developer and I'll build the backend to match what they need."
+    }
+  ]
 }

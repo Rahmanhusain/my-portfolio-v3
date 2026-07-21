@@ -60,6 +60,12 @@
       ]
     },
     {
+      "type": "image",
+      "src": "/servicesimage/diagrams/webdiag1.png",
+      "alt": "Mobile page speed comparison before and after a custom website rebuild",
+      "caption": "A real before and after from a recent rebuild"
+    },
+    {
       "type": "h2",
       "text": "How the project runs"
     },
@@ -100,7 +106,7 @@
     },
     {
       "type": "image",
-      "src": "/servicesimage/diagrams/webdiag1.png",
+      "src": "/servicesimage/diagrams/webdiag2.png",
       "alt": "Diagram of the discovery, design and build, launch, and support process for a custom web app project",
       "caption": "The four stages every project follows, from first call to post launch support"
     },
@@ -122,11 +128,7 @@
     },
     {
       "type": "table",
-      "headers": [
-        "Engagement type",
-        "Best for",
-        "How pricing works"
-      ],
+      "headers": ["Engagement type", "Best for", "How pricing works"],
       "rows": [
         [
           "Single build",

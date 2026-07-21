@@ -57,7 +57,7 @@ export default function ContactPage() {
       <div className="min-h-screen pt-32 pb-20">
         <div className="max-w-6xl mx-auto px-6">
           {/* Header */}
-          <header className="mb-20 max-w-2xl">
+          <header className="mb-12 max-w-2xl">
             <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-4">
               Get in Touch
             </p>
@@ -66,50 +66,49 @@ export default function ContactPage() {
             </h1>
             <p className="text-[#8a8a8a] leading-relaxed text-lg">
               Have a project in mind or just want to say hello? I&apos;d love to
-              hear from you. Choose the best way to reach me below.
+              hear from you. Fill out the form below and I&apos;ll get back to
+              you within one business day.
             </p>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20">
+          {/* Booking CTA Banner */}
+          <div className="mb-12 p-6 md:p-8 rounded-2xl border border-[#242424] bg-[#141414]">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div>
+                <h2 className="font-display text-xl font-semibold text-[#fafafa] tracking-tight mb-2">
+                  Prefer to talk first?
+                </h2>
+                <p className="text-sm text-[#8a8a8a] leading-relaxed max-w-xl">
+                  Book a free 30-minute discovery call. We&apos;ll discuss your
+                  project needs, timeline, and how I can help — no pressure, no
+                  sales pitch.
+                </p>
+              </div>
+              <BookingTrigger
+                source="contact"
+                className="cursor-pointer"
+              >
+                Book a Free 30-Minute Call
+              </BookingTrigger>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
             {/* Left Column - Contact Methods */}
-            <div className="space-y-12">
-              {/* Book a Call Section */}
+            <div className="lg:col-span-4 space-y-8">
               <section>
-                <h2 className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mb-4">
-                  Book a Call
-                </h2>
-                <p className="text-[#8a8a8a] mb-6 leading-relaxed">
-                  Prefer to talk through your project? Schedule a free 30-minute
-                  discovery call where we can discuss your needs and how I can
-                  help.
-                </p>
-                <BookingTrigger
-                  source="contact"
-                  className="text-[11px] md:text-sm px-5 py-2.5 bg-white/10 hover:bg-white cursor-pointer"
-                >
-                  Book a Free 30-Minute Call
-                </BookingTrigger>
-              </section>
-
-              {/* Direct Contact Section */}
-              <section>
-                <h2 className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mb-4">
+                <h3 className="font-display text-lg font-semibold text-[#fafafa] tracking-tight mb-4">
                   Direct Contact
-                </h2>
-                <p className="text-[#8a8a8a] mb-6 leading-relaxed">
-                  Prefer email or want to share more details upfront? Use any of
-                  these channels to reach me directly.
-                </p>
-
-                <div className="space-y-4">
+                </h3>
+                <div className="space-y-3">
                   <a
                     href="mailto:hello@yourname.dev"
                     className="flex items-center gap-3 text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors group"
                   >
-                    <span className="w-10 h-10 rounded-xl border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors">
+                    <span className="w-9 h-9 rounded-lg border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors shrink-0">
                       <svg
-                        width="18"
-                        height="18"
+                        width="16"
+                        height="16"
                         fill="none"
                         viewBox="0 0 24 24"
                         aria-hidden="true"
@@ -127,23 +126,17 @@ export default function ContactPage() {
                         />
                       </svg>
                     </span>
-                    <span>
-                      <span className="text-[#fafafa]">Email:</span>{" "}
-                      hello@yourname.dev
-                    </span>
+                    <span className="truncate">hello@yourname.dev</span>
                   </a>
 
                   <a
                     href="tel:+919876543210"
                     className="flex items-center gap-3 text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors group"
                   >
-                    <span className="w-10 h-10 rounded-xl border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors">
+                    <span className="w-9 h-9 rounded-lg border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors shrink-0">
                       <PhoneIcon />
                     </span>
-                    <span>
-                      <span className="text-[#fafafa]">Phone:</span> +91 98765
-                      43210
-                    </span>
+                    <span>+91 98765 43210</span>
                   </a>
 
                   <a
@@ -152,20 +145,19 @@ export default function ContactPage() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors group"
                   >
-                    <span className="w-10 h-10 rounded-xl border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors">
-                      <WhatsAppIcon width={19} height={19} />
+                    <span className="w-9 h-9 rounded-lg border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors shrink-0">
+                      <WhatsAppIcon width={16} height={16} />
                     </span>
-                    <span>
-                      <span className="text-[#fafafa]">WhatsApp:</span> +91
-                      98765 43210
-                    </span>
+                    <span>WhatsApp</span>
                   </a>
                 </div>
               </section>
 
-              {/* Availability & Location */}
-              <section className="pt-8 border-t border-[#242424]">
-                <div className="flex items-center gap-2.5 text-sm text-[#a3a3a3] mb-4">
+              <section className="pt-6 border-t border-[#242424]">
+                <h3 className="font-display text-lg font-semibold text-[#fafafa] tracking-tight mb-4">
+                  Availability
+                </h3>
+                <div className="flex items-center gap-2.5 text-sm text-[#a3a3a3] mb-2">
                   <span
                     className="relative flex h-1.5 w-1.5"
                     aria-hidden="true"
@@ -180,11 +172,17 @@ export default function ContactPage() {
             </div>
 
             {/* Right Column - Contact Form */}
-            <div className="lg:border-l lg:border-[#242424] lg:pl-10">
-              <h2 className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mb-6">
-                Send a Message
-              </h2>
-              <ContactForm />
+            <div className="lg:col-span-8">
+              <div className="p-6 md:p-8 rounded-2xl border border-[#242424] bg-[#0a0a0a]">
+                <h2 className="font-display text-xl font-semibold text-[#fafafa] tracking-tight mb-1">
+                  Send a Message
+                </h2>
+                <p className="text-sm text-[#8a8a8a] mb-6">
+                  Tell me about your project and I&apos;ll get back to you
+                  within one business day.
+                </p>
+                <ContactForm />
+              </div>
             </div>
           </div>
         </div>

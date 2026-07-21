@@ -7,9 +7,12 @@ export async function POST(request: NextRequest) {
       name?: string;
       email?: string;
       phone?: string;
+      serviceType?: string;
+      budget?: string;
+      timeline?: string;
       message?: string;
     };
-    const { name, email, phone, message } = body;
+    const { name, email, phone, serviceType, budget, timeline, message } = body;
 
     // Basic server-side validation
     if (!name?.trim() || !email?.trim() || !phone?.trim() || !message?.trim()) {
@@ -59,6 +62,9 @@ export async function POST(request: NextRequest) {
         line('Name', name.trim()),
         line('Email', email.trim()),
         line('Phone', phone.trim()),
+        serviceType ? line('Service', serviceType) : null,
+        budget ? line('Budget', budget) : null,
+        timeline ? line('Timeline', timeline) : null,
         '*Message:*',
         esc(message.trim()),
         '──────────────────────',
@@ -68,7 +74,7 @@ export async function POST(request: NextRequest) {
         line('Referrer', referer),
         line('Page', path),
         line('Submitted', submittedAt),
-      ].join('\n');
+      ].filter(Boolean).join('\n');
 
       try {
         const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -106,6 +112,9 @@ export async function POST(request: NextRequest) {
           <p><strong>Name:</strong> ${escapeHtml(name)}</p>
           <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
           <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
+          ${serviceType ? `<p><strong>Service:</strong> ${escapeHtml(serviceType)}</p>` : ''}
+          ${budget ? `<p><strong>Budget:</strong> ${escapeHtml(budget)}</p>` : ''}
+          ${timeline ? `<p><strong>Timeline:</strong> ${escapeHtml(timeline)}</p>` : ''}
           <p><strong>Message:</strong></p>
           <blockquote style="margin:0;padding:12px 16px;border-left:3px solid #ff8fab;background:#fafafa;color:#333;">
             ${escapeHtml(message).replace(/\n/g, '<br/>')}
@@ -127,7 +136,7 @@ export async function POST(request: NextRequest) {
           to: contactEmail,
           replyTo: email.trim(),
           subject: `New contact message from ${name.trim()}`,
-          text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}\n\n—\nIP: ${ip}\nPage: ${path}\nSubmitted: ${submittedAt}`,
+          text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\n${serviceType ? `Service: ${serviceType}\n` : ''}${budget ? `Budget: ${budget}\n` : ''}${timeline ? `Timeline: ${timeline}\n` : ''}\n${message}\n\n—\nIP: ${ip}\nPage: ${path}\nSubmitted: ${submittedAt}`,
           html,
         });
         if (error) {

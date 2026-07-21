@@ -64,6 +64,9 @@ export default function Footer() {
             <Link href="/blog" className={linkClass}>
               Blog
             </Link>
+            <Link href="/contact" className={linkClass}>
+            Contact
+            </Link>
             <FooterBookingButton />
           </nav>
         </div>

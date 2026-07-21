@@ -5,13 +5,17 @@ interface BookingPayload {
   email?: string;
   phone?: string;
   source?: string;
+  /** Optional — one of the service values from the modal, or any free text. */
+  service?: string | null;
+  /** Optional — short project blurb to prep the call. */
+  details?: string | null;
   device?: Record<string, unknown>;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as BookingPayload;
-    const { name, email, phone, source, device } = body;
+    const { name, email, phone, source, service, details, device } = body;
 
     // Never trust the client — validate server-side too.
     if (!name?.trim() || !email?.trim() || !phone?.trim()) {
@@ -20,6 +24,9 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return Response.json({ error: 'Invalid email address.' }, { status: 400 });
+    }
+    if (typeof details === 'string' && details.length > 500) {
+      return Response.json({ error: 'Details too long.' }, { status: 400 });
     }
 
     const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -35,7 +42,16 @@ export async function POST(request: NextRequest) {
     if (!token || !chatId) {
       console.warn('[Booking] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — skipping notify.');
       if (process.env.NODE_ENV === 'development') {
-        console.log('[Booking] lead captured:', { name, email, phone, source, device, ip });
+        console.log('[Booking] lead captured:', {
+          name,
+          email,
+          phone,
+          service,
+          details,
+          source,
+          device,
+          ip,
+        });
       }
       return Response.json({ success: true, warned: 'telegram_not_configured' }, { status: 200 });
     }
@@ -46,13 +62,22 @@ export async function POST(request: NextRequest) {
     const line = (label: string, value: unknown) =>
       `${label}: ${value === undefined || value === null || value === '' ? '—' : String(value)}`;
 
+    const trimmedDetails = typeof details === 'string' ? details.trim() : '';
+    const trimmedService = typeof service === 'string' ? service.trim() : '';
+
     const message = [
-      '*New Booking Request*',
+      '*New Booking Request* 📅',
       '──────────────────────',
       line('Name', esc(name.trim())),
       line('Email', esc(email.trim())),
       line('Phone', esc(phone.trim())),
       line('Source', source),
+      '──────────────────────',
+      trimmedService ? '*About the project*' : null,
+      trimmedService ? line('Service', esc(trimmedService)) : null,
+      trimmedDetails
+        ? ['*Details*', esc(trimmedDetails)].join('\n')
+        : null,
       '──────────────────────',
       '*Device*',
       line('Timezone', device?.timezone),
@@ -66,7 +91,9 @@ export async function POST(request: NextRequest) {
       line('IP', ip),
       '──────────────────────',
       line('Submitted', new Date().toISOString()),
-    ].join('\n');
+    ]
+      .filter(Boolean)
+      .join('\n');
 
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',

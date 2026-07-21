@@ -10,7 +10,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 const stats = [
   { value: "100%", label: "On-time delivery" },
   { value: "5+", label: "Services offered" },
-  { value: "100%", label: "Transparency" },
+  { value: "10+", label: "HappyClients" },
 ];
 
 const IMG_SHADOW_REST =
