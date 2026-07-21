@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useBookingModal } from '@/components/ui/BookingModalProvider';
 import { site } from '@/lib/site';
 
 const navLinks = [
@@ -14,7 +14,7 @@ const navLinks = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
+ const { open } = useBookingModal();
   /* scroll detection — replaces ScrollTrigger */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 64);
@@ -68,14 +68,13 @@ export default function Header() {
 
         {/* Right — CTA */}
         <div className="flex justify-end">
-          <a
-            href={site.bookingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-4 py-2 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
+          <button
+            type="button"
+            onClick={() => open('header')}
+            className="cursor-pointer text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] bg-transparent border border-white/[0.12] px-4 py-2 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
           >
             Book a call
-          </a>
+          </button>
         </div>
       </div>
 
@@ -135,15 +134,16 @@ export default function Header() {
               </span>
             </a>
           ))}
-          <a
-            href={site.bookingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setMenuOpen(false)}
-            className="mt-4 mb-1 flex items-center justify-center gap-2 text-sm font-semibold text-[#0a0a0a] bg-[#fafafa] px-5 py-3 rounded-full"
+         <button
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              open('header');
+            }}
+            className="mt-4 mb-1 flex items-center justify-center gap-2 text-sm font-semibold text-[#0a0a0a] bg-[#fafafa] px-5 py-3 rounded-full cursor-pointer"
           >
             Book a call
-          </a>
+          </button>
         </nav>
       </div>
 

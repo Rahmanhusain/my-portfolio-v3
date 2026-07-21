@@ -2,43 +2,194 @@
   "number": "06",
   "slug": "hosting-deployment",
   "title": "Hosting & Deployment",
-  "shortDesc": "Production-grade deployments on reliable infrastructure, with CI/CD and monitoring included.",
-  "description": "Deploying a web application is about more than uploading files. I set up production environments on Vercel, Netlify, AWS, or DigitalOcean depending on your needs, along with CI/CD pipelines so every commit to main is tested and deployed automatically.",
+  "shortDesc": "Get your site or app live on fast, reliable hosting with zero downtime deploys, so it never falls over right when traffic shows up.",
+  "description": "Hosting and deployment services for founders and small teams who need their website or app live on infrastructure that actually holds up under real traffic. I set up your hosting, build a proper deployment pipeline, and configure monitoring so you find out about problems before your customers do. No guessing with server settings, no site going down during your biggest week.",
   "bannerImage": "/servicesimage/hosting.png",
-  "bannerAlt": "Cloud infrastructure diagram showing CI/CD pipeline from code commit to production",
-  "keywords": ["web hosting services", "deployment setup", "CI/CD pipeline", "Vercel deployment", "cloud hosting developer"],
+  "bannerAlt": "Dashboard showing server uptime and deployment status for a website set up through custom hosting and deployment services",
+  "keywords": [
+    "hosting and deployment services",
+    "website hosting setup",
+    "app deployment developer",
+    "CI/CD pipeline setup",
+    "web app hosting"
+  ],
   "body": [
-    { "type": "h2", "text": "Choosing the right platform" },
+    {
+      "type": "h2",
+      "text": "Why a slow or unstable site is costing you more than you think"
+    },
     {
       "type": "p",
-      "text": "Vercel is the obvious choice for Next.js projects — it handles edge caching, preview deployments, and environment management with almost no configuration. For projects that need more control (background workers, custom networking, large file storage), a VPS on DigitalOcean or a managed container service on AWS is usually the better fit."
+      "text": "A site that takes four seconds to load is not just annoying, it is actively losing you customers before they see anything. Most visitors leave before a slow page even finishes loading, and Google quietly ranks slow sites lower too. Then there is the other failure mode: a site that works fine most days but falls over the one day it matters, like a product launch or a press mention, because nobody set it up to handle a spike in traffic. Both problems come from the same root cause, hosting that was never properly configured in the first place."
     },
-    { "type": "h2", "text": "CI/CD that actually saves time" },
+    {
+      "type": "h2",
+      "text": "What hosting and deployment actually means"
+    },
     {
       "type": "p",
-      "text": "A good pipeline does more than deploy. It runs your test suite, checks types, lints your code, and only deploys if everything passes. I set up GitHub Actions workflows that give you fast feedback on every pull request and automatic deployments on merge."
+      "text": "Hosting is where your website or app actually lives and runs. Deployment is the process of getting your code from your computer onto that server safely, ideally without any downtime and without you needing to touch a terminal every time something changes. Done right, this also includes a CDN so your site loads fast no matter where your visitors are, automatic SSL so the browser shows the padlock icon, and monitoring that alerts someone the moment something breaks, instead of you finding out from an angry customer email."
     },
-    { "type": "h2", "text": "Observability from day one" },
+    {
+      "type": "h2",
+      "text": "What is included"
+    },
     {
       "type": "ul",
       "items": [
-        "Uptime monitoring with Betterstack or UptimeRobot — alerts before users notice",
-        "Error tracking with Sentry — full stack traces with source maps",
-        "Performance monitoring — real user metrics, not just Lighthouse scores",
-        "Log aggregation — structured logs searchable across deployments"
+        "Hosting setup on a modern platform like Vercel, AWS, or a VPS, chosen based on what your app actually needs",
+        "A deployment pipeline so pushing new code goes live automatically, with zero downtime",
+        "CDN and caching configuration so pages load fast for visitors anywhere in the world",
+        "SSL certificate setup so your site is secure and shows the padlock, not a warning",
+        "Uptime and error monitoring with alerts, so problems get caught before customers notice",
+        "Automated backups, so a bad deploy or a database mistake is never a full disaster"
       ]
     },
-    { "type": "h2", "text": "Environment management" },
+    {
+      "type": "h2",
+      "text": "How the setup process works"
+    },
     {
       "type": "p",
-      "text": "Environment variables, secrets, and configuration drift are a common source of production incidents. I document every variable, separate concerns between development, staging, and production environments, and ensure secrets are never committed to source control."
+      "text": "Getting hosting right the first time saves you from a scramble later, so I follow a consistent process on every project."
+    },
+    {
+      "type": "ol",
+      "items": [
+        "Discovery and audit - I review your app, expected traffic, and current setup if one already exists",
+        "Infrastructure setup - I provision hosting, configure the CDN, SSL, and environment variables",
+        "Deployment pipeline - I set up automatic deploys from your code repository, so shipping updates is one click, not a manual upload",
+        "Load and failure testing - I test how the setup handles a traffic spike and confirm backups actually restore correctly",
+        "Launch and monitoring handover - the site goes live, monitoring is active, and you get a plain language explainer of what was set up"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "A look at what a deployment pipeline actually does"
+    },
+    {
+      "type": "p",
+      "text": "For anyone curious what happens behind the scenes, here is a simplified example of the kind of automated deployment workflow I set up. Every time code is pushed, it gets tested and deployed automatically, with no manual steps."
+    },
+    {
+      "type": "code",
+      "lang": "yaml",
+      "code": "name: Deploy\n\non:\n  push:\n    branches: [main]\n\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Install dependencies\n        run: npm ci\n\n      - name: Run tests\n        run: npm test\n\n      - name: Build\n        run: npm run build\n\n      - name: Deploy\n        run: npm run deploy\n        env:\n          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}"
+    },
+    {
+      "type": "image",
+      "src": "/servicesimage/diagrams/hostingdiag1.png",
+      "alt": "Diagram showing a code deployment pipeline from git push to automated testing to live hosting with monitoring",
+      "caption": "A typical deployment pipeline: push code, run tests, deploy automatically, monitor once live"
+    },
+    {
+      "type": "h2",
+      "text": "Pricing and how engagement works"
+    },
+    {
+      "type": "p",
+      "text": "Initial hosting and deployment setup is a fixed price, quoted after I understand your app and expected traffic. If you want ongoing monitoring and management after launch, that runs as a simple monthly retainer, so someone is actually watching for problems instead of you finding out when the site is already down."
+    },
+    {
+      "type": "table",
+      "headers": ["Tier", "Best for", "Typical price", "Timeline"],
+      "rows": [
+        [
+          "Basic setup",
+          "A single site or small app on standard hosting",
+          "Fixed price, quoted after discovery",
+          "2 to 3 days"
+        ],
+        [
+          "Full pipeline setup",
+          "Apps needing CI/CD, staging environments, and monitoring",
+          "Fixed price, quoted after discovery",
+          "4 to 6 days"
+        ],
+        [
+          "Managed hosting",
+          "Ongoing monitoring, updates, and support after launch",
+          "Monthly retainer, quoted after discovery",
+          "Ongoing"
+        ]
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Timeline: what to expect"
+    },
+    {
+      "type": "p",
+      "text": "A basic hosting setup for a single site usually takes 2 to 3 days. A full pipeline with staging environments, automated testing, and monitoring typically takes 4 to 6 days. If you are launching alongside a new build, I fold hosting setup into the same timeline so there is no gap between the app being finished and it actually being live."
+    },
+    {
+      "type": "h2",
+      "text": "How we will talk during the setup"
+    },
+    {
+      "type": "p",
+      "text": "You get an update at each major milestone, not silence followed by a surprise. Once monitoring is active, you also get direct alerts if anything goes wrong after launch, so you are never the last to know your own site is down."
+    },
+    {
+      "type": "h2",
+      "text": "What is included, what is not, and what happens after launch"
+    },
+    {
+      "type": "p",
+      "text": "Every setup includes hosting configuration, the deployment pipeline, SSL, backups, and monitoring setup, plus 14 days of post launch support for anything that surfaces once real traffic hits the site. What is not included: writing new app features, which falls under <a href=\"/services/web-app-development\">web and app development</a>, and ongoing day to day server management unless you choose the managed hosting tier. If something breaks that traces back to the original setup within those first 14 days, I fix it at no extra cost."
+    },
+    {
+      "type": "h2",
+      "text": "Can this handle a real traffic spike?"
+    },
+    {
+      "type": "p",
+      "text": "This is the question I get most, usually from founders who remember a launch day where the site went down. Yes, the setups I build use autoscaling infrastructure and a CDN specifically so a spike in visitors does not take the site offline, and I load test before calling a project done, not after something breaks. If your app also needs background jobs or scheduled tasks running reliably, that pairs well with <a href=\"/services/automation-agent-development\">automation and agent development</a>, and if the app itself needs new backend endpoints to support growth, that is covered under <a href=\"/services/api-backend-development\">API and backend development</a>."
+    },
+    {
+      "type": "h2",
+      "text": "A recent launch, in short"
+    },
+    {
+      "type": "p",
+      "text": "One client came to me after their site crashed during a product feature on social media, taking down checkout for most of the day. I rebuilt their hosting setup with a CDN, autoscaling, and proper monitoring, then load tested it against traffic well above what caused the original crash. Their next big traffic spike, from a similar feature a few months later, saw zero downtime and page load times under one second throughout. I wrote more about what actually causes these crashes in <a href=\"/blog/why-your-site-crashes-during-traffic-spikes\">why sites crash during traffic spikes</a>, and if you are choosing between hosting platforms, <a href=\"/blog/vercel-vs-aws-for-small-business-apps\">Vercel versus AWS for small business apps</a> breaks down the real tradeoffs."
     }
   ],
   "benefits": [
-    { "title": "Zero-downtime deployments", "description": "Atomic deployments and rollback capability mean a bad push never takes your site offline." },
-    { "title": "Automated testing in CI", "description": "Every push runs your test suite before reaching production — catching regressions before your users do." },
-    { "title": "Monitoring and alerts", "description": "Uptime monitoring and error tracking are set up from day one so you know about issues before your users report them." },
-    { "title": "Infrastructure as code", "description": "Environment configuration lives in version control, making it reproducible and disaster-recovery-ready." }
+    {
+      "title": "Your site stays up when it matters most",
+      "description": "Autoscaling and load tested infrastructure mean a traffic spike from a launch or a feature does not take your site offline right when you need it most."
+    },
+    {
+      "title": "Pages load fast, everywhere",
+      "description": "CDN and caching setup means visitors get a fast experience whether they are next door or across the world, which helps both conversions and Google rankings."
+    },
+    {
+      "title": "You find out about problems first",
+      "description": "Uptime and error monitoring alerts you the moment something breaks, so you hear it from a system, not from a frustrated customer."
+    },
+    {
+      "title": "Shipping updates is no longer stressful",
+      "description": "An automated deployment pipeline means new code goes live safely with zero downtime, instead of a manual upload that might break something."
+    }
   ],
-  "whyMe": "I have deployed and maintained applications ranging from simple marketing sites to data-intensive platforms with millions of monthly requests. I choose the right infrastructure for your scale and budget rather than defaulting to the most expensive option, and I document everything so your team is never dependent on me for operational knowledge."
+  "whyMe": "I have rebuilt hosting setups for clients after a bad launch day, and the pattern is almost always the same: nobody load tested the site before it needed to handle real traffic. I do not treat hosting as an afterthought tacked onto a build. I test failure scenarios before calling a setup finished, and I stay reachable if something breaks in the first two weeks after launch, instead of disappearing once the invoice is paid. You get infrastructure decisions made by someone who has watched what happens when they are made carelessly.",
+  "faq": [
+    {
+      "question": "How much does hosting and deployment setup cost?",
+      "answer": "A basic setup for a single site is quoted as a fixed price after a short discovery call, usually landing in the range of a few days of work. A full pipeline with staging environments and monitoring costs more and is also quoted upfront in writing. Ongoing managed hosting runs as a separate monthly retainer if you want it."
+    },
+    {
+      "question": "How long does setup take?",
+      "answer": "A basic setup usually takes 2 to 3 days. A full deployment pipeline with monitoring and staging environments typically takes 4 to 6 days. If this is part of a new app launch, I fold the timeline into the overall build schedule."
+    },
+    {
+      "question": "Do you offer ongoing hosting management after launch?",
+      "answer": "Yes, through the managed hosting tier, which runs as a monthly retainer. This covers ongoing monitoring, updates, and being the person who gets the alert if something goes wrong, rather than you finding out on your own."
+    },
+    {
+      "question": "Can you migrate a site that is already hosted somewhere else?",
+      "answer": "Yes. Migrating an existing site to better hosting is a common request, and I plan the migration to avoid downtime, usually by setting up the new environment fully before switching traffic over."
+    }
+  ]
 }

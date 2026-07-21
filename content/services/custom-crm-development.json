@@ -2,40 +2,179 @@
   "number": "04",
   "slug": "custom-crm-development",
   "title": "Custom CRM Development",
-  "shortDesc": "Tailored CRM systems built around your workflow — not the other way around.",
-  "description": "Off-the-shelf CRM tools are built for the average business, which means they rarely fit anyone perfectly. I build custom CRM systems tailored to your exact workflow — the right data fields, the right automations, the right integrations. The result is a tool your team actually wants to use, built on a stack you own.",
+  "shortDesc": "A CRM built around how your sales team actually works, not a bloated tool they will quietly stop using.",
+  "description": "Custom CRM development for founders and small teams who are tired of bending their sales process to fit someone else's software. I design and build a CRM around your real pipeline, connect it to the tools you already use, and hand it over ready to run. No agency layers, no generic templates, just a senior developer building exactly what your business needs.",
   "bannerImage": "/servicesimage/crm.png",
-  "bannerAlt": "Dashboard interface showing customer pipeline, analytics, and contact management",
-  "keywords": ["custom CRM development", "bespoke CRM software", "CRM developer", "custom business software", "workflow automation"],
+  "bannerAlt": "Screenshot of a custom CRM dashboard showing a sales pipeline, built as part of a custom CRM development project for a small business",
+  "keywords": [
+    "custom CRM development",
+    "CRM software developer",
+    "custom CRM for small business",
+    "CRM development services",
+    "freelance CRM developer"
+  ],
   "body": [
-    { "type": "h2", "text": "Why off-the-shelf CRMs often fail" },
+    {
+      "type": "h2",
+      "text": "Why off the shelf CRMs let growing businesses down"
+    },
     {
       "type": "p",
-      "text": "Generic CRM platforms are designed to cover every possible business model, which means they are optimised for none of them. You end up paying for features you will never use while workarounding the ones that almost fit. A custom-built system gives you exactly what you need — nothing more, nothing less."
+      "text": "Most small teams start with a spreadsheet, then move to a big name CRM because everyone says they should. A few months later half the team has quietly stopped logging calls in it, because the tool was built for a company five times your size with a sales process nothing like yours. Leads sit untouched, follow ups get missed, and you are still paying a monthly fee for software nobody opens. That is the real cost of the wrong CRM: not the subscription, but the deals that slip away because your team stopped trusting the tool."
     },
-    { "type": "h2", "text": "Common features I build" },
+    {
+      "type": "h2",
+      "text": "What custom CRM development actually means"
+    },
+    {
+      "type": "p",
+      "text": "Custom CRM development means the software gets built around how your business already sells, instead of your team changing how they work to fit a template. If your process has three deal stages, the CRM has three deal stages. If your team closes deals over WhatsApp and email, the CRM logs both without anyone copying and pasting. As a freelance CRM developer I keep every build lean: only the screens, fields, and automations your team will actually use, nothing extra to configure or ignore."
+    },
+    {
+      "type": "h2",
+      "text": "What is included in a custom CRM build"
+    },
     {
       "type": "ul",
       "items": [
-        "Contact and company management with custom fields",
-        "Pipeline stages that match your actual sales or delivery process",
-        "Automated follow-up reminders and task assignments",
-        "Email and calendar integrations (Gmail, Outlook)",
-        "Reporting dashboards with the metrics your team actually tracks",
-        "Role-based access so each team member sees what they need"
+        "A contact and deal database built around your real sales stages, not a generic template",
+        "Pipeline views your team can filter, sort, and update in a few clicks",
+        "Automated follow up reminders so a lead never sits untouched for a week",
+        "Integrations with the tools you already use, like email, WhatsApp, or a booking calendar",
+        "Role based access, so a rep sees their own leads and a manager sees everything",
+        "Reporting dashboards that show pipeline health without a spreadsheet export"
       ]
     },
-    { "type": "h2", "text": "Built to evolve" },
+    {
+      "type": "h2",
+      "text": "How I build your CRM"
+    },
     {
       "type": "p",
-      "text": "Businesses change. A custom CRM built with a clean architecture is easy to extend — adding a new pipeline stage, a new report, or a new integration is a manageable task rather than a project overhaul."
+      "text": "Every project follows the same five steps, so you always know what is happening next and nothing feels like a black box."
+    },
+    {
+      "type": "ol",
+      "items": [
+        "Discovery call - we map your current sales process, the data you track, and the tools it needs to talk to",
+        "Design and data mapping - I plan the database and screens, and you review the plan before any code gets written",
+        "Build and integrate - I build the CRM and connect the integrations, with a working preview link you can check anytime",
+        "Testing and training - your team walks through real scenarios with me, and I record a short training video",
+        "Launch and support - the CRM goes live, and I stay on for fixes and small changes during the first two weeks"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "A quick look under the hood"
+    },
+    {
+      "type": "p",
+      "text": "For anyone who likes the details: a typical custom CRM build runs on Next.js and TypeScript on the frontend, with a Postgres database and a small set of backend APIs handling deal updates and automations. Here is a simplified example of the kind of logic that flags a deal as going cold and prompts a rep to follow up."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type Deal = {\n  id: string;\n  stage: \"new\" | \"contacted\" | \"proposal\" | \"closed\";\n  lastContactedAt: Date;\n};\n\nfunction flagColdDeals(deals: Deal[]): Deal[] {\n  const THREE_DAYS_MS = 1000 * 60 * 60 * 24 * 3;\n  const now = Date.now();\n\n  return deals.filter((deal) => {\n    const isOpen = deal.stage !== \"closed\";\n    const isStale = now - deal.lastContactedAt.getTime() > THREE_DAYS_MS;\n    return isOpen && isStale;\n  });\n}"
+    },
+    {
+      "type": "image",
+      "src": "/servicesimage/diagrams/crmdiag1.png",
+      "alt": "Diagram showing the architecture of a custom CRM built with Next.js, a backend API layer, and a Postgres database",
+      "caption": "A typical custom CRM setup: Next.js frontend, a small API layer, and a Postgres database behind it"
+    },
+    {
+      "type": "h2",
+      "text": "Pricing and how engagement works"
+    },
+    {
+      "type": "p",
+      "text": "I work on a fixed price for clearly scoped builds, so you know the total cost before I write a line of code. For CRMs that grow in phases, I also run short paid sprints, usually one to two weeks each, so you can add features without committing to a large project upfront. Either way, you get a written estimate first. No surprise invoices."
+    },
+    {
+      "type": "table",
+      "headers": ["Tier", "Best for", "Typical price", "Timeline"],
+      "rows": [
+        ["Starter CRM", "Solo founders or small teams with one sales pipeline", "Fixed price, quoted after discovery", "2 to 3 weeks"],
+        ["Growth CRM", "Teams with multiple pipelines and a few integrations", "Fixed price, quoted after discovery", "4 to 5 weeks"],
+        ["Enterprise CRM", "Larger teams needing custom reporting and several integrations", "Custom quote after discovery", "5 to 6 weeks"]
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Timeline: what to expect and when"
+    },
+    {
+      "type": "p",
+      "text": "A starter CRM with a single pipeline and one or two integrations usually ships in 2 to 3 weeks. A larger build with multiple pipelines, custom reporting, and several integrations takes 4 to 6 weeks. You get a milestone timeline during the discovery call, so you are never guessing what is happening or when the next piece lands."
+    },
+    {
+      "type": "h2",
+      "text": "How we will talk during the build"
+    },
+    {
+      "type": "p",
+      "text": "The number one worry with hiring a freelancer is getting ghosted halfway through. I send a short update every week, more often during active build weeks, and you get a shared board where you can check progress anytime. If something is going to take longer than planned, you hear about it before the deadline, not after."
+    },
+    {
+      "type": "h2",
+      "text": "What is included, what is not, and how revisions work"
+    },
+    {
+      "type": "p",
+      "text": "Every project includes the build, one round of integration testing, a training walkthrough, and two weeks of post launch support for bug fixes. Design and workflow revisions during the build are included, as long as they stay within the scope we agreed at discovery. What is not included: ongoing feature development after the support window, or a full rebuild of a large existing CRM. If a rebuild is actually cheaper than patching your current system, I will tell you that plainly."
+    },
+    {
+      "type": "h2",
+      "text": "Can a custom CRM handle my industry or my scale?"
+    },
+    {
+      "type": "p",
+      "text": "This is usually the first real question founders ask me, and the answer is yes. I have built pipeline logic for service businesses, real estate teams, and agencies, and the same approach that works for 5 users works for 50, because the database design and hosting scale with you, not against you. If your CRM needs to talk to other internal tools, that usually falls under <a href=\"/services/api-backend-development\">API and backend development</a>, and if you want it hosted and monitored properly once it is live, that is covered under <a href=\"/services/hosting-deployment\">hosting and deployment</a>."
+    },
+    {
+      "type": "h2",
+      "text": "A recent build, in short"
+    },
+    {
+      "type": "p",
+      "text": "One client, a small real estate team, was tracking leads across three spreadsheets and a shared inbox. I built them a custom CRM with a single pipeline view and automatic follow up reminders. It shipped in three weeks, and within the first month their agents were following up on new leads twice as fast, because nothing sat unread in an inbox anymore. If you want to see how I think through a build like this before writing any code, I wrote about it in <a href=\"/blog/why-off-the-shelf-crm-fails-growing-teams\">why off the shelf CRM tools fail growing teams</a> and <a href=\"/blog/how-to-choose-between-custom-crm-and-saas\">how to choose between a custom CRM and a SaaS tool</a>."
     }
   ],
   "benefits": [
-    { "title": "Built around your process", "description": "No forcing your workflow into someone else's opinionated structure — the CRM adapts to how your team works." },
-    { "title": "Own your data", "description": "All your customer data lives in a database you control, with no third-party platform fees or data-export restrictions." },
-    { "title": "Integrates with your stack", "description": "Custom webhooks and integrations connect your CRM to the tools you already use — email, billing, support, and more." },
-    { "title": "Grows with your business", "description": "Adding new fields, reports, or automations is straightforward because the codebase is clean and well-documented." }
+    {
+      "title": "Leads stop slipping through the cracks",
+      "description": "Automated follow up reminders and clear pipeline stages mean a hot lead never sits ignored in someone's inbox for a week."
+    },
+    {
+      "title": "Your team actually uses it",
+      "description": "Because the CRM matches how your team already sells, adoption is not a fight. Nobody has to relearn how to think just to log a call."
+    },
+    {
+      "title": "Straight answers, no support queue",
+      "description": "You talk directly to the person building your CRM. Questions get answered the same day, not routed through account managers."
+    },
+    {
+      "title": "Numbers you can trust for decisions",
+      "description": "Reporting dashboards show real pipeline health, so hiring and budget calls are based on data, not a gut feeling about how sales is going."
+    }
   ],
-  "whyMe": "I have built internal tools and CRMs for businesses across sales, logistics, and professional services. I start by understanding your team's actual day-to-day before writing a line of code, which means the system I deliver is one your people will adopt immediately rather than work around."
+  "whyMe": "I have built custom CRMs for service businesses and real estate teams who tried the big name tools first and watched their own team quietly stop using them. My approach is the same every time: map the real sales process before writing a line of code, keep the build lean, and stay hands on from discovery through launch. You are never handed off to a junior developer once the contract is signed. You work with me the entire time, which is usually why these builds ship faster and actually match the pipeline your team runs day to day.",
+  "faq": [
+    {
+      "question": "How much does custom CRM development cost?",
+      "answer": "Pricing depends on scope. A starter CRM with one pipeline and a couple of integrations is quoted as a fixed price after the discovery call. Larger builds with multiple pipelines or heavy integrations are either a bigger fixed price or run as short paid sprints. You always get a written estimate before any work starts."
+    },
+    {
+      "question": "How long does a custom CRM build take?",
+      "answer": "Most starter builds ship in 2 to 3 weeks. Larger builds with more pipelines and integrations usually take 4 to 6 weeks. You get a milestone timeline during discovery so you know what to expect and when."
+    },
+    {
+      "question": "Can you migrate our data from our current CRM or spreadsheets?",
+      "answer": "Yes. Data migration from spreadsheets or another CRM is part of the standard build. I map your existing fields to the new structure during the design phase so nothing gets lost in the move."
+    },
+    {
+      "question": "What happens after launch if we need changes?",
+      "answer": "Every build includes two weeks of post launch support for fixes and small tweaks. After that, changes can be handled as short paid sprints, so you are never stuck waiting on a big new contract just to update a form field."
+    }
+  ]
 }

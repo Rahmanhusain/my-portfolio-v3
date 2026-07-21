@@ -1,31 +1,171 @@
 {
-  "number": "08",
-  "slug": "b2b-e-commerce-solutions",
+  "number": "07",
+  "slug": "b2b-ecommerce-solutions",
   "title": "B2B E-Commerce Solutions",
-  "shortDesc": "Online stores and selling flows that convert — from storefront setup to payments, carts, and fulfilment integrations.",
-  "description": "I build e-commerce that sells. Whether you need a polished Shopify store, a WooCommerce site, or a custom headless storefront, I handle the storefront, product catalogue, cart and checkout, and the payment and fulfilment integrations that make it actually work. The focus is on speed, trust signals, and a checkout that doesn't lose customers.",
+  "shortDesc": "Give your business buyers a fast, self-serve way to order from you online, with the pricing tiers, bulk ordering, and approvals a wholesale business actually needs.",
+  "description": "B2B e-commerce solutions built for businesses that sell to other businesses, not just individual shoppers. I build custom online stores and buyer portals with tiered pricing, bulk order tools, and account-based access, so your sales team stops taking repeat orders over email and your buyers get a fast way to reorder on their own. Every build is shaped around how your business actually sells, not forced into a generic storefront template.",
   "bannerImage": "/servicesimage/b2becommerce.png",
-  "bannerAlt": "E-commerce storefront showing products, cart, and checkout on a laptop",
-  "keywords": ["e-commerce development", "Shopify developer", "WooCommerce development", "online store development", "headless commerce", "payment integration"],
+  "bannerAlt": "Screenshot of a custom B2B ecommerce storefront showing tiered pricing, a bulk order form, and account based buyer login",
+  "keywords": [
+    "B2B ecommerce development",
+    "wholesale ecommerce platform",
+    "B2B online ordering system",
+    "custom B2B store development"
+  ],
   "body": [
-    { "type": "h2", "text": "What I can build" },
-    { "type": "p", "text": "Storefront setup and theme work on Shopify or WooCommerce, custom product pages, variant and inventory modelling, cart and checkout flows, discount and coupon logic, and integrations with payment gateways, shipping, and tax tools." },
-    { "type": "h2", "text": "Platform vs. custom" },
-    { "type": "p", "text": "For most small and mid-size stores, Shopify or WooCommerce gets you to market fast with a huge app ecosystem. When you need a bespoke buying experience, unusual catalogue rules, or tight integration with internal systems, a headless storefront on Next.js with a commerce backend gives you full control." },
-    { "type": "ul", "items": [
-      "Platforms: Shopify, WooCommerce, BigCommerce",
-      "Headless: Next.js storefront with commerce APIs",
-      "Payments: Stripe, Razorpay, PayPal, and local gateways",
-      "Ops: shipping, tax, inventory, and email/SMS notifications"
-    ] },
-    { "type": "h2", "text": "What you get" },
-    { "type": "p", "text": "A store that loads fast and is easy to run day to day, documented admin workflows, and a 30-day window for tweaks after launch. You keep full access to the admin and all credentials." }
+    {
+      "type": "h2",
+      "text": "Why selling to businesses online is a different problem than selling to shoppers"
+    },
+    {
+      "type": "p",
+      "text": "A normal online store assumes one price for everyone and one person making the buying decision. B2B does not work that way. Your buyers want different prices depending on volume or contract, they order in bulk instead of one item at a time, and often more than one person at their company needs to place or approve an order. Most off the shelf store builders were never designed for that, so a lot of B2B businesses end up back on email, PDF price lists, and spreadsheets, even after paying for a website."
+    },
+    {
+      "type": "p",
+      "text": "That gap costs more than it looks like. Every order that comes in by email is a person on your team retyping it into a system by hand, and every buyer who has to email you for a price is a buyer who might just order from a competitor with an easier process instead. A proper B2B store fixes this by letting buyers see their own pricing, place their own repeat orders, and get approvals routed automatically, while your team only steps in where a human decision is actually needed."
+    },
+    {
+      "type": "h2",
+      "text": "What a custom B2B ecommerce build actually includes"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Buyer accounts with custom pricing tiers, discounts, and credit limits per company",
+        "Bulk ordering tools, including CSV upload and saved order templates for fast reordering",
+        "Quote requests and approval workflows for large orders or first time buyers",
+        "Multiple logins under one company account, with spending limits set per user",
+        "Integration with your existing inventory, accounting, or ERP system so stock and orders stay accurate",
+        "An admin dashboard to manage pricing tiers, orders, and buyer accounts without touching code"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "How I build your B2B store"
+    },
+    {
+      "type": "p",
+      "text": "A B2B store touches your pricing, your sales process, and often another system you already run your business on, so I do not guess at the logic. I map it with you first."
+    },
+    {
+      "type": "ol",
+      "items": [
+        "Discovery call - we go through your buyers, pricing structure, and current ordering process in detail",
+        "Platform and pricing design - I plan the tiers, permissions, and order logic and review it with you before building",
+        "Build and test - built and tested against real products, real prices, and real order examples from your business",
+        "Integration - connected to your inventory, accounting, or ERP system, plus the payment methods your buyers actually use, including invoicing and net terms",
+        "Launch and monitoring - the store goes live, and I watch the first real orders closely to catch anything the test data missed"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "Here is a simplified look at how a tiered pricing rule might work behind the scenes. Real pricing logic usually has more layers, but this shows the basic shape."
+    },
+    {
+      "type": "code",
+      "lang": "typescript",
+      "code": "type BuyerTier = \"standard\" | \"wholesale\" | \"distributor\";\n\ntype LineItem = {\n  basePrice: number;\n  quantity: number;\n};\n\nfunction getUnitPrice(basePrice: number, tier: BuyerTier, quantity: number) {\n  const tierDiscount = { standard: 0, wholesale: 0.12, distributor: 0.22 }[tier];\n  const bulkDiscount = quantity >= 100 ? 0.05 : 0;\n  return basePrice * (1 - tierDiscount - bulkDiscount);\n}\n\nfunction getOrderTotal(items: LineItem[], tier: BuyerTier) {\n  return items.reduce((total, item) => {\n    const unitPrice = getUnitPrice(item.basePrice, tier, item.quantity);\n    return total + unitPrice * item.quantity;\n  }, 0);\n}"
+    },
+    {
+      "type": "image",
+      "src": "/servicesimage/diagrams/b2bdiag1.png",
+      "alt": "Diagram showing a B2B order flow from buyer login through tiered pricing, approval, and order confirmation",
+      "caption": "A typical B2B order flow: buyer login, tiered pricing applied, approval if needed, order confirmed"
+    },
+    {
+      "type": "h2",
+      "text": "Pricing and how engagement works"
+    },
+    {
+      "type": "p",
+      "text": "A single tier storefront with a straightforward catalog is priced as a fixed fee once we map the scope on a discovery call. Multi tier platforms with bulk ordering and approval logic cost more and are quoted the same way, after we know exactly what the buyer side needs to do. Full builds that plug into an existing ERP or inventory system are quoted separately, since every ERP setup is a little different. If you want to add features over time rather than launch everything at once, I also run short paid sprints so you can grow the store in pieces."
+    },
+    {
+      "type": "table",
+      "headers": ["Tier", "Best for", "Typical price", "Timeline"],
+      "rows": [
+        ["Basic B2B storefront", "One pricing tier, straightforward catalog and checkout", "Fixed price, quoted after discovery", "2 to 3 weeks"],
+        ["Multi tier B2B platform", "Several buyer tiers, bulk ordering, and approval workflows", "Fixed price, quoted after discovery", "3 to 5 weeks"],
+        ["Full B2B platform with system integration", "Connecting your existing inventory, accounting, or ERP system", "Custom quote after discovery", "5 to 8 weeks"]
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Timeline: what to expect"
+    },
+    {
+      "type": "p",
+      "text": "A basic B2B storefront with one pricing tier usually ships in 2 to 3 weeks. A multi tier platform with bulk ordering and approvals typically takes 3 to 5 weeks. A full build that connects to your existing inventory or accounting system takes longer, usually 5 to 8 weeks, since it needs to be tested carefully against your live data before it touches real orders. You get a written timeline after the discovery call, before any work begins."
+    },
+    {
+      "type": "h2",
+      "text": "How we will talk during the build"
+    },
+    {
+      "type": "p",
+      "text": "You get an update at each milestone, not just a message at the end saying it is done. During active build weeks I check in more often, especially once we get into pricing logic or connecting to a system that holds your real stock or accounting data. If I hit an edge case during testing, like a buyer tier that does not fit the rules we agreed on, I raise it with you right away instead of quietly deciding on my own."
+    },
+    {
+      "type": "h2",
+      "text": "What is included, what is not, and how revisions work"
+    },
+    {
+      "type": "p",
+      "text": "Every build includes the store, testing against real product and pricing data, and 14 days of post launch monitoring so anything that only shows up with real buyer traffic gets caught fast. Logic changes during the build are included as long as they stay inside the scope we agreed on at discovery. What is not included: building a brand new backend or database if you do not already have one, which falls under <a href=\"/services/api-backend-development\">API and backend development</a>, and hosting the finished store, which is covered separately under <a href=\"/services/hosting-deployment\">hosting and deployment</a>. Ongoing feature requests after the support window are handled as short paid sprints, so costs stay predictable instead of turning into an open ended retainer."
+    },
+    {
+      "type": "h2",
+      "text": "Can this handle my industry, or the order volume I actually deal with?"
+    },
+    {
+      "type": "p",
+      "text": "This is usually the first worry, and it is a fair one. The honest answer is that the platform is built around your actual order volume and product catalog from day one, not a generic template stretched to fit. I have built B2B stores for manufacturing, wholesale distribution, and industrial supply, and the pricing and permission logic changes each time to match how that business really sells. If your catalog is large or your order volume is high enough that performance becomes its own concern, that pairs with <a href=\"/services/web-app-development\">web and app development</a> for the front end and <a href=\"/services/api-backend-development\">API and backend development</a> for the systems underneath, so the store stays fast as it grows."
+    },
+    {
+      "type": "h2",
+      "text": "A recent build, in short"
+    },
+    {
+      "type": "p",
+      "text": "One distribution client was running their entire reorder process through email, with someone on staff manually checking each buyer's negotiated price before typing the order into their system. I built them a buyer portal with tiered pricing, saved reorder templates, and an approval step for anything over a set order size. Repeat buyers went from emailing and waiting to reordering in a couple of minutes on their own, and the manual price checking step disappeared completely since the correct price was already applied at checkout. I wrote more about this kind of build in <a href=\"/blog/what-makes-b2b-ecommerce-different-from-b2c\">what actually makes B2B ecommerce different from B2C</a> and <a href=\"/blog/signs-your-business-needs-a-b2b-buyer-portal\">the signs your business needs a B2B buyer portal</a>."
+    }
   ],
   "benefits": [
-    { "title": "Built to convert", "description": "Clear product pages, a low-friction cart, and a trustworthy checkout are designed in from the start — not patched on later." },
-    { "title": "Fast storefronts", "description": "Optimised images, caching, and clean code keep load times down, which directly protects conversion rates." },
-    { "title": "Payments that work", "description": "Reliable gateway and tax/shipping integrations mean fewer failed orders and fewer support tickets." },
-    { "title": "You stay in control", "description": "Full admin access, clean documentation, and a handover session so your team can run the store confidently." }
+    {
+      "title": "Your sales team stops re-typing orders",
+      "description": "Buyers place their own orders at their own prices, so your team is no longer the middle step between an email and a completed order."
+    },
+    {
+      "title": "Repeat orders happen in minutes, not days",
+      "description": "Saved order templates and bulk upload tools mean a buyer who orders every month can reorder in a couple of clicks instead of writing a fresh email each time."
+    },
+    {
+      "title": "Pricing mistakes stop happening",
+      "description": "Tiered pricing is applied automatically at checkout, so no one on your team has to remember or look up which discount a specific buyer gets."
+    },
+    {
+      "title": "You can see exactly who is ordering what",
+      "description": "An admin dashboard shows order activity by buyer and account, so you are never guessing which company is placing which order or waiting on which approval."
+    }
   ],
-  "whyMe": "I treat an online store as a product, not just a website — performance, checkout friction, and trust all affect revenue. I build stores that are fast, reliable, and straightforward for you to operate after launch."
+  "whyMe": "I have built B2B stores where the pricing logic was the hardest part of the project, not the design, and that is usually true for any real wholesale or distribution business. I build the pricing, tiers, and approval rules first and get them right against your actual products before the storefront design is ever the focus. You work with me directly through every step, not a project manager relaying your notes to a developer you never talk to, so pricing questions get answered the same day instead of the same week.",
+  "faq": [
+    {
+      "question": "How much does a B2B ecommerce build cost?",
+      "answer": "A basic storefront with one pricing tier is quoted as a fixed price after a short discovery call. Multi tier platforms and builds that connect to an existing ERP or inventory system cost more, since the pricing logic and integration testing takes longer. You get a written estimate before any work starts."
+    },
+    {
+      "question": "Can it connect to the inventory or accounting system we already use?",
+      "answer": "In most cases, yes. Most inventory and accounting platforms offer an API, and I connect to it directly. If your system does not have a public API, I look for another reliable way to sync data, and that gets figured out during the discovery call, before anything is quoted."
+    },
+    {
+      "question": "Do buyers need to create an account, or can anyone order?",
+      "answer": "That depends on how you want to sell. Most B2B stores I build require a buyer account so the correct pricing tier applies, but it is common to also allow general browsing or quote requests without an account for new prospects."
+    },
+    {
+      "question": "What happens if pricing rules or products change after launch?",
+      "answer": "Every build includes 14 days of post launch monitoring to catch anything that only shows up with real orders. After that, pricing and product changes are usually something you manage yourself through the admin dashboard, and larger changes are handled as short paid sprints."
+    }
+  ]
 }
