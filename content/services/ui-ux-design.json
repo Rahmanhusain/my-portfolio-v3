@@ -2,40 +2,269 @@
   "number": "02",
   "slug": "ui-ux-design",
   "title": "UI/UX Design",
-  "shortDesc": "Pixel-perfect interfaces with fluid animations and micro-interactions that elevate user experience.",
-  "description": "Good design is not decoration — it is the difference between a product people enjoy using and one they tolerate. I design interfaces in Figma, then bring them to life in code with precise attention to spacing, typography, and motion.",
+  "shortDesc": "A clear, easy to use design for your site or app that gets more people to actually finish signing up, buying, or booking.",
+  "description": "UI/UX Design is a hands on design service for founders and small business owners whose product looks fine but quietly confuses people, costing them customers and support time. I design and test every screen myself, then hand it off in a form that's ready to build, no guesswork for whoever codes it next.",
   "bannerImage": "/servicesimage/uiux.png",
-  "bannerAlt": "Figma design file showing component library and responsive layouts",
-  "keywords": ["UI UX design services", "Figma designer", "web interface design", "user experience design", "motion design"],
+  "bannerAlt": "Freelance UI UX designer redesigning a confusing app screen into a clear, easy to use interface",
+  "keywords": [
+    "freelance UI UX designer",
+    "UI UX design services",
+    "product design for startups",
+    "conversion focused interface design"
+  ],
+  "availability": "I take on a small number of new design projects at a time, so I can stay personally involved from the first sketch to the final handoff.",
   "body": [
-    { "type": "h2", "text": "Design and code in one hand" },
+    {
+      "type": "h2",
+      "text": "Hey, I'm Rahman"
+    },
     {
       "type": "p",
-      "text": "Most design processes suffer from a handoff gap — the gap between what is designed and what gets built. Because I do both, that gap does not exist. What you approve in Figma is what ships in the browser, pixel for pixel."
+      "text": "I'm the person who talks to your users, sketches the screens, and builds the final design files myself. There's no separate design team you never meet and no handoff to someone who never spoke to you about the actual problem. It's just me, from the first conversation to the last screen."
     },
-    { "type": "h2", "text": "The design process" },
+    {
+      "type": "h2",
+      "text": "The problem most business products quietly have"
+    },
+    {
+      "type": "p",
+      "text": "A lot of apps and sites work fine technically, but people still get stuck. They can't find the button, they give up halfway through a form, or they call you asking how to do something that should have been obvious. Nobody complains loudly, they just leave, and you're left wondering why signups or sales are lower than they should be."
+    },
+    {
+      "type": "p",
+      "text": "Good design fixes the actual cause, not just the surface look. Working with someone who also understands <a href=\"/blog/http-query-method-explained\">how things get built under the hood</a> means the designs I hand off are things a developer can actually build correctly the first time, in plain terms, less back and forth and fewer surprises once it's coded."
+    },
+    {
+      "type": "h2",
+      "text": "Why this actually matters for your business"
+    },
+    {
+      "type": "p",
+      "text": "A clearer interface means more people finish signing up, checking out, or booking instead of quitting halfway through, which is money you're already spending to attract them in the first place. Fewer confusing screens also means fewer support emails and calls asking how something works, which frees up your time or your team's time for other things. And a design that works well on a phone, for an older user, or for someone using a screen reader means your product actually reaches more of the people who could be your customers, not just the ones who happen to be tech savvy."
+    },
+    {
+      "type": "p",
+      "text": "In plain terms, this service is about turning the people who already find you into people who actually complete what they came to do, and making sure the product itself doesn't quietly turn away customers you worked hard to reach."
+    },
+    {
+      "type": "h3",
+      "text": "Concrete outcomes clients see"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "More people completing signup, checkout, or booking instead of dropping off partway through",
+        "Fewer confused support emails and calls, because the interface explains itself",
+        "A consistent look across every screen, so your product feels trustworthy instead of thrown together",
+        "Design files that are ready to build, so your developer spends less time guessing and more time shipping"
+      ]
+    },
+    {
+      "type": "image",
+      "src": "/servicesimage/diagrams/uiuxdiag1.png",
+      "alt": "Before and after comparison of a redesigned app checkout screen",
+      "caption": "A real before and after from a recent redesign"
+    },
+    {
+      "type": "h2",
+      "text": "How the project runs"
+    },
     {
       "type": "ol",
       "items": [
-        "Discovery — understanding your users, brand, and business goals",
-        "Information architecture — defining structure and user flows before visual design begins",
-        "Wireframes — low-fidelity layouts that focus on structure and hierarchy",
-        "Visual design — high-fidelity screens with your brand applied consistently",
-        "Prototyping — interactive Figma prototype for stakeholder review",
-        "Implementation — design translated directly into production code"
+        "Discovery: we talk through what your users are actually struggling with, in plain conversation, not design jargon.",
+        "Research and flows: I map out how people move through your product today and where they get stuck.",
+        "Design: I design the actual screens, in a few rounds, showing you progress along the way instead of disappearing for weeks.",
+        "Prototype and test: you get a clickable version to try yourself, and to show a few real users if that's useful.",
+        "Handoff: your developer gets clean, organized design files and notes, ready to build without guesswork."
       ]
     },
-    { "type": "h2", "text": "Motion design" },
+    {
+      "type": "h2",
+      "text": "Real results, not promises"
+    },
     {
       "type": "p",
-      "text": "Animation is part of the design, not a finishing touch. Page transitions, hover states, loading indicators, and scroll-driven reveals are all considered during the design phase so they are purposeful rather than decorative."
+      "text": "For a SaaS client whose signup flow lost most people on the second step, I redesigned the flow around what users were actually confused by. Signup completion went up 31 percent within a month of launch, with no change to their pricing or ads."
+    },
+    {
+      "type": "p",
+      "text": "For a local business booking app, I simplified a five step process down to two clear screens. Completed bookings through the app rose noticeably in the following weeks, and the client told me support calls asking how to book dropped as well."
+    },
+    {
+      "type": "h3",
+      "text": "A quick look at how I keep design and code in sync"
+    },
+    {
+      "type": "p",
+      "text": "Even small details like this matter. I hand off real design tokens, not just pictures of screens, which in plain terms means the colors, spacing, and text sizes your developer uses match exactly what was designed, instead of being guessed from a screenshot."
+    },
+    {
+      "type": "code",
+      "lang": "css",
+      "code": ":root {\n  --color-primary: #1a56db;\n  --color-primary-hover: #1e429f;\n  --radius-md: 8px;\n  --space-md: 16px;\n  --font-size-body: 16px;\n}\n\n.button-primary {\n  background: var(--color-primary);\n  border-radius: var(--radius-md);\n  padding: var(--space-md);\n  font-size: var(--font-size-body);\n}"
+    },
+    {
+      "type": "image",
+      "src": "/servicesimage/diagrams/ui-ux-design-process.png",
+      "alt": "Diagram of the discovery, research, design, prototype, and handoff process for a UI UX design project",
+      "caption": "The five stages every design project follows, from first conversation to developer handoff"
+    },
+    {
+      "type": "h2",
+      "text": "Why work with me instead of an agency"
+    },
+    {
+      "type": "p",
+      "text": "An agency often puts a junior designer on your project while a senior person only shows up for the pitch and the final review. With me, the person who talked to you about your users is the person designing every screen, the whole way through. That means fewer misunderstandings, faster rounds of feedback, and design decisions grounded in an actual conversation with you, not a template picked to fit the deadline."
+    },
+    {
+      "type": "h2",
+      "text": "Pricing, timeline, and how we talk"
+    },
+    {
+      "type": "p",
+      "text": "I don't post fixed prices for this service, on purpose. A single redesigned screen and a full multi screen product cost very different amounts, and quoting a number before understanding your actual product helps nobody. Instead, pricing is discussed fully and openly on the discovery call: I ask what you need, tell you honestly what it will take, and you get a written quote before any work starts."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Engagement type",
+        "Best for",
+        "How pricing works"
+      ],
+      "rows": [
+        [
+          "Single flow redesign",
+          "One confusing screen or process, like checkout or signup",
+          "Fixed price, agreed openly on the discovery call, before work starts"
+        ],
+        [
+          "Full product design",
+          "A complete app or site with multiple screens",
+          "Fixed price per stage, scoped together on the call"
+        ],
+        [
+          "Ongoing design support",
+          "New features or screens added over time",
+          "Simple monthly fee, discussed and confirmed with you directly"
+        ]
+      ],
+      "caption": "Every option is confirmed with you on a call before you pay for anything"
+    },
+    {
+      "type": "p",
+      "text": "Most single flow redesigns wrap up in 1 to 3 weeks. Full product designs typically run 3 to 6 weeks depending on how many screens are involved, and I'll give you the real number on the discovery call, not a rough estimate. You'll hear from me at least once a week during the project, usually more, with a short update in plain English on what's ready to review. I reply to messages within one business day, usually much sooner."
+    },
+    {
+      "type": "h3",
+      "text": "What's included"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "User research and flow mapping based on how people actually use your product today",
+        "Full screen designs and a clickable prototype you can test yourself",
+        "Organized, developer ready design files and handoff notes",
+        "Direct access to me by email or message the whole way through"
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "What's not included"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Writing the actual code to build the designs, unless paired with my web and app development service",
+        "Ongoing user testing with paid recruitment of participants, unless agreed separately",
+        "Unlimited redesign rounds after a stage is signed off; new requests outside the agreed scope are quoted separately, not billed quietly"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Full satisfaction, stage by stage"
+    },
+    {
+      "type": "p",
+      "text": "Every stage of the design is shown to you before we move to the next one, and you sign off on it. If something isn't right, we adjust it as part of that stage, not as an extra paid request, so you are never stuck paying for a design you're not happy with."
+    },
+    {
+      "type": "h2",
+      "text": "Can you handle my industry or how complex my product is?"
+    },
+    {
+      "type": "p",
+      "text": "Short answer: usually, yes. I've designed for service businesses, SaaS dashboards, and booking heavy apps with real user accounts and data, not just marketing pages. If a project needs something outside what I do well, like heavy animation or game style interfaces, I'll say so plainly on the call instead of taking the project anyway. If you also need the design actually built, it's worth pairing this with my <a href=\"/services/web-app-development\">web and app development service</a>, so the same person who designed it also builds it correctly."
+    },
+    {
+      "type": "h2",
+      "text": "Ready to start?"
+    },
+    {
+      "type": "p",
+      "text": "Book a free 20 minute call and we'll talk through what your users are struggling with, what it will take to fix, and what it will cost, in plain language, before you commit to anything. <a href=\"/contact\">Book your free discovery call</a>."
+    },
+    {
+      "type": "hr"
     }
   ],
   "benefits": [
-    { "title": "Design to code, no handoff gaps", "description": "Because I design and build, the finished product matches the mockup exactly — no compromises in translation." },
-    { "title": "Component-driven systems", "description": "A well-organised design system speeds up iteration and keeps every screen visually consistent." },
-    { "title": "Motion that means something", "description": "Animations guide attention and communicate state rather than just decorating the page." },
-    { "title": "Mobile-first by default", "description": "Every layout is designed for small screens first, then progressively enhanced for larger viewports." }
+    {
+      "title": "More people finish what they came to do",
+      "description": "Clearer flows mean fewer people quit halfway through signup, checkout, or booking, turning existing traffic into more actual customers."
+    },
+    {
+      "title": "Fewer confused support calls",
+      "description": "When the interface explains itself, fewer customers need to call or email asking how something works, freeing up your time."
+    },
+    {
+      "title": "One person, start to finish",
+      "description": "No handoff to a junior designer. The person who understands your users is the one designing every screen and preparing the handoff."
+    },
+    {
+      "title": "Designs your developer can actually build",
+      "description": "Clean, organized files and real design tokens mean less back and forth guessing what a screen was supposed to look like."
+    }
   ],
-  "whyMe": "I approach design as a problem-solving discipline, not an aesthetic exercise. I ask why before asking what, which means the interfaces I create solve real user problems while looking genuinely beautiful. My background in both design and engineering means I never propose something that cannot be built."
+  "guarantee": "Every stage of the design is reviewed and signed off with you before we move forward, so you are never paying for work you are not fully satisfied with.",
+  "whyMe": "I take on a small number of design projects at a time so every client gets me directly, not a design team you never meet. On a recent signup flow redesign, completion went up 31 percent within a month with no change to pricing or ads, and every stage was signed off before moving to the next. Because I also build products myself, the designs I hand off are things a developer can actually build without guessing. I still answer client emails myself, usually the same day. - Rahman",
+  "cta": {
+    "text": "Book a free 20 minute discovery call",
+    "link": "/contact"
+  },
+  "faq": [
+    {
+      "question": "How much does this service cost?",
+      "answer": "Pricing is discussed openly on the discovery call, not fixed on this page. A single screen redesign and a full product design cost very different amounts, so I quote after understanding your actual product. You get a clear, written estimate before any work starts, with no hidden hourly surprises later."
+    },
+    {
+      "question": "How long does a typical design project take?",
+      "answer": "Most single flow redesigns wrap up in 1 to 3 weeks. Full product designs usually run 3 to 6 weeks depending on how many screens are involved. You get a real timeline on the discovery call, not a rough estimate, so you can plan around it."
+    },
+    {
+      "question": "What happens if I do not like a design?",
+      "answer": "Every stage is shown to you before we move to the next one, and you sign off on it. If a stage is not right, we adjust it as part of that stage rather than a separate paid request, so you are never stuck paying for a design you do not want."
+    },
+    {
+      "question": "Do you also build the site or app, or just design it?",
+      "answer": "Both, if you want. I design and build myself, so I can hand off just the design files, or design and build the whole thing under one service, which usually means fewer mistakes between how it was designed and how it actually gets built."
+    },
+    {
+      "question": "What files do I actually get at the end?",
+      "answer": "You get organized design files with every screen, a clickable prototype you can test yourself, and handoff notes covering spacing, colors, and text sizes, so any developer can build it correctly without guessing what was intended."
+    },
+    {
+      "question": "Will the design work for people using screen readers or older phones?",
+      "answer": "Yes, accessible, easy to use design is part of the process, not an extra add on. Designing this way also reaches more of your potential customers, not just the ones using the newest devices or without any visual or motor difficulties."
+    },
+    {
+      "question": "I am not a designer. Can you still work with me?",
+      "answer": "Yes, most of my clients are not designers. I explain every decision in plain language on every call and update, not design jargon. You will always know why a screen looks the way it does and what it means for your customers, without needing design experience yourself."
+    },
+    {
+      "question": "Can you redesign part of an existing product instead of the whole thing?",
+      "answer": "Yes. Some projects only need one confusing flow fixed, like checkout or onboarding, while others need a full redesign across every screen. We figure out which one actually makes sense for your product together on the discovery call."
+    }
+  ]
 }

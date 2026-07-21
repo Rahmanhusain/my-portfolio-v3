@@ -8,7 +8,7 @@ const navLinks = [
   { label: 'Services', href: '/services' },
   { label: 'About',    href: '/#about'   },
   { label: 'Blog',     href: '/blog'     },
-  { label: 'Contact',  href: '/#contact' },
+  { label: 'Contact',  href: '/contact'  },
 ];
 
 export default function Header() {
@@ -86,13 +86,13 @@ export default function Header() {
           scrolled || menuOpen ? 'bg-[#0a0a0a]/85 backdrop-blur-2xl' : '',
         ].join(' ')}
       >
-        <Link
+        <a
           href="/"
           aria-label="Home"
           className="font-display font-bold text-[#fafafa] text-base tracking-tight"
         >
           Rahman<span className="text-white/30">.</span>
-        </Link>
+        </a>
 
         {/* Hamburger */}
         <button

@@ -25,6 +25,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    {
+      url: `${siteUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    }
   ];
 
   const serviceRoutes: MetadataRoute.Sitemap = services.map((service) => ({
@@ -41,5 +47,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...serviceRoutes, ...postRoutes];
+  const contactRoute: MetadataRoute.Sitemap = [
+    {
+      url: `${siteUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    },
+  ];
+
+  return [...staticRoutes, ...serviceRoutes, ...postRoutes, ...contactRoute];
 }
