@@ -152,7 +152,7 @@
     },
     {
       "type": "p",
-      "text": "One client came to me after their site crashed during a product feature on social media, taking down checkout for most of the day. I rebuilt their hosting setup with a CDN, autoscaling, and proper monitoring, then load tested it against traffic well above what caused the original crash. Their next big traffic spike, from a similar feature a few months later, saw zero downtime and page load times under one second throughout. I wrote more about what actually causes these crashes in <a href=\"/blog/why-your-site-crashes-during-traffic-spikes\">why sites crash during traffic spikes</a>, and if you are choosing between hosting platforms, <a href=\"/blog/vercel-vs-aws-for-small-business-apps\">Vercel versus AWS for small business apps</a> breaks down the real tradeoffs."
+      "text": "One client came to me after their site crashed during a product feature on social media, taking down checkout for most of the day. I rebuilt their hosting setup with a CDN, autoscaling, and proper monitoring, then load tested it against traffic well above what caused the original crash. Their next big traffic spike, from a similar feature a few months later, saw zero downtime and page load times under one second throughout. I wrote more about choosing between hosting platforms, <a href=\"/blog/vercel-vs-aws-for-small-business-apps\">Vercel versus AWS for small business apps</a> breaks down the real tradeoffs."
     }
   ],
   "benefits": [

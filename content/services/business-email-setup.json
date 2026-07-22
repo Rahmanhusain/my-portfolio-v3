@@ -137,7 +137,7 @@
     },
     {
       "type": "p",
-      "text": "One client had a signup form on their site that was supposed to send a welcome email, but almost none of their new users ever saw it because it was landing in spam. I audited their domain, found a missing DKIM record and a DMARC policy that was too loose, fixed both, and retested with real inboxes across Gmail, Outlook, and Yahoo. Within a week their welcome email open rate went from under 20 percent to over 90 percent. I wrote more about how this kind of thing happens in <a href=\"/blog/why-your-emails-go-to-spam\">why your business emails keep going to spam</a>, and if you are deciding between a free inbox and a paid one, <a href=\"/blog/gmail-vs-google-workspace-for-business\">Gmail versus Google Workspace for business</a> breaks down the real differences."
+      "text": "One client had a signup form on their site that was supposed to send a welcome email, but almost none of their new users ever saw it because it was landing in spam. I audited their domain, found a missing DKIM record and a DMARC policy that was too loose, fixed both, and retested with real inboxes across Gmail, Outlook, and Yahoo. Within a week their welcome email open rate went from under 20 percent to over 90 percent. I wrote more about how this kind of thing happens in <a href=\"/blog/why-business-emails-keep-going-to-spam\">why your business emails keep going to spam</a>."
     }
   ],
   "benefits": [

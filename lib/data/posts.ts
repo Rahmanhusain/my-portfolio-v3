@@ -29,7 +29,9 @@ export interface Post extends Omit<PostRaw, "updatedAt"> {
 import kimivsfable5 from "@/content/posts/kimik3vsfable5.json";
 import gsapPost from "@/content/posts/gsap.json";
 import queryMethod from "@/content/posts/querymethod.json";
-
+import customCrm from "@/content/posts/custom-crm-vs-saas-tool.json";
+import whyBusinessEmailKeepGoingToSpam from "@/content/posts/why-business-email-keep-going-to-spam.json";
+import vercelVsAwsForSmallBusinessApps from "@/content/posts/vercel-vs-aws-for-small-business.json";
 function hydrate(raw: PostRaw): Post {
   return { ...raw, updatedAt: new Date(raw.updatedAt) };
 }
@@ -39,4 +41,7 @@ export const posts: Post[] = [
   hydrate(kimivsfable5 as PostRaw),
   hydrate(queryMethod as PostRaw),
   hydrate(gsapPost as PostRaw),
+  hydrate(customCrm as PostRaw),
+  hydrate(whyBusinessEmailKeepGoingToSpam as PostRaw),
+  hydrate(vercelVsAwsForSmallBusinessApps as PostRaw),
 ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());

@@ -137,7 +137,7 @@
     },
     {
       "type": "p",
-      "text": "One client, a small real estate team, was tracking leads across three spreadsheets and a shared inbox. I built them a custom CRM with a single pipeline view and automatic follow up reminders. It shipped in three weeks, and within the first month their agents were following up on new leads twice as fast, because nothing sat unread in an inbox anymore. If you want to see how I think through a build like this before writing any code, I wrote about it in <a href=\"/blog/why-off-the-shelf-crm-fails-growing-teams\">why off the shelf CRM tools fail growing teams</a> and <a href=\"/blog/how-to-choose-between-custom-crm-and-saas\">how to choose between a custom CRM and a SaaS tool</a>."
+      "text": "One client, a small real estate team, was tracking leads across three spreadsheets and a shared inbox. I built them a custom CRM with a single pipeline view and automatic follow up reminders. It shipped in three weeks, and within the first month their agents were following up on new leads twice as fast, because nothing sat unread in an inbox anymore. If you want to see how I think through a build like this before writing any code, I wrote about it in <a href=\"/blog/how-to-choose-between-custom-crm-and-saas\">how to choose between a custom CRM and a SaaS tool</a>."
     }
   ],
   "benefits": [
