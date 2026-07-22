@@ -32,7 +32,7 @@
     },
     {
       "type": "p",
-      "text": "Good design fixes the actual cause, not just the surface look. Working with someone who also understands <a href=\"/blog/http-query-method-explained\">how things get built under the hood</a> means the designs I hand off are things a developer can actually build correctly the first time, in plain terms, less back and forth and fewer surprises once it's coded."
+      "text": "Good design fixes the actual cause, not just the surface look. Working with someone who also understands <a href=\"/blog/http-query-method-explained\">how things get built under the hood</a> and <a href=\"/blog/gsap-animation-react-nextjs-guide\">how to design smooth animations</a> means the designs I hand off are things a developer can actually build correctly the first time, in plain terms, less back and forth and fewer surprises once it's coded."
     },
     {
       "type": "h2",

@@ -191,7 +191,7 @@
     },
     {
       "type": "p",
-      "text": "Short answer: usually, yes. I've built for service businesses, online stores, and internal tools that handle real customer accounts and data, not just simple marketing pages. If a project needs a specialty I don't cover well, like heavy native mobile app work, I'll tell you that plainly on the call instead of taking the project anyway. For businesses that also need a stronger backend or data setup behind the scenes, it's worth looking at my <a href=\"/services/api-development\">API design and development service</a> too, which pairs directly with this one."
+      "text": "Short answer: usually, yes. I've built for service businesses, online stores, and internal tools that handle real customer accounts and data, not just simple marketing pages. If a project needs a specialty I don't cover well, like heavy native mobile app work, I'll tell you that plainly on the call instead of taking the project anyway. For businesses that also need a stronger backend or data setup behind the scenes, it's worth looking at my <a href=\"/services/api-backend-development\">API design and Backend development service</a> too, which pairs directly with this one."
     },
     {
       "type": "h2",

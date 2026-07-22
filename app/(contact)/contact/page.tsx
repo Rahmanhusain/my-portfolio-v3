@@ -86,7 +86,7 @@ export default function ContactPage() {
               </div>
               <BookingTrigger
                 source="contact"
-                className="cursor-pointer"
+                className="text-[11px] md:text-sm px-5 py-2.5 bg-white/10 hover:bg-white cursor-pointer"
               >
                 Book a Free 30-Minute Call
               </BookingTrigger>

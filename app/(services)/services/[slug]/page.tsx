@@ -1,11 +1,11 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { services } from '@/lib/data/services';
-import { siteUrl } from '@/lib/seo';
-import { renderBlock } from '@/lib/content-blocks';
-import Faq from '@/components/sections/Faq';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { services } from "@/lib/data/services";
+import { siteUrl } from "@/lib/seo";
+import { renderBlock } from "@/lib/content-blocks";
+import Faq from "@/components/ui/Faq";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,27 +19,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service) return {};
 
   const canonical = `${siteUrl}/services/${service.slug}`;
-  const ogImage   = service.bannerImage.startsWith('/')
+  const ogImage = service.bannerImage.startsWith("/")
     ? `${siteUrl}${service.bannerImage}`
     : service.bannerImage;
 
   return {
-    title:       `${service.title} — Services`,
+    title: `${service.title} — Services`,
     description: service.shortDesc,
-    keywords:    service.keywords,
-    alternates:  { canonical },
+    keywords: service.keywords,
+    alternates: { canonical },
     openGraph: {
-      title:       `${service.title} by Rahman`,
+      title: `${service.title} by Rahman`,
       description: service.shortDesc,
-      url:         canonical,
-      type:        'website',
-      images:      [{ url: ogImage, width: 1200, height: 630, alt: service.bannerAlt }],
+      url: canonical,
+      type: "website",
+      images: [
+        { url: ogImage, width: 1200, height: 630, alt: service.bannerAlt },
+      ],
     },
     twitter: {
-      card:        'summary_large_image',
-      title:       `${service.title} by Rahman`,
+      card: "summary_large_image",
+      title: `${service.title} by Rahman`,
       description: service.shortDesc,
-      images:      [ogImage],
+      images: [ogImage],
     },
   };
 }
@@ -52,27 +54,37 @@ export default async function ServicePage({ params }: Props) {
   const canonical = `${siteUrl}/services/${service.slug}`;
 
   const jsonLd = {
-    '@context':   'https://schema.org',
-    '@type':      'Service',
-    name:         service.title,
-    description:  service.description,
-    url:          canonical,
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.title,
+    description: service.description,
+    url: canonical,
     provider: {
-      '@type': 'Person',
-      name:    'Rahman',
-      url:     siteUrl,
+      "@type": "Person",
+      name: "Rahman",
+      url: siteUrl,
     },
-    areaServed:   'Worldwide',
-    serviceType:  service.title,
+    areaServed: "Worldwide",
+    serviceType: service.title,
   };
 
   const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type':    'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-      { '@type': 'ListItem', position: 2, name: 'Services', item: `${siteUrl}/services` },
-      { '@type': 'ListItem', position: 3, name: service.title, item: canonical },
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Services",
+        item: `${siteUrl}/services`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: service.title,
+        item: canonical,
+      },
     ],
   };
 
@@ -106,8 +118,14 @@ export default async function ServicePage({ params }: Props) {
 
         <div className="max-w-3xl mx-auto px-6">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#8a8a8a] mt-10 mb-10">
-            <Link href="/services" className="hover:text-[#fafafa] transition-colors">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-2 text-xs text-[#8a8a8a] mt-10 mb-10"
+          >
+            <Link
+              href="/services"
+              className="hover:text-[#fafafa] transition-colors"
+            >
               Services
             </Link>
             <span aria-hidden="true">/</span>
