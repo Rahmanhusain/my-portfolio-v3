@@ -128,7 +128,7 @@
     },
     {
       "type": "p",
-      "text": "One distribution client was running their entire reorder process through email, with someone on staff manually checking each buyer's negotiated price before typing the order into their system. I built them a buyer portal with tiered pricing, saved reorder templates, and an approval step for anything over a set order size. Repeat buyers went from emailing and waiting to reordering in a couple of minutes on their own, and the manual price checking step disappeared completely since the correct price was already applied at checkout. I wrote more about this kind of build in <a href=\"/blog/what-makes-b2b-ecommerce-different-from-b2c\">what actually makes B2B ecommerce different from B2C</a> and <a href=\"/blog/signs-your-business-needs-a-b2b-buyer-portal\">the signs your business needs a B2B buyer portal</a>."
+      "text": "One distribution client was running their entire reorder process through email, with someone on staff manually checking each buyer's negotiated price before typing the order into their system. I built them a buyer portal with tiered pricing, saved reorder templates, and an approval step for anything over a set order size. Repeat buyers went from emailing and waiting to reordering in a couple of minutes on their own, and the manual price checking step disappeared completely since the correct price was already applied at checkout. I wrote more about this kind of build in <a href=\"/blog/signs-your-business-needs-a-b2b-buyer-portal\">the signs your business needs a B2B buyer portal</a>."
     }
   ],
   "benefits": [

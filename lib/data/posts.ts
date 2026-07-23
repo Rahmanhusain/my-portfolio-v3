@@ -32,6 +32,8 @@ import queryMethod from "@/content/posts/querymethod.json";
 import customCrm from "@/content/posts/custom-crm-vs-saas-tool.json";
 import whyBusinessEmailKeepGoingToSpam from "@/content/posts/why-business-email-keep-going-to-spam.json";
 import vercelVsAwsForSmallBusinessApps from "@/content/posts/vercel-vs-aws-for-small-business.json";
+import howMuchTimeAutomationActuallySavesASmallTeam from "@/content/posts/how-much-time-automation-actually-saves-a-small-team.json";
+import signsYourBusinessNeedsAB2BBuyerPortal from "@/content/posts/signs-your-business-needs-a-b2b-buyer-portal.json";
 function hydrate(raw: PostRaw): Post {
   return { ...raw, updatedAt: new Date(raw.updatedAt) };
 }
@@ -44,4 +46,6 @@ export const posts: Post[] = [
   hydrate(customCrm as PostRaw),
   hydrate(whyBusinessEmailKeepGoingToSpam as PostRaw),
   hydrate(vercelVsAwsForSmallBusinessApps as PostRaw),
+  hydrate(howMuchTimeAutomationActuallySavesASmallTeam as PostRaw),
+  hydrate(signsYourBusinessNeedsAB2BBuyerPortal as PostRaw),
 ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());

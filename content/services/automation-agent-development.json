@@ -137,7 +137,7 @@
     },
     {
       "type": "p",
-      "text": "One client's support team was manually reading and sorting every incoming email before replying, which meant simple questions sat for hours during busy periods. I built an agent that reads each incoming email, drafts a reply for common questions, and flags anything unusual for a human to handle directly. Average first response time dropped from several hours to under ten minutes for the questions the agent could handle on its own. I wrote more about how to think through a build like this in <a href=\"/blog/when-you-need-an-ai-agent-vs-simple-automation\">when you actually need an AI agent versus simple automation</a> and <a href=\"/blog/how-much-time-does-automation-really-save\">how much time automation actually saves a small team</a>."
+      "text": "One client's support team was manually reading and sorting every incoming email before replying, which meant simple questions sat for hours during busy periods. I built an agent that reads each incoming email, drafts a reply for common questions, and flags anything unusual for a human to handle directly. Average first response time dropped from several hours to under ten minutes for the questions the agent could handle on its own. I wrote more about how to think through a build like this in <a href=\"/blog/how-much-time-automation-actually-saves-a-small-team\">how much time automation actually saves a small team</a>."
     }
   ],
   "benefits": [
