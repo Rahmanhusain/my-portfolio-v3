@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev'
   ),
   title: {
-    default: 'Rahman — Software Developer',
+    default: 'Rahman',
     template: '%s | Rahman',
   },
   description:
