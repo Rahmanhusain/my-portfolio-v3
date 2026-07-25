@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { locationLabel } from '@/lib/site';
+import { site, locationLabel } from '@/lib/site';
 import FooterBookingButton from '@/components/layout/FooterBookingButton';
 
 const socialLinks = [
-  { label: 'GitHub', href: 'https://github.com/rahman' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/rahman' },
-  { label: 'X / Twitter', href: 'https://x.com/rahman' },
+  { label: 'GitHub',     href: site.social.github },
+  { label: 'LinkedIn',   href: site.social.linkedin },
+  { label: 'X / Twitter', href: site.social.twitter },
 ];
 
 const linkClass =

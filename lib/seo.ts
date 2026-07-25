@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { site } from '@/lib/site';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
 const siteName = 'Rahman — Software Developer';
@@ -26,6 +27,8 @@ export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
       card: 'summary_large_image',
       title: siteName,
       description: defaultDescription,
+      site: site.social.twitterHandle,
+      creator: site.social.twitterHandle,
     },
     robots: { index: true, follow: true },
     alternates: { canonical: '/' },

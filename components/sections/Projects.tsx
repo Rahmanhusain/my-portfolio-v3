@@ -6,6 +6,7 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import ProjectCard from '@/components/ui/ProjectCard';
 import MagneticButton from '@/components/ui/MagneticButton';
 import { projects } from '@/lib/data/projects';
+import { site } from '@/lib/site';
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -36,7 +37,7 @@ export default function Projects() {
           />
           <MagneticButton
             as="a"
-            href="https://github.com/rahman"
+            href={site.social.github}
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 self-start md:self-auto mb-2"

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { posts } from '@/lib/data/posts';
 import { siteUrl } from '@/lib/seo';
+import { site } from '@/lib/site';
 import { renderBlock } from '@/lib/content-blocks';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -43,6 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title:       post.title,
       description: post.description,
       images:      [ogImage],
+      site:        site.social.twitterHandle,
+      creator:     site.social.twitterHandle,
     },
   };
 }

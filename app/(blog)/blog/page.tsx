@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { posts } from '@/lib/data/posts';
 import { siteUrl } from '@/lib/seo';
+import { site } from '@/lib/site';
 
 const sortedPosts = [...posts].sort(
   (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
@@ -34,6 +35,8 @@ export const metadata: Metadata = {
     title: 'Blog — Web Development Insights by Rahman',
     description:
       'Practical articles on React, Next.js, GSAP, and modern frontend engineering.',
+    site: site.social.twitterHandle,
+    creator: site.social.twitterHandle,
   },
 };
 

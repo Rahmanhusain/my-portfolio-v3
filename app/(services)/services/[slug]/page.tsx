@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { services } from "@/lib/data/services";
 import { siteUrl } from "@/lib/seo";
+import { site } from "@/lib/site";
 import { renderBlock } from "@/lib/content-blocks";
 import Faq from "@/components/ui/Faq";
 
@@ -42,6 +43,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${service.title} by Rahman`,
       description: service.shortDesc,
       images: [ogImage],
+      site: site.social.twitterHandle,
+      creator: site.social.twitterHandle,
     },
   };
 }

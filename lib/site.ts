@@ -23,6 +23,18 @@ export const site = {
     utcOffset: 'UTC+5:30',
     global: 'Working with clients globally.',
   },
+  // Socials — full URLs so they're drop-in for `Person.sameAs`, footer/contact
+  // link `href`s, and the `twitter.site` / `twitter.creator` SEO fields.
+  social: {
+    github:   'https://github.com/rahman',
+    linkedin: 'https://linkedin.com/in/rahman',
+    twitter:  'https://x.com/rahman',
+    // Handle (no leading @) — used by Next's twitter.site / twitter.creator
+    twitterHandle: 'rahman',
+    phone:    '+91 123 456 7890',
+    email:    'your.email@example.com',
+  },
+
 } as const;
 
 // Composed strings used in multiple places.

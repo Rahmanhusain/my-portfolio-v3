@@ -29,6 +29,8 @@ export const metadata: Metadata = {
     title: "Contact — Rahman Software Developer",
     description:
       "Have a project in mind? Let's talk about how I can help bring your vision to life.",
+    site: site.social.twitterHandle,
+    creator: site.social.twitterHandle,
   },
 };
 

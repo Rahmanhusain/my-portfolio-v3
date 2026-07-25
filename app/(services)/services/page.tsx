@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { services } from "@/lib/data/services";
 import { siteUrl } from "@/lib/seo";
+import { site } from "@/lib/site";
 import Faq from "@/components/ui/Faq";
 import BookingTrigger from "@/components/ui/BookingTrigger";
 
@@ -33,6 +34,8 @@ export const metadata: Metadata = {
     title: "Services — Software Development by Rahman",
     description:
       "End-to-end web development, design, and infrastructure services for businesses that care about quality.",
+    site: site.social.twitterHandle,
+    creator: site.social.twitterHandle,
   },
 };
 

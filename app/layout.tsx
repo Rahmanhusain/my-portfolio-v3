@@ -3,6 +3,7 @@ import { Inter, Inter_Tight, Dancing_Script } from 'next/font/google';
 import './globals.css';
 import BookingModalProvider from '@/components/ui/BookingModalProvider';
 import ContactFormS from '@/components/ui/ContactFormS';
+import { site } from '@/lib/site';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -48,6 +49,8 @@ export const metadata: Metadata = {
     title: 'Rahman — Software Developer',
     description:
       'Software Developer building fast, accessible, and beautifully crafted web products.',
+    site: site.social.twitterHandle,
+    creator: site.social.twitterHandle,
     // Twitter falls back to the generated og:image
   },
   robots: { index: true, follow: true },
@@ -85,8 +88,9 @@ const personJsonLd = {
     'API Development',
   ],
   sameAs: [
-    'https://github.com/rahman',
-    'https://linkedin.com/in/rahman',
+    site.social.github,
+    site.social.linkedin,
+    site.social.twitter,
   ],
 };
 
