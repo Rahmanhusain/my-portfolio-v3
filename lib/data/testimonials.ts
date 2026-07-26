@@ -2,8 +2,7 @@ export interface Testimonial {
   id: string;
   quote: string;
   name: string;
-  role: string;
-  company: string;
+ 
   initials: string;
 }
 
@@ -11,28 +10,22 @@ export const testimonials: Testimonial[] = [
   {
     id: '1',
     quote:
-      'Delivered a beautifully crafted product ahead of schedule. The attention to detail and proactive communication made the entire process seamless. Would absolutely work together again.',
-    name: 'Alex Morgan',
-    role: 'Product Lead',
-    company: 'Acme Corp',
-    initials: 'AM',
+      'Rahman built a professional website for our handloom and curtain business. It strengthened our online presence and brought us quality leads. the oberall experience was smooth and satisfying.',
+    name: 'Rakesh Gogia',
+    initials: 'RG',
   },
   {
     id: '2',
     quote:
-      'Transformed our legacy dashboard into a modern, performant application. The code quality is excellent and the animations feel premium. Our team is still impressed.',
-    name: 'Sarah Chen',
-    role: 'CTO',
-    company: 'Nexus Labs',
-    initials: 'SC',
+      'He helped us set up a custom business email with our domain. The process was quick, and it has improved our brand\'s professional image.',
+    name: 'Shivam Shukla',
+    initials: 'SS',
   },
   {
     id: '3',
     quote:
-      'Sharp technical instincts and a great eye for design. Took our vague brief and turned it into something we are genuinely proud to show clients.',
-    name: 'James Okafor',
-    role: 'Founder',
-    company: 'Studio Eleven',
-    initials: 'JO',
+      'The calling automation has improved our workflow and customer experience. It\'s been a valuable solution for our business. his expertise in web development and automation is commendable.',
+    name: 'Fatima Ahmed',
+    initials: 'FA',
   },
 ];

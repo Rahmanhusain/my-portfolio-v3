@@ -10,7 +10,10 @@
     "React",
     "Next.js",
     "Animation",
-    "Performance"
+    "Performance",
+    "ScrollTrigger",
+    "Framer Motion",
+    "Web Development"
   ],
   "keywords": [
     "GSAP animation React",

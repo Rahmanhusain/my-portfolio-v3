@@ -10,14 +10,31 @@
     "API Design",
     "REST",
     "Next.js",
-    "Backend"
+    "Backend",
+    "Web Development",
+    "HTTP Methods",
+    "QUERY Method",
+    "RFC 10008",
+    "Web Performance",
+    "Caching",
+    "Web Standards",
+    "HTTP Request Body"
   ],
   "keywords": [
     "HTTP QUERY method",
     "RFC 10008",
     "safe idempotent HTTP method",
     "GET vs POST vs QUERY",
-    "REST API search endpoint"
+    "REST API search endpoint",
+    "cacheable HTTP methods",
+    "structured search filters",
+    "Next.js API design",
+    "backend development",
+    "HTTP methods explained",
+    "API design best practices",
+    "HTTP caching",
+    "HTTP request body",
+    "HTTP request methods"
   ],
   "bannerImage": "/blogpostimages/query.png",
   "bannerAlt": "the new HTTP QUERY method",

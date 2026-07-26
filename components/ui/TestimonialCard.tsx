@@ -38,9 +38,9 @@ export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
         </div>
         <div>
           <p className="text-sm font-medium text-[#fafafa]">{testimonial.name}</p>
-          <p className="text-xs text-[#8a8a8a]">
+          {/* <p className="text-xs text-[#8a8a8a]">
             {testimonial.role}, {testimonial.company}
-          </p>
+          </p> */}
         </div>
       </footer>
     </article>
