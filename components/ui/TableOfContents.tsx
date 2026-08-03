@@ -1,4 +1,4 @@
-import { extractHeadings, type ContentBlock } from '@/lib/content-blocks';
+import { extractHeadings, type ContentBlock } from "@/lib/content-blocks";
 
 /**
  * Sticky outline of an article, generated from its `h2`/`h3` blocks.
@@ -10,7 +10,13 @@ import { extractHeadings, type ContentBlock } from '@/lib/content-blocks';
  * Server Component — the ids come from the same `headingSlug()` the renderer
  * uses, so the links can't break.
  */
-export default function TableOfContents({ body }: { body: ContentBlock[] }) {
+export default function TableOfContents({
+  body,
+  heading = "In this article",
+}: {
+  body: ContentBlock[];
+  heading?: string;
+}) {
   const headings = extractHeadings(body);
 
   // Not worth the visual weight for a two-section post.
@@ -25,13 +31,13 @@ export default function TableOfContents({ body }: { body: ContentBlock[] }) {
         id="toc-heading"
         className="mb-4 text-xs font-medium uppercase tracking-widest text-muted"
       >
-        In this article
+        {heading}
       </h2>
       <ol className="space-y-2.5">
         {headings.map((heading) => (
           <li
             key={heading.id}
-            className={heading.level === 'h3' ? 'pl-4' : undefined}
+            className={heading.level === "h3" ? "pl-4" : undefined}
           >
             <a
               href={`#${heading.id}`}

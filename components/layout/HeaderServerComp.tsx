@@ -46,13 +46,13 @@ export default function Header() {
         className={'hidden md:grid grid-cols-3 items-center px-8 h-14.5 bg-(--color-bg) border-b border-(--color-border) transition-all duration-500'}
       >
         {/* Left — logo */}
-        <Link
+        <a
           href="/"
           aria-label="Home"
           className="font-display font-bold text-fg text-base tracking-tight hover:opacity-60 transition-opacity duration-200 w-fit"
         >
           Rahman<span className="text-faint">.</span>
-        </Link>
+        </a>
 
         {/* Centre — pill nav */}
         <nav
@@ -67,7 +67,7 @@ export default function Header() {
           {navLinks.map((link) => {
             const active = isActive(pathname, link.href);
             return (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
                 aria-current={active ? 'page' : undefined}
@@ -79,7 +79,7 @@ export default function Header() {
                 ].join(' ')}
               >
                 {link.label}
-              </Link>
+              </a>
             );
           })}
         </nav>
@@ -100,13 +100,13 @@ export default function Header() {
       <div
         className={'md:hidden flex items-center bg-(--color-bg) border-b border-(--color-border) justify-between px-5 h-14 transition-all duration-500'}
       >
-        <Link
+        <a
           href="/"
           aria-label="Home"
           className="font-display font-bold text-fg text-base tracking-tight"
         >
           Rahman<span className="text-faint">.</span>
-        </Link>
+        </a>
 
         {/* Hamburger */}
         <button
@@ -139,7 +139,7 @@ export default function Header() {
           {navLinks.map((link, i) => {
             const active = isActive(pathname, link.href);
             return (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
                 aria-current={active ? 'page' : undefined}
@@ -153,7 +153,7 @@ export default function Header() {
                 <span className="text-[10px] text-subtle font-mono">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-              </Link>
+              </a>
             );
           })}
           <button

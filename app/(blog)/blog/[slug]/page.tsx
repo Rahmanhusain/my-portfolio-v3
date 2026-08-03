@@ -1,16 +1,16 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { posts } from '@/lib/data/posts';
-import { siteUrl } from '@/lib/seo';
-import { site } from '@/lib/site';
-import { renderBlock } from '@/lib/content-blocks';
-import TableOfContents from '@/components/ui/TableOfContents';
-import ShareLinks from '@/components/ui/ShareLinks';
-import CtaBand from '@/components/sections/CtaBand';
-import ScrollProgress from '@/components/ui/ScrollProgress';
-import BackToTop from '@/components/ui/BackToTop';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { posts } from "@/lib/data/posts";
+import { siteUrl } from "@/lib/seo";
+import { site } from "@/lib/site";
+import { renderBlock } from "@/lib/content-blocks";
+import TableOfContents from "@/components/ui/TableOfContents";
+import ShareLinks from "@/components/ui/ShareLinks";
+import CtaBand from "@/components/sections/CtaBand";
+import ScrollProgress from "@/components/ui/ScrollProgress";
+import BackToTop from "@/components/ui/BackToTop";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -22,9 +22,9 @@ export async function generateStaticParams() {
  *  which is one of the signals Google uses to judge article depth. */
 function countWords(post: (typeof posts)[number]): number {
   return post.body.reduce((total, block) => {
-    if ('text' in block) return total + block.text.split(/\s+/).length;
-    if ('items' in block)
-      return total + block.items.join(' ').split(/\s+/).length;
+    if ("text" in block) return total + block.text.split(/\s+/).length;
+    if ("items" in block)
+      return total + block.items.join(" ").split(/\s+/).length;
     return total;
   }, 0);
 }
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return {};
 
   const canonical = `${siteUrl}/blog/${post.slug}`;
-  const ogImage = post.bannerImage.startsWith('/')
+  const ogImage = post.bannerImage.startsWith("/")
     ? `${siteUrl}${post.bannerImage}`
     : post.bannerImage;
 
@@ -43,21 +43,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: post.title,
     description: post.description,
     keywords: post.keywords,
-    authors: [{ name: 'Rahman', url: siteUrl }],
+    authors: [{ name: "Rahman", url: siteUrl }],
     alternates: { canonical },
     openGraph: {
       title: post.title,
       description: post.description,
       url: canonical,
-      type: 'article',
+      type: "article",
       publishedTime: post.updatedAt.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
-      authors: ['Rahman'],
+      authors: ["Rahman"],
       tags: post.tags,
       images: [{ url: ogImage, width: 1200, height: 630, alt: post.bannerAlt }],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: post.title,
       description: post.description,
       images: [ogImage],
@@ -77,7 +77,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const canonical = `${siteUrl}/blog/${post.slug}`;
   const isoDate = post.updatedAt.toISOString();
-  const image = post.bannerImage.startsWith('/')
+  const image = post.bannerImage.startsWith("/")
     ? `${siteUrl}${post.bannerImage}`
     : post.bannerImage;
 
@@ -98,32 +98,37 @@ export default async function BlogPostPage({ params }: Props) {
     .map((entry) => entry.post);
 
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    '@id': `${canonical}#article`,
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${canonical}#article`,
     headline: post.title,
     description: post.description,
-    keywords: post.keywords.join(', '),
+    keywords: post.keywords.join(", "),
     articleSection: post.tags[0],
     wordCount: countWords(post),
     datePublished: isoDate,
     dateModified: isoDate,
     url: canonical,
     image,
-    inLanguage: 'en-US',
-    isPartOf: { '@id': `${siteUrl}/blog#blog` },
-    author: { '@id': `${siteUrl}/#person` },
-    publisher: { '@id': `${siteUrl}/#person` },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+    inLanguage: "en-US",
+    isPartOf: { "@id": `${siteUrl}/blog#blog` },
+    author: { "@id": `${siteUrl}/#person` },
+    publisher: { "@id": `${siteUrl}/#person` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   };
 
   const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${siteUrl}/blog` },
-      { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: `${siteUrl}/blog`,
+      },
+      { "@type": "ListItem", position: 3, name: post.title, item: canonical },
     ],
   };
 
@@ -154,7 +159,7 @@ export default async function BlogPostPage({ params }: Props) {
           {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg" /> */}
         </div>
 
-        <div className="mx-auto max-w-2xl px-6">
+        <div className="mx-auto max-w-6xl px-6">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
@@ -174,7 +179,7 @@ export default async function BlogPostPage({ params }: Props) {
           {/* Post header */}
           <header className="mb-10">
             <div className="mb-5 flex items-center gap-3 text-xs text-muted">
-              <time dateTime={isoDate.split('T')[0]}>{post.date}</time>
+              <time dateTime={isoDate.split("T")[0]}>{post.date}</time>
               <span aria-hidden="true">·</span>
               <span>{post.readTime}</span>
             </div>
@@ -219,11 +224,19 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </header>
 
-          <TableOfContents body={post.body} />
+          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-10 lg:items-start">
+            <div className="mb-10 lg:hidden">
+              <TableOfContents body={post.body} />
+            </div>
 
-          {/* Rich content */}
-          <div className="prose-custom">
-            {post.body.map((block, i) => renderBlock(block, i))}
+            {/* Rich content */}
+            <div className="prose-custom min-w-0">
+              {post.body.map((block, i) => renderBlock(block, i))}
+            </div>
+
+            <aside className="mt-12 hidden lg:sticky lg:top-24 lg:block lg:self-start">
+              <TableOfContents body={post.body} />
+            </aside>
           </div>
 
           {/* Inline conversion prompt — placed where the reader has just got

@@ -6,6 +6,7 @@ import { services } from "@/lib/data/services";
 import { siteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { renderBlock } from "@/lib/content-blocks";
+import TableOfContents from "@/components/ui/TableOfContents";
 import Faq from "@/components/ui/Faq";
 import CtaBand from "@/components/sections/CtaBand";
 import BookingTrigger from "@/components/ui/BookingTrigger";
@@ -138,7 +139,7 @@ export default async function ServicePage({ params }: Props) {
           {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg" /> */}
         </div>
 
-        <div className="mx-auto max-w-3xl px-6">
+        <div className="mx-auto max-w-6xl px-6">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
@@ -148,10 +149,7 @@ export default async function ServicePage({ params }: Props) {
               Home
             </Link>
             <span aria-hidden="true">/</span>
-            <Link
-              href="/services"
-              className="transition-colors hover:text-fg"
-            >
+            <Link href="/services" className="transition-colors hover:text-fg">
               Services
             </Link>
             <span aria-hidden="true">/</span>
@@ -185,12 +183,22 @@ export default async function ServicePage({ params }: Props) {
 
           <hr className="mb-12 border-border" />
 
-          {/* Rich body content */}
-          {service.body.length > 0 && (
-            <div className="reveal mb-14">
-              {service.body.map((block, i) => renderBlock(block, i))}
+          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-10 lg:items-start">
+            <div className="mb-10 lg:hidden">
+              <TableOfContents body={service.body} heading="On this page" />
             </div>
-          )}
+
+            {/* Rich body content */}
+            {service.body.length > 0 && (
+              <div className="reveal mb-14 min-w-0">
+                {service.body.map((block, i) => renderBlock(block, i))}
+              </div>
+            )}
+
+            <aside className="mt-12 hidden lg:sticky lg:top-24 lg:block lg:self-start">
+              <TableOfContents body={service.body} heading="On this page" />
+            </aside>
+          </div>
 
           {/* Benefits */}
           <section aria-labelledby="benefits-heading" className="mb-14">
@@ -211,7 +219,12 @@ export default async function ServicePage({ params }: Props) {
                       aria-hidden="true"
                       className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-faint text-fg"
                     >
-                      <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
                         <path
                           d="M2 7.5l3.2 3.2L12 4"
                           stroke="currentColor"
