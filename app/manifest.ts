@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       'Software Developer building fast, accessible, and beautifully crafted web products. Available for freelance.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0a0a0a',
-    theme_color: '#0a0a0a',
+    background_color: '#f5f2ec',
+    theme_color: '#f5f2ec',
     icons: [
       {
         src: '/icon',

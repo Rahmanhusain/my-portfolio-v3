@@ -5,7 +5,16 @@ const siteUrl =
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [{ userAgent: '*', allow: '/' }],
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        // API routes return JSON and have no search value — keeping them out
+        // of the index also keeps them out of crawl budget.
+        disallow: ['/api/'],
+      },
+    ],
     sitemap: `${siteUrl}/sitemap.xml`,
+    host: siteUrl,
   };
 }

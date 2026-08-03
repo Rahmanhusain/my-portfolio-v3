@@ -70,7 +70,7 @@ function collectDeviceInfo() {
 }
 
 const inputClass =
-  'w-full bg-[#141414] border border-[#242424] rounded-xl px-4 py-3 text-sm text-[#fafafa] placeholder:text-[#8a8a8a] focus:outline-none focus:border-[#8a8a8a] transition-colors duration-200';
+  'w-full bg-raised border border-border rounded-xl px-4 py-3 text-sm text-fg placeholder:text-muted focus:outline-none focus:border-muted transition-colors duration-200';
 
 const SERVICE_OPTIONS = [
   { value: 'web-app',     label: 'Web App Development' },
@@ -85,7 +85,7 @@ const SERVICE_OPTIONS = [
 ] as const;
 
 const selectClass =
-  'w-full bg-[#141414] border border-[#242424] rounded-xl px-4 py-3 text-sm text-[#fafafa] focus:outline-none focus:border-[#8a8a8a] transition-colors duration-200 appearance-none cursor-pointer pr-10';
+  'w-full bg-raised border border-border rounded-xl px-4 py-3 text-sm text-fg focus:outline-none focus:border-muted transition-colors duration-200 appearance-none cursor-pointer pr-10';
 
 export default function BookingModalProvider({
   children,
@@ -260,7 +260,7 @@ export default function BookingModalProvider({
           aria-modal="true"
           aria-labelledby="booking-modal-title"
           aria-describedby="booking-modal-desc"
-          className={`relative w-full max-w-md my-auto bg-[#0a0a0a] border border-[#242424] rounded-2xl p-6 md:p-8 shadow-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto transition-all duration-200 motion-reduce:transition-none ${
+          className={`relative w-full max-w-md my-auto bg-bg border border-border rounded-2xl p-6 md:p-8 shadow-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto transition-all duration-200 motion-reduce:transition-none ${
             isOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-95'
           }`}
         >
@@ -268,7 +268,7 @@ export default function BookingModalProvider({
             type="button"
             onClick={close}
             aria-label="Close"
-            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg text-[#8a8a8a] hover:text-[#fafafa] hover:bg-white/[0.06] transition-colors"
+            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-black/[0.05] transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -276,12 +276,12 @@ export default function BookingModalProvider({
           </button>
 
           <header className="mb-5 pr-8">
-            <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-2">
+            <p className="text-xs font-medium tracking-widest uppercase text-muted mb-2">
               Book a Free 30-Minute Call
             </p>
             <h2
               id="booking-modal-title"
-              className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight"
+              className="font-display text-2xl font-semibold text-fg tracking-tight"
             >
               Let&apos;s set up a time
             </h2>
@@ -289,7 +289,7 @@ export default function BookingModalProvider({
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div>
-              <label htmlFor="booking-name" className="block text-xs text-[#8a8a8a] mb-1.5">
+              <label htmlFor="booking-name" className="block text-xs text-muted mb-1.5">
                 Name
               </label>
               <input
@@ -313,7 +313,7 @@ export default function BookingModalProvider({
             </div>
 
             <div>
-              <label htmlFor="booking-email" className="block text-xs text-[#8a8a8a] mb-1.5">
+              <label htmlFor="booking-email" className="block text-xs text-muted mb-1.5">
                 Email
               </label>
               <input
@@ -336,7 +336,7 @@ export default function BookingModalProvider({
             </div>
 
             <div>
-              <label htmlFor="booking-phone" className="block text-xs text-[#8a8a8a] mb-1.5">
+              <label htmlFor="booking-phone" className="block text-xs text-muted mb-1.5">
                 Phone number
               </label>
               <input
@@ -360,7 +360,7 @@ export default function BookingModalProvider({
                 aria-invalid={!!errors.phone}
               />
               {!errors.phone && (
-                <p id="booking-phone-hint" className="text-xs text-[#8a8a8a] mt-1.5">
+                <p id="booking-phone-hint" className="text-xs text-muted mt-1.5">
                   Include your country code (e.g. +1, +44, +91).
                 </p>
               )}
@@ -372,8 +372,8 @@ export default function BookingModalProvider({
             </div>
 
             <div>
-              <label htmlFor="booking-service" className="block text-xs text-[#8a8a8a] mb-1.5">
-                What can I help with? <span className="text-[#6a6a6a]">(optional)</span>
+              <label htmlFor="booking-service" className="block text-xs text-muted mb-1.5">
+                What can I help with? <span className="text-subtle">(optional)</span>
               </label>
               <div className="relative">
                 <select
@@ -388,7 +388,7 @@ export default function BookingModalProvider({
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#8a8a8a]">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                     <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -397,8 +397,8 @@ export default function BookingModalProvider({
             </div>
 
             <div>
-              <label htmlFor="booking-details" className="block text-xs text-[#8a8a8a] mb-1.5">
-                A few project details <span className="text-[#6a6a6a]">(optional)</span>
+              <label htmlFor="booking-details" className="block text-xs text-muted mb-1.5">
+                A few project details <span className="text-subtle">(optional)</span>
               </label>
               <textarea
                 id="booking-details"
@@ -421,12 +421,12 @@ export default function BookingModalProvider({
                     {errors.details}
                   </p>
                 ) : (
-                  <p id="booking-details-hint" className="text-xs text-[#8a8a8a]">
+                  <p id="booking-details-hint" className="text-xs text-muted">
                     Helps me prep useful questions instead of generic ones.
                   </p>
                 )}
                 <span
-                  className={`text-xs ${detailsLength < 10 ? 'text-[#8a8a8a]' : 'text-[#fafafa]'}`}
+                  className={`text-xs ${detailsLength < 10 ? 'text-muted' : 'text-fg'}`}
                 >
                   {detailsLength}/500
                 </span>
@@ -436,7 +436,7 @@ export default function BookingModalProvider({
             <button
               type="submit"
               disabled={submitting}
-              className="cursor-pointer w-full mt-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-[#fafafa] text-sm font-semibold text-[#0a0a0a] bg-[#fafafa] hover:bg-white/[0.85] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="cursor-pointer w-full mt-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-fg text-sm font-semibold text-bg bg-fg hover:bg-strong transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {submitting ? 'Redirecting…' : 'Continue to scheduling →'}
             </button>
@@ -444,7 +444,7 @@ export default function BookingModalProvider({
 
           <p
             id="booking-modal-desc"
-            className="mt-4 text-xs leading-relaxed text-[#8a8a8a]"
+            className="mt-4 text-xs leading-relaxed text-muted"
           >
             By submitting, you&apos;ll be redirected to the scheduling page where
             you can pick a date and your preferred available time slot — your

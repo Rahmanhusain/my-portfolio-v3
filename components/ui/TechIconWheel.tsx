@@ -56,11 +56,11 @@ export default function TechIconWheel({
       role="img"
     >
       {/* Centre dot */}
-      <div className="absolute w-2 h-2 rounded-full bg-[#242424]" aria-hidden="true" />
+      <div className="absolute w-2 h-2 rounded-full bg-border" aria-hidden="true" />
 
       {/* Outer ring guide */}
       <div
-        className="absolute rounded-full border border-[#242424]/50"
+        className="absolute rounded-full border border-border/50"
         style={{ width: size - iconSize, height: size - iconSize }}
         aria-hidden="true"
       />
@@ -89,14 +89,14 @@ export default function TechIconWheel({
               }}
               title={tech.name}
             >
-              <div className="w-full h-full rounded-xl border border-[#242424] bg-[#141414] flex items-center justify-center overflow-hidden">
+              <div className="w-full h-full rounded-xl border border-border bg-raised flex items-center justify-center overflow-hidden">
                 <Image
                   src={tech.icon}
                   alt={tech.name}
                   width={iconSize - 16}
                   height={iconSize - 16}
                   className="wheel-icon-img object-contain"
-                  style={{ filter: 'brightness(0) invert(1)' }}
+                  style={{ filter: 'brightness(0)' }}
                   onError={(e) => {
                     // Show initial as fallback if icon missing
                     const target = e.currentTarget as HTMLImageElement;
@@ -104,7 +104,7 @@ export default function TechIconWheel({
                     const parent = target.parentElement;
                     if (parent && !parent.querySelector('span')) {
                       const span = document.createElement('span');
-                      span.className = 'text-[10px] font-semibold text-[#8a8a8a]';
+                      span.className = 'text-[10px] font-semibold text-muted';
                       span.textContent = tech.name.slice(0, 2).toUpperCase();
                       parent.appendChild(span);
                     }

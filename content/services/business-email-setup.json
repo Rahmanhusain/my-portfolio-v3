@@ -13,6 +13,11 @@
     "Google Workspace setup",
     "email deliverability setup"
   ],
+  "tags": [
+    "Domain Email",
+    "SPF & DKIM",
+    "Deliverability"
+  ],
   "body": [
     {
       "type": "h2",
@@ -92,11 +97,31 @@
     },
     {
       "type": "table",
-      "headers": ["Tier", "Best for", "Typical price", "Timeline"],
+      "headers": [
+        "Tier",
+        "Best for",
+        "Typical price",
+        "Timeline"
+      ],
       "rows": [
-        ["Basic setup", "One domain, one mailbox provider, standard records", "Fixed price, quoted after discovery", "1 to 2 days"],
-        ["Team setup", "Multiple mailboxes, aliases, and deliverability fixes", "Fixed price, quoted after discovery", "2 to 4 days"],
-        ["App email setup", "Transactional email for a website or app, plus domain records", "Fixed price, quoted after discovery", "3 to 5 days"]
+        [
+          "Basic setup",
+          "One domain, one mailbox provider, standard records",
+          "Fixed price, quoted after discovery",
+          "1 to 2 days"
+        ],
+        [
+          "Team setup",
+          "Multiple mailboxes, aliases, and deliverability fixes",
+          "Fixed price, quoted after discovery",
+          "2 to 4 days"
+        ],
+        [
+          "App email setup",
+          "Transactional email for a website or app, plus domain records",
+          "Fixed price, quoted after discovery",
+          "3 to 5 days"
+        ]
       ]
     },
     {

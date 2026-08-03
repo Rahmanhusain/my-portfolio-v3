@@ -3,15 +3,18 @@ import Link from 'next/link';
 import { posts } from '@/lib/data/posts';
 import { siteUrl } from '@/lib/seo';
 import { site } from '@/lib/site';
+import CtaBand from '@/components/sections/CtaBand';
+import ScrollProgress from '@/components/ui/ScrollProgress';
+import BackToTop from '@/components/ui/BackToTop';
 
 const sortedPosts = [...posts].sort(
   (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
 );
 
 export const metadata: Metadata = {
-  title: 'Blog — Web Development Insights by Rahman',
+  title: 'Blog — Web Development & Business Insights',
   description:
-    'Articles on React, Next.js, GSAP, Tailwind CSS, and modern web development. Practical guides written by a full-stack developer.',
+    'Practical articles on React, Next.js, GSAP, Tailwind CSS, automation, and running a small business online — written by a full-stack developer who ships.',
   keywords: [
     'web development blog',
     'React tutorials',
@@ -19,6 +22,7 @@ export const metadata: Metadata = {
     'GSAP animation',
     'Tailwind CSS',
     'frontend development',
+    'business automation',
     'full-stack developer blog',
   ],
   alternates: { canonical: `${siteUrl}/blog` },
@@ -43,22 +47,36 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Blog',
+  '@id': `${siteUrl}/blog#blog`,
   name: 'Rahman — Web Development Blog',
   description: metadata.description,
   url: `${siteUrl}/blog`,
-  author: {
-    '@type': 'Person',
-    name: 'Rahman',
-    url: siteUrl,
-  },
+  inLanguage: 'en-US',
+  isPartOf: { '@id': `${siteUrl}/#website` },
+  author: { '@id': `${siteUrl}/#person` },
+  publisher: { '@id': `${siteUrl}/#person` },
   blogPost: sortedPosts.map((p) => ({
     '@type': 'BlogPosting',
     headline: p.title,
     description: p.description,
     url: `${siteUrl}/blog/${p.slug}`,
     datePublished: p.updatedAt.toISOString(),
+    dateModified: p.updatedAt.toISOString(),
+    image: p.bannerImage.startsWith('/')
+      ? `${siteUrl}${p.bannerImage}`
+      : p.bannerImage,
     keywords: p.keywords.join(', '),
+    author: { '@id': `${siteUrl}/#person` },
   })),
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${siteUrl}/blog` },
+  ],
 };
 
 export default function BlogPage() {
@@ -68,61 +86,74 @@ export default function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ScrollProgress />
 
-      <div className="min-h-screen pt-32 pb-20">
-        <div className="max-w-3xl mx-auto px-6">
-          <header className="mb-16">
-            <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-4">
-              Writing
-            </p>
-            <h1 className="font-display text-5xl md:text-6xl font-bold text-[#fafafa] tracking-tight leading-tight">
-              Thoughts
-            </h1>
-            <p className="text-[#8a8a8a] mt-4 leading-relaxed max-w-lg">
-              I write about web development, performance, and the craft of
-              building things on the web.
-            </p>
-          </header>
+      <div className="mx-auto max-w-3xl px-6 pb-24 pt-32">
+        {/* ── Header ──────────────────────────────────────────────────── */}
+        <header className="mb-16">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-8 flex items-center gap-2 text-xs text-muted"
+          >
+            <Link href="/" className="transition-colors hover:text-fg">
+              Home
+            </Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-fg">Blog</span>
+          </nav>
 
-          <ol className="divide-y divide-[#242424]">
-            {sortedPosts.map((post) => (
-              <li key={post.slug}>
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="group flex flex-col gap-2 py-8 hover:pl-2 transition-all duration-200"
-                >
-                  <div className="flex items-center gap-3 text-xs text-[#8a8a8a]">
-                    <time dateTime={post.updatedAt.toISOString().split('T')[0]}>
-                      {post.date}
-                    </time>
-                    <span aria-hidden="true">·</span>
-                    <span>{post.readTime}</span>
-                  </div>
+          <h1 className="font-display text-5xl font-bold leading-tight tracking-tight text-fg md:text-6xl">
+            Thoughts
+          </h1>
+          <p className="mt-4 max-w-lg leading-relaxed text-muted">
+            I write about web development, performance, automation, and the
+            craft of building things on the web.
+          </p>
+        </header>
 
-                  <h2 className="font-display text-xl font-semibold text-[#fafafa] tracking-tight leading-snug group-hover:text-[#fafafa] transition-colors">
+        {/* ── Archive ─────────────────────────────────────────────────── */}
+        <ol className="border-t border-border">
+          {sortedPosts.map((post) => (
+            <li key={post.slug}>
+              <article className="group relative border-b border-border py-7 transition-[padding] duration-300 hover:pl-2">
+                <div className="mb-2 flex items-center gap-3 text-xs text-muted">
+                  <time dateTime={post.updatedAt.toISOString().split('T')[0]}>
+                    {post.date}
+                  </time>
+                  <span aria-hidden="true">·</span>
+                  <span>{post.readTime}</span>
+                </div>
+
+                <h2 className="font-display text-xl font-medium leading-snug tracking-tight text-fg md:text-2xl">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="after:absolute after:inset-0 after:content-['']"
+                  >
                     {post.title}
-                  </h2>
+                  </Link>
+                </h2>
 
-                  <p className="text-sm text-[#8a8a8a] leading-relaxed line-clamp-2">
-                    {post.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs px-2.5 py-0.5 rounded-full border border-[#242424] text-[#8a8a8a]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </div>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+                  {post.description}
+                </p>
+              </article>
+            </li>
+          ))}
+        </ol>
       </div>
+
+      <CtaBand
+        source="blog-index"
+        eyebrow="Beyond the reading"
+        title="Rather have it built than read about it?"
+        description="Everything I write about here is work I do for clients. If you'd like it done for your business instead, a free 30-minute call is the fastest way to find out what it takes."
+      />
+
+      <BackToTop />
     </>
   );
 }

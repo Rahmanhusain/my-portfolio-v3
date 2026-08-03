@@ -12,6 +12,11 @@
     "B2B online ordering system",
     "custom B2B store development"
   ],
+  "tags": [
+    "B2B Ordering",
+    "Pricing Tiers",
+    "Bulk Checkout"
+  ],
   "body": [
     {
       "type": "h2",
@@ -83,11 +88,31 @@
     },
     {
       "type": "table",
-      "headers": ["Tier", "Best for", "Typical price", "Timeline"],
+      "headers": [
+        "Tier",
+        "Best for",
+        "Typical price",
+        "Timeline"
+      ],
       "rows": [
-        ["Basic B2B storefront", "One pricing tier, straightforward catalog and checkout", "Fixed price, quoted after discovery", "2 to 3 weeks"],
-        ["Multi tier B2B platform", "Several buyer tiers, bulk ordering, and approval workflows", "Fixed price, quoted after discovery", "3 to 5 weeks"],
-        ["Full B2B platform with system integration", "Connecting your existing inventory, accounting, or ERP system", "Custom quote after discovery", "5 to 8 weeks"]
+        [
+          "Basic B2B storefront",
+          "One pricing tier, straightforward catalog and checkout",
+          "Fixed price, quoted after discovery",
+          "2 to 3 weeks"
+        ],
+        [
+          "Multi tier B2B platform",
+          "Several buyer tiers, bulk ordering, and approval workflows",
+          "Fixed price, quoted after discovery",
+          "3 to 5 weeks"
+        ],
+        [
+          "Full B2B platform with system integration",
+          "Connecting your existing inventory, accounting, or ERP system",
+          "Custom quote after discovery",
+          "5 to 8 weeks"
+        ]
       ]
     },
     {

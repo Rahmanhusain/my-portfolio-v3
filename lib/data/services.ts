@@ -21,7 +21,12 @@ export interface Service {
   description: string;
   bannerImage: string;
   bannerAlt:   string;
+  /** Long-tail phrases for `<meta name="keywords">` and JSON-LD. */
   keywords:    string[];
+  /** Two-to-three-word display chips shown next to the title in the
+   *  services list. Deliberately separate from `keywords`, which is far too
+   *  wordy to render. */
+  tags:        string[];
   benefits:    ServiceBenefit[];
   whyMe:       string;
   faq?:        ServiceFaq[];

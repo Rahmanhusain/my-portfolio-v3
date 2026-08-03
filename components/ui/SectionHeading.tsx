@@ -9,6 +9,9 @@ interface SectionHeadingProps {
   title: string;
   description?: string;
   centered?: boolean;
+  /** Wire this to the parent section's `aria-labelledby` so the landmark
+   *  actually resolves to a name (it silently didn't before). */
+  id?: string;
 }
 
 export default function SectionHeading({
@@ -16,6 +19,7 @@ export default function SectionHeading({
   title,
   description,
   centered = false,
+  id,
 }: SectionHeadingProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -65,15 +69,27 @@ export default function SectionHeading({
       className={clsx('mb-16', centered && 'text-center')}
     >
       {eyebrow && (
-        <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-4">
+        <p
+          className={clsx(
+            'flex items-center gap-2.5 text-xs font-medium tracking-widest uppercase text-muted mb-4',
+            centered && 'justify-center'
+          )}
+        >
+          <span
+            aria-hidden="true"
+            className="h-px w-6 bg-gradient-to-r from-faint to-transparent"
+          />
           {eyebrow}
         </p>
       )}
-      <h2 className="font-display text-4xl md:text-5xl font-semibold text-[#fafafa] leading-tight tracking-tight">
+      <h2
+        id={id}
+        className="font-display text-4xl md:text-5xl font-semibold text-fg leading-tight tracking-tight"
+      >
         {title}
       </h2>
       {description && (
-        <p className="mt-4 text-[#8a8a8a] max-w-xl leading-relaxed">
+        <p className="mt-4 text-muted max-w-xl leading-relaxed">
           {description}
         </p>
       )}

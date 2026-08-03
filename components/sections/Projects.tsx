@@ -25,12 +25,13 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="py-32 md:py-40 border-t border-[#242424]"
+      className="py-32 md:py-40 border-t border-border"
       aria-labelledby="projects-heading"
     >
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
           <SectionHeading
+            id="projects-heading"
             eyebrow="Selected Work"
             title="Projects"
             description="A few things I've built recently."

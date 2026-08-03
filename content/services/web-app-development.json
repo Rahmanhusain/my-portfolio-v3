@@ -12,6 +12,11 @@
     "Next.js developer for hire",
     "small business website that converts"
   ],
+  "tags": [
+    "Web Apps",
+    "Next.js",
+    "Responsive Build"
+  ],
   "availability": "I take on a small number of new projects at a time, so I can stay personally involved in every one instead of spreading thin.",
   "body": [
     {
@@ -128,7 +133,11 @@
     },
     {
       "type": "table",
-      "headers": ["Engagement type", "Best for", "How pricing works"],
+      "headers": [
+        "Engagement type",
+        "Best for",
+        "How pricing works"
+      ],
       "rows": [
         [
           "Single build",

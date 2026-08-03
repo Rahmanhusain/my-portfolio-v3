@@ -13,6 +13,11 @@
     "CRM development services",
     "freelance CRM developer"
   ],
+  "tags": [
+    "Sales Pipeline",
+    "Custom CRM",
+    "Reporting"
+  ],
   "body": [
     {
       "type": "h2",
@@ -92,11 +97,31 @@
     },
     {
       "type": "table",
-      "headers": ["Tier", "Best for", "Typical price", "Timeline"],
+      "headers": [
+        "Tier",
+        "Best for",
+        "Typical price",
+        "Timeline"
+      ],
       "rows": [
-        ["Starter CRM", "Solo founders or small teams with one sales pipeline", "Fixed price, quoted after discovery", "2 to 3 weeks"],
-        ["Growth CRM", "Teams with multiple pipelines and a few integrations", "Fixed price, quoted after discovery", "4 to 5 weeks"],
-        ["Enterprise CRM", "Larger teams needing custom reporting and several integrations", "Custom quote after discovery", "5 to 6 weeks"]
+        [
+          "Starter CRM",
+          "Solo founders or small teams with one sales pipeline",
+          "Fixed price, quoted after discovery",
+          "2 to 3 weeks"
+        ],
+        [
+          "Growth CRM",
+          "Teams with multiple pipelines and a few integrations",
+          "Fixed price, quoted after discovery",
+          "4 to 5 weeks"
+        ],
+        [
+          "Enterprise CRM",
+          "Larger teams needing custom reporting and several integrations",
+          "Custom quote after discovery",
+          "5 to 6 weeks"
+        ]
       ]
     },
     {

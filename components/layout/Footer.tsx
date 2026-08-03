@@ -9,23 +9,23 @@ const socialLinks = [
 ];
 
 const linkClass =
-  'text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors duration-200';
+  'text-sm text-muted hover:text-fg transition-colors duration-200';
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[#242424] bg-[#0a0a0a]">
+    <footer className="border-t border-border bg-bg">
       <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         {/* Left — brand, copyright, location, availability */}
         <div>
-          <p className="font-display font-semibold text-[#fafafa] tracking-tight mb-1">
+          <p className="font-display font-semibold text-fg tracking-tight mb-1">
             Rahman.
           </p>
-          <p className="text-xs text-[#8a8a8a]">
+          <p className="text-xs text-muted">
             © {year} — All rights reserved.
           </p>
-          <p className="text-xs text-[#8a8a8a] mt-1">
+          <p className="text-xs text-muted mt-1">
             {locationLabel}
           </p>
           <div className="flex items-center gap-2 mt-3">
@@ -33,7 +33,7 @@ export default function Footer() {
               className="w-2 h-2 rounded-full bg-green-400 animate-pulse"
               aria-hidden="true"
             />
-            <span className="text-xs text-[#8a8a8a]">Available for freelance</span>
+            <span className="text-xs text-muted">Available for freelance</span>
           </div>
         </div>
 
@@ -54,7 +54,7 @@ export default function Footer() {
 
         {/* Right — quick links (always visible, no hover) */}
         <div>
-          <h2 className="text-xs font-medium uppercase tracking-widest text-[#8a8a8a] mb-3">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-muted mb-3">
             Quick Links
           </h2>
           <nav aria-label="Quick links" className="flex flex-wrap gap-6">

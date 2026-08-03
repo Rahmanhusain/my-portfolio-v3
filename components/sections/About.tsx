@@ -8,15 +8,25 @@ import { useScrollReveal } from "@/lib/useScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 const stats = [
-  { value: "100%", label: "On-time delivery" },
-  { value: "5+", label: "Services offered" },
-  { value: "10+", label: "HappyClients" },
+  { value: 100, suffix: "%", label: "On-time delivery" },
+  { value: 8, suffix: "", label: "Services offered" },
+  { value: 10, suffix: "+", label: "Happy clients" },
+];
+
+/** Things a client can scan in a second — cheaper to read than the bio. */
+const capabilities = [
+  "Next.js & React",
+  "TypeScript",
+  "Node & APIs",
+  "UI/UX Design",
+  "Automation & AI",
+  "Cloud & DevOps",
 ];
 
 const IMG_SHADOW_REST =
-  "0 10px 30px rgba(0,0,0,0.28), 0 0 0 1px rgba(250,250,250,0.04)";
+  "0 10px 30px rgba(23,21,15,0.10), 0 0 0 1px rgba(23,21,15,0.06)";
 const IMG_SHADOW_HOVER =
-  "0 28px 56px rgba(0,0,0,0.5), 0 0 0 1px rgba(250,250,250,0.1)";
+  "0 28px 56px rgba(23,21,15,0.20), 0 0 0 1px rgba(23,21,15,0.12)";
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -50,6 +60,35 @@ export default function About() {
     duration: 0.7,
     start: "top 85%",
   });
+
+  // Count-up on the stat numbers. The rendered HTML already contains the final
+  // value, so crawlers and reduced-motion users read the real number — the
+  // animation only ever rewrites it on the way up.
+  useGSAP(
+    () => {
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      if (prefersReducedMotion) return;
+
+      gsap.utils.toArray<HTMLElement>(".about-stat-value").forEach((el) => {
+        const target = Number(el.dataset.value ?? 0);
+        const suffix = el.dataset.suffix ?? "";
+        const counter = { n: 0 };
+
+        gsap.to(counter, {
+          n: target,
+          duration: 1.6,
+          ease: "power2.out",
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+          onUpdate: () => {
+            el.textContent = `${Math.round(counter.n)}${suffix}`;
+          },
+        });
+      });
+    },
+    { scope: sectionRef },
+  );
 
   useGSAP(
     () => {
@@ -236,6 +275,7 @@ export default function About() {
 
           <div>
             <SectionHeading
+              id="about-heading"
               eyebrow="About Me"
               title="I turn ideas into shipping products."
             />
@@ -261,14 +301,31 @@ export default function About() {
               </p>
             </div>
 
+            {/* Capability chips — skimmable proof of range */}
+            <ul className="flex flex-wrap gap-2 mt-8">
+              {capabilities.map((cap) => (
+                <li
+                  key={cap}
+                  className="rounded-full border border-border px-3 py-1.5 text-xs text-muted transition-colors duration-200 hover:border-faint hover:text-fg"
+                >
+                  {cap}
+                </li>
+              ))}
+            </ul>
+
             <div
               ref={statsRef}
-              className="grid grid-cols-3 gap-6 mt-12 pt-10 border-t border-border"
+              className="grid grid-cols-3 gap-6 mt-10 pt-10 border-t border-border"
             >
               {stats.map((stat) => (
                 <div key={stat.label} className="about-stat">
-                  <p className="font-display text-3xl font-bold text-fg tracking-tight">
+                  <p
+                    className="about-stat-value font-display text-3xl font-bold text-fg tracking-tight tabular-nums"
+                    data-value={stat.value}
+                    data-suffix={stat.suffix}
+                  >
                     {stat.value}
+                    {stat.suffix}
                   </p>
                   <p className="text-xs text-muted mt-1 leading-snug">
                     {stat.label}

@@ -13,6 +13,11 @@
     "custom workflow automation",
     "AI automation services"
   ],
+  "tags": [
+    "AI Agents",
+    "Workflow Automation",
+    "Integrations"
+  ],
   "body": [
     {
       "type": "h2",
@@ -92,11 +97,31 @@
     },
     {
       "type": "table",
-      "headers": ["Tier", "Best for", "Typical price", "Timeline"],
+      "headers": [
+        "Tier",
+        "Best for",
+        "Typical price",
+        "Timeline"
+      ],
       "rows": [
-        ["Simple automation", "Connecting two or three tools around one task", "Fixed price, quoted after discovery", "2 to 4 days"],
-        ["Multi step workflow", "Several connected steps with decision logic", "Fixed price, quoted after discovery", "1 to 2 weeks"],
-        ["Custom AI agent", "A task needing judgment, like triage or first line support", "Custom quote after discovery", "2 to 3 weeks"]
+        [
+          "Simple automation",
+          "Connecting two or three tools around one task",
+          "Fixed price, quoted after discovery",
+          "2 to 4 days"
+        ],
+        [
+          "Multi step workflow",
+          "Several connected steps with decision logic",
+          "Fixed price, quoted after discovery",
+          "1 to 2 weeks"
+        ],
+        [
+          "Custom AI agent",
+          "A task needing judgment, like triage or first line support",
+          "Custom quote after discovery",
+          "2 to 3 weeks"
+        ]
       ]
     },
     {

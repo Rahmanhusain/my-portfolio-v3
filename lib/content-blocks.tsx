@@ -27,7 +27,7 @@ function renderRich(text: string): ReactNode[] {
   }
   matches.sort((a, b) => a.index - b.index);
 
-  const cls = 'text-[#fafafa] underline underline-offset-2 hover:text-[#ffb3c6] transition-colors';
+  const cls = 'text-fg underline underline-offset-2 hover:text-[#ffb3c6] transition-colors';
   const nodes: ReactNode[] = [];
   let last = 0;
   let key = 0;
@@ -63,6 +63,38 @@ export type ContentBlock =
   | { type: 'table'; headers: string[]; rows: string[][]; caption?: string }
   | { type: 'hr' };
 
+// ─── Heading anchors ─────────────────────────────────────────────────────────
+
+/**
+ * Stable, URL-safe id for a heading. Used both by the renderer (to stamp the
+ * `id`) and by the table of contents (to build the `href`), so the two can
+ * never drift apart. Markdown link syntax is stripped first so
+ * `[Next.js](https://…)` in a heading doesn't leak brackets into the slug.
+ */
+export function headingSlug(text: string): string {
+  return text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 60);
+}
+
+/** Extracts the h2/h3 outline of a document, for a table of contents. */
+export function extractHeadings(blocks: ContentBlock[]) {
+  return blocks
+    .filter(
+      (b): b is Extract<ContentBlock, { type: 'h2' | 'h3' }> =>
+        b.type === 'h2' || b.type === 'h3'
+    )
+    .map((b) => ({
+      level: b.type,
+      text: b.text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'),
+      id: headingSlug(b.text),
+    }));
+}
+
 // ─── Renderer ────────────────────────────────────────────────────────────────
 
 export function renderBlock(block: ContentBlock, i: number) {
@@ -71,9 +103,17 @@ export function renderBlock(block: ContentBlock, i: number) {
       return (
         <h2
           key={i}
-          className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mt-10 mb-4"
+          id={headingSlug(block.text)}
+          className="group font-display text-2xl font-semibold text-fg tracking-tight mt-10 mb-4"
         >
           {renderRich(block.text)}
+          <a
+            href={`#${headingSlug(block.text)}`}
+            aria-label={`Link to this section`}
+            className="ml-2 align-middle text-base text-faint opacity-0 transition-opacity duration-200 group-hover:opacity-100 focus-visible:opacity-100"
+          >
+            #
+          </a>
         </h2>
       );
 
@@ -81,7 +121,8 @@ export function renderBlock(block: ContentBlock, i: number) {
       return (
         <h3
           key={i}
-          className="font-display text-xl font-semibold text-[#fafafa] tracking-tight mt-7 mb-3"
+          id={headingSlug(block.text)}
+          className="font-display text-xl font-semibold text-fg tracking-tight mt-7 mb-3"
         >
           {renderRich(block.text)}
         </h3>
@@ -89,7 +130,7 @@ export function renderBlock(block: ContentBlock, i: number) {
 
     case 'p':
       return (
-        <p key={i} className="text-[#8a8a8a] leading-relaxed mb-5">
+        <p key={i} className="text-muted leading-relaxed mb-5">
           {renderRich(block.text)}
         </p>
       );
@@ -98,10 +139,10 @@ export function renderBlock(block: ContentBlock, i: number) {
       return (
         <ul
           key={i}
-          className="mb-5 space-y-2 pl-5 list-disc marker:text-[#3a3a3a]"
+          className="mb-5 space-y-2 pl-5 list-disc marker:text-faint"
         >
           {block.items.map((item, j) => (
-            <li key={j} className="text-sm text-[#8a8a8a] leading-relaxed">
+            <li key={j} className="text-sm text-muted leading-relaxed">
               {renderRich(item)}
             </li>
           ))}
@@ -112,10 +153,10 @@ export function renderBlock(block: ContentBlock, i: number) {
       return (
         <ol
           key={i}
-          className="mb-5 space-y-2 pl-5 list-decimal marker:text-[#3a3a3a]"
+          className="mb-5 space-y-2 pl-5 list-decimal marker:text-faint"
         >
           {block.items.map((item, j) => (
-            <li key={j} className="text-sm text-[#8a8a8a] leading-relaxed">
+            <li key={j} className="text-sm text-muted leading-relaxed">
               {renderRich(item)}
             </li>
           ))}
@@ -126,15 +167,15 @@ export function renderBlock(block: ContentBlock, i: number) {
       return (
         <div
           key={i}
-          className="mb-5 rounded-xl overflow-hidden border border-[#242424]"
+          className="mb-5 rounded-xl overflow-hidden border border-border"
         >
-          <div className="flex items-center justify-between px-4 py-2 bg-[#141414] border-b border-[#242424]">
-            <span className="text-[10px] text-[#8a8a8a] uppercase tracking-wider font-mono">
+          <div className="flex items-center justify-between px-4 py-2 bg-raised border-b border-border">
+            <span className="text-[10px] text-muted uppercase tracking-wider font-mono">
               {block.lang}
             </span>
           </div>
-          <pre className="bg-[#0d0d0d] p-5 overflow-x-auto">
-            <code className="text-xs text-[#c9d1d9] font-mono leading-relaxed whitespace-pre">
+          <pre className="bg-surface p-5 overflow-x-auto">
+            <code className="text-xs text-strong font-mono leading-relaxed whitespace-pre">
               {block.code}
             </code>
           </pre>
@@ -144,7 +185,7 @@ export function renderBlock(block: ContentBlock, i: number) {
     case 'image':
       return (
         <figure key={i} className="mb-6">
-          <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-[#242424]">
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-border">
             <Image
               src={block.src}
               alt={block.alt}
@@ -154,7 +195,7 @@ export function renderBlock(block: ContentBlock, i: number) {
             />
           </div>
           {block.caption && (
-            <figcaption className="text-xs text-[#8a8a8a] text-center mt-3">
+            <figcaption className="text-xs text-muted text-center mt-3">
               {renderRich(block.caption)}
             </figcaption>
           )}
@@ -164,14 +205,14 @@ export function renderBlock(block: ContentBlock, i: number) {
     case 'table':
       return (
         <figure key={i} className="mb-6">
-          <div className="overflow-x-auto rounded-xl border border-[#242424]">
+          <div className="overflow-x-auto rounded-xl border border-border">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
                   {block.headers.map((h, j) => (
                     <th
                       key={j}
-                      className="bg-[#141414] px-4 py-3 text-left font-semibold text-[#fafafa] whitespace-nowrap border-b border-[#242424]"
+                      className="bg-raised px-4 py-3 text-left font-semibold text-fg whitespace-nowrap border-b border-border"
                     >
                       {renderRich(h)}
                     </th>
@@ -182,12 +223,12 @@ export function renderBlock(block: ContentBlock, i: number) {
                 {block.rows.map((row, r) => (
                   <tr
                     key={r}
-                    className="odd:bg-[#0a0a0a] even:bg-[#0d0d0d] hover:bg-[#161616] transition-colors"
+                    className="odd:bg-bg even:bg-surface hover:bg-border transition-colors"
                   >
                     {row.map((cell, c) => (
                       <td
                         key={c}
-                        className="px-4 py-3 text-[#8a8a8a] align-top border-b border-[#242424]"
+                        className="px-4 py-3 text-muted align-top border-b border-border"
                       >
                         {renderRich(cell)}
                       </td>
@@ -198,7 +239,7 @@ export function renderBlock(block: ContentBlock, i: number) {
             </table>
           </div>
           {block.caption && (
-            <figcaption className="text-xs text-[#8a8a8a] text-center mt-3">
+            <figcaption className="text-xs text-muted text-center mt-3">
               {renderRich(block.caption)}
             </figcaption>
           )}
@@ -206,7 +247,7 @@ export function renderBlock(block: ContentBlock, i: number) {
       );
 
     case 'hr':
-      return <hr key={i} className="border-[#242424] my-8" />;
+      return <hr key={i} className="border-border my-8" />;
 
     default:
       return null;

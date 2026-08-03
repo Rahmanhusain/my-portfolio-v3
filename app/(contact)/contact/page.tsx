@@ -1,19 +1,28 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { siteUrl } from "@/lib/seo";
-import { site, locationLabel } from "@/lib/site";
+import {
+  site,
+  locationLabel,
+  mailto,
+  telHref,
+  whatsappHref,
+} from "@/lib/site";
 import ContactForm from "@/components/ui/ContactForm";
 import BookingTrigger from "@/components/ui/BookingTrigger";
+import ScrollProgress from "@/components/ui/ScrollProgress";
 import { PhoneIcon, WhatsAppIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Contact — Let's Build Something Together",
   description:
-    "Get in touch for web development projects, collaborations, or just to say hello. Available for freelance work with quick response times.",
+    "Get in touch about a web app, custom CRM, e-commerce build, or automation project. Free 30-minute discovery call, written quote, and a reply within one business day.",
   keywords: [
     "contact web developer",
     "hire developer",
     "freelance developer",
     "web development inquiry",
+    "book a developer call",
     "project collaboration",
   ],
   alternates: { canonical: `${siteUrl}/contact` },
@@ -37,16 +46,44 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
+  "@id": `${siteUrl}/contact#page`,
   name: "Contact — Rahman Software Developer",
   description: metadata.description,
   url: `${siteUrl}/contact`,
-  mainEntity: {
-    "@type": "Person",
-    name: "Rahman",
-    email: "mailto:hello@yourname.dev",
-    url: siteUrl,
-  },
+  isPartOf: { "@id": `${siteUrl}/#website` },
+  inLanguage: "en-US",
+  mainEntity: { "@id": `${siteUrl}/#business` },
 };
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Contact",
+      item: `${siteUrl}/contact`,
+    },
+  ],
+};
+
+/** Removes the "what happens after I hit send?" anxiety that kills form fills. */
+const nextSteps = [
+  {
+    title: "You send the details",
+    body: "The more you share about goals and constraints, the more useful my first reply is.",
+  },
+  {
+    title: "I reply within one business day",
+    body: "With honest first thoughts — including if I think it's not a fit or you don't need me.",
+  },
+  {
+    title: "We talk it through",
+    body: "A free 30-minute call to scope the work, then a written quote with a fixed price.",
+  },
+];
 
 export default function ContactPage() {
   return (
@@ -55,18 +92,37 @@ export default function ContactPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ScrollProgress />
 
-      <div className="min-h-screen pt-32 pb-20">
-        <div className="max-w-6xl mx-auto px-6">
+      <div className="relative min-h-screen overflow-hidden pt-32 pb-20">
+        <div className="aurora" aria-hidden="true" />
+        <div className="grid-bg" aria-hidden="true" />
+
+        <div className="relative mx-auto max-w-6xl px-6">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-8 flex items-center gap-2 text-xs text-muted"
+          >
+            <Link href="/" className="transition-colors hover:text-fg">
+              Home
+            </Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-fg">Contact</span>
+          </nav>
+
           {/* Header */}
           <header className="mb-12 max-w-2xl">
-            <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-4">
+            <p className="mb-4 text-xs font-medium uppercase tracking-widest text-muted">
               Get in Touch
             </p>
-            <h1 className="font-display text-5xl md:text-6xl font-bold text-[#fafafa] tracking-tight leading-tight mb-6">
+            <h1 className="mb-6 font-display text-5xl font-bold leading-tight tracking-tight text-fg md:text-6xl">
               Let&apos;s work together.
             </h1>
-            <p className="text-[#8a8a8a] leading-relaxed text-lg">
+            <p className="text-lg leading-relaxed text-muted">
               Have a project in mind or just want to say hello? I&apos;d love to
               hear from you. Fill out the form below and I&apos;ll get back to
               you within one business day.
@@ -74,13 +130,13 @@ export default function ContactPage() {
           </header>
 
           {/* Booking CTA Banner */}
-          <div className="mb-12 p-6 md:p-8 rounded-2xl border border-[#242424] bg-[#141414]">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="glow-card mb-12 rounded-2xl border border-border bg-raised p-6 md:p-8">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div>
-                <h2 className="font-display text-xl font-semibold text-[#fafafa] tracking-tight mb-2">
+                <h2 className="mb-2 font-display text-xl font-semibold tracking-tight text-fg">
                   Prefer to talk first?
                 </h2>
-                <p className="text-sm text-[#8a8a8a] leading-relaxed max-w-xl">
+                <p className="max-w-xl text-sm leading-relaxed text-muted">
                   Book a free 30-minute discovery call. We&apos;ll discuss your
                   project needs, timeline, and how I can help — no pressure, no
                   sales pitch.
@@ -88,26 +144,27 @@ export default function ContactPage() {
               </div>
               <BookingTrigger
                 source="contact"
-                className="text-[11px] md:text-sm px-5 py-2.5 bg-white/10 hover:bg-white cursor-pointer"
+                variant="solid"
+                className="cta-halo shrink-0 cursor-pointer px-6 py-3"
               >
                 Book a Free 30-Minute Call
               </BookingTrigger>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
             {/* Left Column - Contact Methods */}
-            <div className="lg:col-span-4 space-y-8">
+            <div className="space-y-8 lg:col-span-4">
               <section>
-                <h3 className="font-display text-lg font-semibold text-[#fafafa] tracking-tight mb-4">
+                <h2 className="mb-4 font-display text-lg font-semibold tracking-tight text-fg">
                   Direct Contact
-                </h3>
+                </h2>
                 <div className="space-y-3">
                   <a
-                    href="mailto:hello@yourname.dev"
-                    className="flex items-center gap-3 text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors group"
+                    href={mailto}
+                    className="group flex items-center gap-3 text-sm text-muted transition-colors hover:text-fg"
                   >
-                    <span className="w-9 h-9 rounded-lg border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors shrink-0">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border transition-colors group-hover:border-faint">
                       <svg
                         width="16"
                         height="16"
@@ -128,58 +185,81 @@ export default function ContactPage() {
                         />
                       </svg>
                     </span>
-                    <span className="truncate">hello@yourname.dev</span>
+                    <span className="link-sweep truncate">
+                      {site.social.email}
+                    </span>
                   </a>
 
                   <a
-                    href="tel:+919876543210"
-                    className="flex items-center gap-3 text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors group"
+                    href={telHref}
+                    className="group flex items-center gap-3 text-sm text-muted transition-colors hover:text-fg"
                   >
-                    <span className="w-9 h-9 rounded-lg border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors shrink-0">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border transition-colors group-hover:border-faint">
                       <PhoneIcon />
                     </span>
-                    <span>+91 98765 43210</span>
+                    <span className="link-sweep">{site.social.phone}</span>
                   </a>
 
                   <a
-                    href="https://wa.me/919876543210"
+                    href={whatsappHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-sm text-[#8a8a8a] hover:text-[#fafafa] transition-colors group"
+                    className="group flex items-center gap-3 text-sm text-muted transition-colors hover:text-fg"
                   >
-                    <span className="w-9 h-9 rounded-lg border border-[#242424] flex items-center justify-center group-hover:border-[#3a3a3a] transition-colors shrink-0">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border transition-colors group-hover:border-faint">
                       <WhatsAppIcon width={16} height={16} />
                     </span>
-                    <span>WhatsApp</span>
+                    <span className="link-sweep">WhatsApp</span>
                   </a>
                 </div>
               </section>
 
-              <section className="pt-6 border-t border-[#242424]">
-                <h3 className="font-display text-lg font-semibold text-[#fafafa] tracking-tight mb-4">
+              <section className="border-t border-border pt-6">
+                <h2 className="mb-4 font-display text-lg font-semibold tracking-tight text-fg">
                   Availability
-                </h3>
-                <div className="flex items-center gap-2.5 text-sm text-[#a3a3a3] mb-2">
-                  <span
-                    className="relative flex h-1.5 w-1.5"
-                    aria-hidden="true"
-                  >
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-400" />
-                  </span>
+                </h2>
+                <div className="mb-2 flex items-center gap-2.5 text-sm text-strong">
+                  <span className="pulse-dot" aria-hidden="true" />
                   {site.responseTime}.
                 </div>
-                <p className="text-sm text-[#8a8a8a]">{locationLabel}</p>
+                <p className="text-sm text-muted">{locationLabel}</p>
+              </section>
+
+              {/* What happens next — removes the black-box feeling */}
+              <section className="border-t border-border pt-6">
+                <h2 className="mb-4 font-display text-lg font-semibold tracking-tight text-fg">
+                  What happens next
+                </h2>
+                <ol className="stagger space-y-4">
+                  {nextSteps.map((step, i) => (
+                    <li key={step.title} className="flex gap-3.5">
+                      <span
+                        aria-hidden="true"
+                        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-faint font-display text-[11px] font-semibold text-fg"
+                      >
+                        {i + 1}
+                      </span>
+                      <span>
+                        <span className="block text-sm font-medium text-fg">
+                          {step.title}
+                        </span>
+                        <span className="mt-0.5 block text-xs leading-relaxed text-muted">
+                          {step.body}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
               </section>
             </div>
 
             {/* Right Column - Contact Form */}
             <div className="lg:col-span-8">
-              <div className="p-6 md:p-8 rounded-2xl border border-[#242424] bg-[#0a0a0a]">
-                <h2 className="font-display text-xl font-semibold text-[#fafafa] tracking-tight mb-1">
+              <div className="rounded-2xl border border-border bg-bg p-6 md:p-8">
+                <h2 className="mb-1 font-display text-xl font-semibold tracking-tight text-fg">
                   Send a Message
                 </h2>
-                <p className="text-sm text-[#8a8a8a] mb-6">
+                <p className="mb-6 text-sm text-muted">
                   Tell me about your project and I&apos;ll get back to you
                   within one business day.
                 </p>

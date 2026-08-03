@@ -55,8 +55,9 @@ const steps: WorkflowStep[] = [
   },
 ];
 
-const ACTIVE_GLOW = '0 0 0 6px #0a0a0a, 0 0 18px 2px rgba(250,250,250,0.35)';
-const REST_SHADOW = '0 0 0 6px #0a0a0a';
+const ACTIVE_GLOW =
+  '0 0 0 6px var(--color-bg), 0 0 18px 2px rgba(23,21,15,0.25)';
+const REST_SHADOW = '0 0 0 6px var(--color-bg)';
 
 export default function Workflow() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -96,9 +97,9 @@ export default function Workflow() {
           if (segment) gsap.set(segment, { scaleY: 1 });
           if (dot)
             gsap.set(dot, {
-              backgroundColor: '#fafafa',
-              borderColor: '#fafafa',
-              color: '#0a0a0a',
+              backgroundColor: 'var(--color-fg)',
+              borderColor: 'var(--color-fg)',
+              color: 'var(--color-bg)',
             });
         });
         return;
@@ -181,11 +182,12 @@ export default function Workflow() {
     <section
       ref={sectionRef}
       id="workflow"
-      className="py-32 md:py-40 border-t border-[#242424]"
+      className="py-32 md:py-40 border-t border-border"
       aria-labelledby="workflow-heading"
     >
       <div className="max-w-6xl mx-auto px-6">
         <SectionHeading
+          id="workflow-heading"
           eyebrow="How I work"
           title="A clear process, start to finish."
           description="No black boxes. Every project moves through the same five connected stages — you always know where things stand."
@@ -210,20 +212,20 @@ export default function Workflow() {
                       <span
                         aria-hidden="true"
                         style={{ top: '50%', height: 'calc(100% + 3rem)' }}
-                        className="absolute w-px -translate-x-1/2 left-5 md:left-1/2 bg-[#242424]"
+                        className="absolute w-px -translate-x-1/2 left-5 md:left-1/2 bg-border"
                       />
                       {/* white fill that grows toward the next node on scroll */}
                       <span
                         aria-hidden="true"
                         style={{ top: '50%', height: 'calc(100% + 3rem)' }}
-                        className="workflow-segment absolute w-px -translate-x-1/2 left-5 md:left-1/2 origin-top bg-gradient-to-b from-[#fafafa] to-[#cfcfcf]"
+                        className="workflow-segment absolute w-px -translate-x-1/2 left-5 md:left-1/2 origin-top bg-gradient-to-b from-fg to-muted"
                       />
                     </>
                   )}
 
                   {/* Node dot — centred vertically on the card */}
                   <span
-                    className="workflow-dot absolute z-10 top-1/2 left-5 md:left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#3a3a3a] bg-[#0a0a0a] text-[#fafafa]"
+                    className="workflow-dot absolute z-10 top-1/2 left-5 md:left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-faint bg-bg text-fg"
                     style={{ boxShadow: REST_SHADOW }}
                   >
                     {step.icon}
@@ -233,7 +235,7 @@ export default function Workflow() {
                   <span
                     aria-hidden="true"
                     className={[
-                      'workflow-connector absolute top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-[#3a3a3a] to-transparent',
+                      'workflow-connector absolute top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-faint to-transparent',
                       // mobile: from dot toward the card on the right
                       'left-10 w-6 origin-left',
                       // desktop: point from center rail toward whichever side the card is
@@ -251,11 +253,11 @@ export default function Workflow() {
                       isLeft ? 'md:mr-auto md:pr-2' : 'md:ml-auto md:pl-2',
                     ].join(' ')}
                   >
-                    <div className="relative overflow-hidden rounded-2xl border border-[#242424] bg-gradient-to-b from-[#191919] to-[#101010] p-6 transition-colors duration-300 hover:border-[#3a3a3a]">
+                    <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-raised to-surface p-6 transition-colors duration-300 hover:border-faint">
                       {/* Large low-opacity step number, tucked in the corner opposite the text */}
                       <span
                         aria-hidden="true"
-                        style={{ color: 'rgba(250,250,250,0.07)' }}
+                        style={{ color: 'rgba(23,21,15,0.07)' }}
                         className={[
                           'pointer-events-none absolute select-none font-display text-4xl font-bold leading-none',
                           isLeft ? 'top-2 right-3 md:left-2 md:right-auto' : 'top-2 right-3',
@@ -265,14 +267,14 @@ export default function Workflow() {
                       </span>
                       <div className="relative">
                         <h3
-                          className={`font-display text-lg font-semibold text-[#fafafa] mb-2 tracking-tight ${
+                          className={`font-display text-lg font-semibold text-fg mb-2 tracking-tight ${
                             isLeft ? 'md:text-right' : ''
                           }`}
                         >
                           {step.title}
                         </h3>
                         <p
-                          className={`text-sm text-[#8a8a8a] leading-relaxed ${
+                          className={`text-sm text-muted leading-relaxed ${
                             isLeft ? 'md:text-right' : ''
                           }`}
                         >

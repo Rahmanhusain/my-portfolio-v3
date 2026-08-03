@@ -33,7 +33,7 @@ export default function FaqHome() {
     <section
       ref={sectionRef}
       id="faq"
-      className="py-32 md:py-40 border-t border-[#242424]"
+      className="py-32 md:py-40 border-t border-border"
       aria-labelledby="faq-heading"
     >
       <script
@@ -43,30 +43,31 @@ export default function FaqHome() {
 
       <div className="max-w-6xl mx-auto px-6">
         <SectionHeading
+          id="faq-heading"
           eyebrow="Questions"
           title="Frequently asked"
           description="Answers to the things clients ask before we start. Still unsure? Drop me a message."
           centered={false}
         />
 
-        <div className="border-t border-[#242424]">
+        <div className="border-t border-border">
           {faqs.map((faq) => (
             <details
               key={faq.question}
-              className="faq-item group border-b border-[#242424]"
+              className="faq-item group border-b border-border"
             >
-              <summary className="flex items-center justify-between gap-6 py-6 cursor-pointer list-none text-[#fafafa]">
+              <summary className="flex items-center justify-between gap-6 py-6 cursor-pointer list-none text-fg">
                 <span className="font-display text-lg font-medium tracking-tight">
                   {faq.question}
                 </span>
                 <span
                   aria-hidden="true"
-                  className="text-2xl text-[#8a8a8a] transition-transform duration-300 group-open:rotate-45"
+                  className="text-2xl text-muted transition-transform duration-300 group-open:rotate-45"
                 >
                   +
                 </span>
               </summary>
-              <p className="text-[#8a8a8a] leading-relaxed pb-6 max-w-2xl">
+              <p className="text-muted leading-relaxed pb-6 max-w-2xl">
                 {faq.answer}
               </p>
             </details>

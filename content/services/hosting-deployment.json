@@ -13,6 +13,11 @@
     "CI/CD pipeline setup",
     "web app hosting"
   ],
+  "tags": [
+    "Cloud Hosting",
+    "CI/CD",
+    "Zero Downtime"
+  ],
   "body": [
     {
       "type": "h2",
@@ -92,7 +97,12 @@
     },
     {
       "type": "table",
-      "headers": ["Tier", "Best for", "Typical price", "Timeline"],
+      "headers": [
+        "Tier",
+        "Best for",
+        "Typical price",
+        "Timeline"
+      ],
       "rows": [
         [
           "Basic setup",

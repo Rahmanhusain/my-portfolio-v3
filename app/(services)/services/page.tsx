@@ -4,20 +4,26 @@ import { services } from "@/lib/data/services";
 import { siteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 import Faq from "@/components/ui/Faq";
-import BookingTrigger from "@/components/ui/BookingTrigger";
+import CtaBand from "@/components/sections/CtaBand";
+import ScrollProgress from "@/components/ui/ScrollProgress";
+import BackToTop from "@/components/ui/BackToTop";
+import ServiceMarquee from "@/components/ui/ServiceMarquee";
+import ServiceList from "@/components/ui/ServiceList";
 
 export const metadata: Metadata = {
-  title: "Services — Software Development",
+  title: "Services — Web Apps, CRMs, E-Commerce, APIs & Automation",
   description:
-    "Professional web development, UI/UX design, API development, custom CRM, business email, and hosting services. Crafted for startups and growing businesses.",
+    "Web app development, UI/UX design, custom CRM, e-commerce, API and backend work, business email setup, hosting, and AI automation — built end to end by one developer. Free 30-minute scoping call.",
   keywords: [
     "web development services",
     "full-stack developer for hire",
     "UI UX design services",
     "API development",
     "custom CRM development",
+    "e-commerce development",
     "business email setup",
     "web hosting deployment",
+    "AI automation services",
     "freelance web developer",
   ],
   alternates: { canonical: `${siteUrl}/services` },
@@ -41,18 +47,55 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "ItemList",
+  "@type": "CollectionPage",
+  "@id": `${siteUrl}/services#page`,
   name: "Services — Rahman Software Developer",
   description: metadata.description,
   url: `${siteUrl}/services`,
-  itemListElement: services.map((s, i) => ({
-    "@type": "ListItem",
-    position: i + 1,
-    name: s.title,
-    description: s.shortDesc,
-    url: `${siteUrl}/services/${s.slug}`,
-  })),
+  isPartOf: { "@id": `${siteUrl}/#website` },
+  about: { "@id": `${siteUrl}/#business` },
+  inLanguage: "en-US",
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: services.map((s, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: s.title,
+      description: s.shortDesc,
+      url: `${siteUrl}/services/${s.slug}`,
+    })),
+  },
 };
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Services",
+      item: `${siteUrl}/services`,
+    },
+  ],
+};
+
+/** The three objections that stop a small business from hiring a freelancer. */
+const guarantees = [
+  {
+    title: "Fixed, written quote",
+    body: "You approve a scope and a number before any work starts. No hourly surprises, no scope creep invoices.",
+  },
+  {
+    title: "You own everything",
+    body: "Full source code in your own Git repo, plus deployment docs. Nothing is locked behind me.",
+  },
+  {
+    title: "30 days of free fixes",
+    body: "Anything I built that breaks after launch gets fixed at no cost for the first month.",
+  },
+];
 
 export default function ServicesPage() {
   return (
@@ -61,77 +104,108 @@ export default function ServicesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ScrollProgress />
 
-      <div className="min-h-screen pt-32 pb-20">
-        <div className="max-w-6xl mx-auto px-6">
-          {/* Header */}
-          <header className="mb-20 max-w-2xl">
-            <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-4">
+      {/* ── Hero ────────────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden pt-32 pb-16">
+        <div className="aurora" aria-hidden="true" />
+        <div className="grid-bg" aria-hidden="true" />
+
+        <div className="relative mx-auto max-w-6xl px-6">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-8 flex items-center gap-2 text-xs text-muted"
+          >
+            <Link href="/" className="transition-colors hover:text-fg">
+              Home
+            </Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-fg">Services</span>
+          </nav>
+
+          <header className="max-w-3xl">
+            <p className="mb-4 text-xs font-medium uppercase tracking-widest text-muted">
               What I Do
             </p>
-            <h1 className="font-display text-5xl md:text-6xl font-bold text-[#fafafa] tracking-tight leading-tight mb-6">
+            <h1 className="mb-6 font-display text-5xl font-bold leading-tight tracking-tight text-fg md:text-6xl">
               Services
             </h1>
-            <p className="text-[#8a8a8a] leading-relaxed text-lg">
+            <p className="text-lg leading-relaxed text-muted">
               I work across the entire stack — from designing pixel-perfect
               interfaces to building the infrastructure behind them. Whether you
               need a complete product built from scratch or a specific piece of
               the puzzle, here is how I can help.
             </p>
           </header>
+        </div>
+      </div>
 
-          {/* Services grid — same visual pattern as home page */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#242424] border border-[#242424] rounded-2xl overflow-hidden">
-            {services.map((service) => (
-              <article
-                key={service.slug}
-                className="p-8 bg-[#0a0a0a] hover:bg-[#141414] transition-colors duration-300 group flex flex-col"
-              >
-                <p className="font-display text-xs font-medium text-[#242424] group-hover:text-[#3a3a3a] mb-4 transition-colors duration-300 tracking-wider">
-                  {service.number}
-                </p>
-                <h2 className="font-display text-xl font-semibold text-[#fafafa] mb-3 leading-tight tracking-tight">
-                  {service.title}
-                </h2>
-                <p className="text-sm text-[#8a8a8a] leading-relaxed flex-1">
-                  {service.shortDesc}
-                </p>
-                <div className="mt-6 flex items-center justify-between">
-                  <div className="w-6 h-px bg-[#242424] group-hover:w-12 group-hover:bg-[#fafafa] transition-all duration-300" />
-                  <Link
-                    href={`/services/${service.slug}`}
-                    className="text-[11px] font-semibold uppercase tracking-wide text-[#8a8a8a] group-hover:text-[#fafafa] transition-colors duration-200"
-                    aria-label={`Learn more about ${service.title}`}
-                  >
-                    Learn More →
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
+      <ServiceMarquee />
 
-          {/* CTA */}
-          <div className="mt-20 pt-12 border-t border-[#242424] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div>
-              <h2 className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mb-2">
-                Not sure what you need?
-              </h2>
-              <p className="text-sm text-[#8a8a8a]">
-                Drop me a message and we can figure it out together.
-              </p>
-            </div>
-            <BookingTrigger
-              source="services"
-              className="cursor-pointer shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-6 py-3 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
+      {/* ── List ────────────────────────────────────────────────────────── */}
+      <div className="pb-20 pt-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <ServiceList headingLevel="h2" />
+
+          {/* ── Guarantees ────────────────────────────────────────────── */}
+          <section
+            aria-labelledby="guarantees-heading"
+            className="mt-24 border-t border-border pt-16"
+          >
+            <h2
+              id="guarantees-heading"
+              className="reveal mb-10 font-display text-2xl font-semibold tracking-tight text-fg md:text-3xl"
             >
-              Book a free 30-min discovery call
-            </BookingTrigger>
-          </div>
+              What every engagement includes
+            </h2>
+            <div className="stagger grid grid-cols-1 gap-5 md:grid-cols-3">
+              {guarantees.map((item) => (
+                <div
+                  key={item.title}
+                  className="glow-card rounded-2xl border border-border bg-raised p-6"
+                >
+                  <div
+                    className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg border border-border text-fg"
+                    aria-hidden="true"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 14 14" fill="none">
+                      <path
+                        d="M2 7.5l3.2 3.2L12 4"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="mb-2 font-display text-base font-semibold tracking-tight text-fg">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted">
+                    {item.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
 
       {/* FAQ — answers pre-sales questions, earns FAQ rich results */}
       <Faq />
+
+      <CtaBand
+        source="services"
+        eyebrow="Not sure which one you need?"
+        title="Tell me the problem — I'll tell you the fix."
+        description="Most projects don't map neatly onto one service. Bring the problem to a free 30-minute call and I'll scope the smallest thing that actually solves it."
+      />
+
+      <BackToTop />
     </>
   );
 }

@@ -7,6 +7,10 @@ import { siteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { renderBlock } from "@/lib/content-blocks";
 import Faq from "@/components/ui/Faq";
+import CtaBand from "@/components/sections/CtaBand";
+import BookingTrigger from "@/components/ui/BookingTrigger";
+import ScrollProgress from "@/components/ui/ScrollProgress";
+import BackToTop from "@/components/ui/BackToTop";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -59,16 +63,30 @@ export default async function ServicePage({ params }: Props) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${canonical}#service`,
     name: service.title,
     description: service.description,
     url: canonical,
-    provider: {
-      "@type": "Person",
-      name: "Rahman",
-      url: siteUrl,
-    },
+    image: service.bannerImage.startsWith("/")
+      ? `${siteUrl}${service.bannerImage}`
+      : service.bannerImage,
+    provider: { "@id": `${siteUrl}/#business` },
     areaServed: "Worldwide",
     serviceType: service.title,
+    // The benefits are the concrete deliverables — modelling them as an offer
+    // catalogue is what makes this eligible for service rich results.
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `${service.title} — what's included`,
+      itemListElement: service.benefits.map((benefit) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: benefit.title,
+          description: benefit.description,
+        },
+      })),
+    },
   };
 
   const breadcrumbJsonLd = {
@@ -92,7 +110,7 @@ export default async function ServicePage({ params }: Props) {
   };
 
   // Sibling services for internal linking (exclude current)
-  const related = services.filter((s) => s.slug !== slug).slice(0);
+  const related = services.filter((s) => s.slug !== slug);
 
   return (
     <>
@@ -104,10 +122,11 @@ export default async function ServicePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <ScrollProgress />
 
       <div className="min-h-screen pb-20">
         {/* Banner */}
-        <div className="relative w-full sm:aspect-21/4.5 aspect-21/8 max-h-80  overflow-hidden bg-bg">
+        <div className="relative mt-14 sm:mt-14.5 w-full sm:aspect-21/4.5 aspect-21/8 max-h-80 overflow-hidden bg-bg">
           <Image
             src={service.bannerImage}
             alt={service.bannerAlt}
@@ -116,43 +135,59 @@ export default async function ServicePage({ params }: Props) {
             className="object-fit"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]" />
+          {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg" /> */}
         </div>
 
-        <div className="max-w-3xl mx-auto px-6">
+        <div className="mx-auto max-w-3xl px-6">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
-            className="flex items-center gap-2 text-xs text-[#8a8a8a] mt-10 mb-10"
+            className="mt-10 mb-10 flex items-center gap-2 text-xs text-muted"
           >
+            <Link href="/" className="transition-colors hover:text-fg">
+              Home
+            </Link>
+            <span aria-hidden="true">/</span>
             <Link
               href="/services"
-              className="hover:text-[#fafafa] transition-colors"
+              className="transition-colors hover:text-fg"
             >
               Services
             </Link>
             <span aria-hidden="true">/</span>
-            <span className="text-[#fafafa]">{service.title}</span>
+            <span className="text-fg">{service.title}</span>
           </nav>
 
           {/* Header */}
           <header className="mb-12">
-            <p className="text-xs font-medium tracking-widest uppercase text-[#8a8a8a] mb-4">
+            <p className="mb-4 text-xs font-medium uppercase tracking-widest text-muted">
               {service.number}
             </p>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-[#fafafa] tracking-tight leading-tight mb-6">
+            <h1 className="mb-6 font-display text-4xl font-bold leading-tight tracking-tight text-fg md:text-5xl">
               {service.title}
             </h1>
-            <p className="text-[#8a8a8a] text-lg leading-relaxed">
+            <p className="text-lg leading-relaxed text-muted">
               {service.description}
             </p>
+
+            {/* Early CTA — catches the visitor who's already sold */}
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <BookingTrigger
+                source={`service-${service.slug}-top`}
+                variant="solid"
+                className="cursor-pointer px-6 py-3"
+              >
+                Book a Free Call
+              </BookingTrigger>
+              <span className="text-xs text-muted">{site.responseTime}</span>
+            </div>
           </header>
 
-          <hr className="border-[#242424] mb-12" />
+          <hr className="mb-12 border-border" />
 
           {/* Rich body content */}
           {service.body.length > 0 && (
-            <div className="mb-14">
+            <div className="reveal mb-14">
               {service.body.map((block, i) => renderBlock(block, i))}
             </div>
           )}
@@ -161,20 +196,36 @@ export default async function ServicePage({ params }: Props) {
           <section aria-labelledby="benefits-heading" className="mb-14">
             <h2
               id="benefits-heading"
-              className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mb-8"
+              className="mb-8 font-display text-2xl font-semibold tracking-tight text-fg"
             >
               What you get
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="stagger grid grid-cols-1 gap-6 md:grid-cols-2">
               {service.benefits.map((benefit, i) => (
                 <div
                   key={i}
-                  className="p-6 bg-[#141414] rounded-2xl border border-[#242424]"
+                  className="glow-card rounded-2xl border border-border bg-raised p-6"
                 >
-                  <h3 className="font-display text-base font-semibold text-[#fafafa] mb-2 tracking-tight">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-sm text-[#8a8a8a] leading-relaxed">
+                  <div className="mb-3 flex items-center gap-2.5">
+                    <span
+                      aria-hidden="true"
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-faint text-fg"
+                    >
+                      <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+                        <path
+                          d="M2 7.5l3.2 3.2L12 4"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    <h3 className="font-display text-base font-semibold tracking-tight text-fg">
+                      {benefit.title}
+                    </h3>
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted">
                     {benefit.description}
                   </p>
                 </div>
@@ -186,57 +237,43 @@ export default async function ServicePage({ params }: Props) {
           <section aria-labelledby="why-heading" className="mb-14">
             <h2
               id="why-heading"
-              className="font-display text-2xl font-semibold text-[#fafafa] tracking-tight mb-5"
+              className="mb-5 font-display text-2xl font-semibold tracking-tight text-fg"
             >
               Why work with me
             </h2>
-            <p className="text-[#8a8a8a] leading-relaxed text-base">
+            <p className="text-base leading-relaxed text-muted">
               {service.whyMe}
             </p>
           </section>
 
-          {/* CTA */}
-          <div className="p-8 bg-[#141414] rounded-2xl border border-[#242424] mb-14">
-            <h2 className="font-display text-xl font-semibold text-[#fafafa] tracking-tight mb-2">
-              Ready to get started?
-            </h2>
-            <p className="text-sm text-[#8a8a8a] mb-6">
-              Tell me about your project and I will get back to you within one
-              business day.
-            </p>
-            <a
-              href="mailto:hello@yourname.dev"
-              className="inline-flex items-center text-[11px] font-semibold uppercase tracking-wide text-[#fafafa] border border-white/[0.12] px-6 py-3 rounded-full hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-transparent transition-all duration-200"
-            >
-              Get in Touch
-            </a>
-          </div>
-
           {/* Related services — internal linking */}
           {related.length > 0 && (
-            <section aria-labelledby="related-heading">
+            <section aria-labelledby="related-heading" className="mb-4">
               <h2
                 id="related-heading"
-                className="font-display text-lg font-semibold text-[#fafafa] tracking-tight mb-6"
+                className="mb-6 font-display text-lg font-semibold tracking-tight text-fg"
               >
                 Other services
               </h2>
-              <div className="divide-y divide-[#242424] border border-[#242424] rounded-2xl overflow-hidden">
+              <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border">
                 {related.map((s) => (
                   <Link
                     key={s.slug}
                     href={`/services/${s.slug}`}
-                    className="flex items-center justify-between px-6 py-5 bg-[#0a0a0a] hover:bg-[#141414] transition-colors duration-200 group"
+                    className="group flex items-center justify-between bg-bg px-6 py-5 transition-colors duration-200 hover:bg-raised"
                   >
                     <div>
-                      <p className="text-[10px] font-medium tracking-widest uppercase text-[#3a3a3a] mb-1">
+                      <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-subtle">
                         {s.number}
                       </p>
-                      <p className="text-sm font-semibold text-[#fafafa] tracking-tight">
-                        {s.title}
+                      <p className="text-sm font-semibold tracking-tight text-fg">
+                        <span className="link-sweep">{s.title}</span>
                       </p>
                     </div>
-                    <span className="text-[#8a8a8a] group-hover:text-[#fafafa] transition-colors text-sm">
+                    <span
+                      aria-hidden="true"
+                      className="arrow-slide text-sm text-muted transition-colors group-hover:text-fg"
+                    >
                       →
                     </span>
                   </Link>
@@ -244,9 +281,19 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
           )}
+
           <Faq faqs={service.faq} />
         </div>
       </div>
+
+      <CtaBand
+        source={`service-${service.slug}`}
+        eyebrow="Ready when you are"
+        title={`Let's scope your ${service.title.toLowerCase()} project.`}
+        description="Bring your requirements, your constraints, or just a rough idea. Thirty minutes, a clear plan, and a written quote — no obligation either way."
+      />
+
+      <BackToTop />
     </>
   );
 }

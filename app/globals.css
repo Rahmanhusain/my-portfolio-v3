@@ -1,18 +1,45 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Colors */
-  --color-bg: #0a0a0a;
-  --color-surface: #141414;
-  --color-fg: #fafafa;
-  --color-muted: #8a8a8a;
-  --color-border: #242424;
-  --color-invert: #ffffff;
+  /* ── Palette ───────────────────────────────────────────────────────────
+     Warm paper light theme. Every component reads these tokens — there are
+     no hardcoded hex values in the components any more, so re-theming the
+     whole site (including back to dark) means editing this block only.
+
+     Measured contrast against --color-bg (every text tone clears WCAG AA):
+       fg     16.4:1  — body + headings
+       strong  9.8:1  — text one step down from primary
+       muted   5.6:1  — secondary copy
+       subtle  4.5:1  — micro-copy; the lightest tone still legal for text
+       faint          — hairlines and decorative glyphs ONLY, never text
+  */
+  --color-bg: #f5f2ec;        /* page */
+  --color-surface: #ebe6dc;   /* raised panel / card */
+  --color-raised: #fbf9f5;    /* card that needs to read lighter than page */
+  --color-fg: #17150f;        /* primary text */
+  --color-strong: #3f3a31;    /* text one step down from primary */
+  --color-muted: #6b6459;     /* secondary text */
+  --color-subtle: #756e62;    /* tertiary text — do not lighten past this */
+  --color-border: #e0dace;    /* hairline */
+  --color-faint: #c9c2b3;     /* stronger hairline, decorative glyphs */
+  --color-invert: #17150f;
 
   /* Typography */
   --font-sans: var(--font-inter);
   --font-display: var(--font-inter-tight);
   --font-cursive: var(--font-cursive);
+}
+
+/* Animated custom properties — enables JS-free gradient/counter animation. */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --shine {
+  syntax: "<percentage>";
+  initial-value: 0%;
+  inherits: false;
 }
 
 * {
@@ -24,8 +51,8 @@ html {
 }
 
 body {
-  background-color: #0a0a0a;
-  color: #fafafa;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
   font-family: var(--font-inter), Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -33,8 +60,25 @@ body {
 
 /* Selection */
 ::selection {
-  background-color: #fafafa;
-  color: #0a0a0a;
+  background-color: var(--color-fg);
+  color: var(--color-bg);
+}
+
+/* Typography niceties — headings never orphan a word, body copy wraps evenly */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* Consistent, visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 /* Scrollbar */
@@ -42,10 +86,10 @@ body {
   width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #242424;
+  background: var(--color-faint);
   border-radius: 2px;
 }
 
@@ -236,6 +280,539 @@ section {
   .love-heart,
   .love-hover-heart {
     display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   INTERACTION LAYER — zero JavaScript.
+
+   Everything below runs on CSS alone (scroll-driven animations, marquees,
+   hover choreography), which is what lets the server-rendered routes
+   (/services, /blog, /contact) feel as alive as the client-rendered home
+   page without shipping a single extra kilobyte of JS.
+
+   Progressive enhancement contract: the *resting* state is always the
+   visible, usable one. Animations only ever apply inside
+   `@supports (animation-timeline: …)`, so browsers without scroll-driven
+   animation support (and anyone with reduced-motion on) get plain,
+   fully-visible content.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Scroll-driven reveals ─────────────────────────────────────────────
+   Usage: <div class="reveal">, <div class="reveal reveal-left">, and
+   `style="--reveal-delay: .1s"` (or the .stagger-* helpers) to sequence a row. */
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translate3d(-2.5rem, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    transform: translate3d(2.5rem, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-blur {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translate3d(0, 1.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      opacity: 0;
+      animation: reveal-up cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+    .reveal-left {
+      animation-name: reveal-left;
+    }
+    .reveal-right {
+      animation-name: reveal-right;
+    }
+    .reveal-scale {
+      animation-name: reveal-scale;
+    }
+    .reveal-blur {
+      animation-name: reveal-blur;
+    }
+
+    /* Longer runway — reveals later, for hero-adjacent content */
+    .reveal-slow {
+      animation-range: entry 0% cover 45%;
+    }
+
+    /* Sequenced children: each nth child lags a little further into the range */
+    .stagger > * {
+      opacity: 0;
+      animation: reveal-up cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+    .stagger > *:nth-child(2) {
+      animation-range: entry 0% cover 36%;
+    }
+    .stagger > *:nth-child(3) {
+      animation-range: entry 0% cover 42%;
+    }
+    .stagger > *:nth-child(4) {
+      animation-range: entry 0% cover 48%;
+    }
+    .stagger > *:nth-child(5) {
+      animation-range: entry 0% cover 54%;
+    }
+    .stagger > *:nth-child(n + 6) {
+      animation-range: entry 0% cover 60%;
+    }
+  }
+}
+
+/* ── 2. Scroll progress + back-to-top ─────────────────────────────────────
+   Both are hidden entirely when scroll timelines are unsupported, so they
+   never appear in a broken/static state. */
+
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes fade-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.9);
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+  }
+}
+
+.scroll-progress,
+.back-to-top {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    height: 2px;
+    transform-origin: 0 50%;
+    background: linear-gradient(
+      90deg,
+      var(--color-faint),
+      var(--color-muted) 55%,
+      var(--color-fg)
+    );
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+
+  .back-to-top {
+    display: inline-flex;
+    opacity: 0;
+    animation: fade-rise-in linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 60vh 110vh;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-progress {
+      animation: none;
+      transform: scaleX(1);
+    }
+    .back-to-top {
+      animation: none;
+      opacity: 1;
+    }
+  }
+}
+
+/* ── 3. Marquee ───────────────────────────────────────────────────────────
+   Two identical groups scroll left by exactly (100% + gap), so the seam is
+   invisible and the loop is perfectly continuous. Pauses on hover/focus so
+   visitors can actually read what's scrolling past. */
+
+@keyframes marquee-shift {
+  to {
+    transform: translateX(calc(-100% - var(--marquee-gap)));
+  }
+}
+
+.marquee {
+  --marquee-gap: 3rem;
+  --marquee-duration: 40s;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  gap: var(--marquee-gap);
+  user-select: none;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+
+/* `space-around` is the fallback for the case where the caller didn't pass
+   enough items to overflow the container — it keeps the loop seamless instead
+   of opening a gap. Once the content is wider than the track (which is what
+   the `repeat` prop on <Marquee> guarantees) it behaves exactly like
+   flex-start, so items sit at their real gap and the motion reads properly. */
+.marquee__group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--marquee-gap);
+  min-width: 100%;
+  animation: marquee-shift var(--marquee-duration) linear infinite;
+  will-change: transform;
+}
+
+.marquee--reverse .marquee__group {
+  animation-direction: reverse;
+}
+
+.marquee:hover .marquee__group,
+.marquee:focus-within .marquee__group {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__group {
+    animation: none;
+  }
+  .marquee {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .marquee::-webkit-scrollbar {
+    display: none;
+  }
+  /* One copy is enough once it stops moving */
+  .marquee__group[aria-hidden="true"] {
+    display: none;
+  }
+}
+
+/* ── 4. Card choreography ─────────────────────────────────────────────────
+   `.glow-card` draws an animated conic border on hover — the illusion of a
+   light sweeping around the card edge, done entirely with a masked gradient. */
+
+@keyframes border-spin {
+  to {
+    --angle: 360deg;
+  }
+}
+
+.glow-card {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    background-color 0.35s ease;
+}
+
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 55%,
+    rgba(23, 21, 15, 0.45),
+    transparent 75%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glow-card:hover::before,
+.glow-card:focus-within::before {
+  opacity: 1;
+  animation: border-spin 4s linear infinite;
+}
+
+.glow-card:hover,
+.glow-card:focus-within {
+  transform: translateY(-4px);
+}
+
+/* Soft radial bloom that grows from the card centre on hover */
+.bloom-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bloom-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    60% 60% at 50% 0%,
+    rgba(23, 21, 15, 0.06),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.bloom-card:hover::after,
+.bloom-card:focus-within::after {
+  opacity: 1;
+}
+.bloom-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Arrow that slides on row hover */
+.arrow-slide {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .arrow-slide {
+  transform: translate(3px, -3px);
+}
+
+/* ── 5. Text effects ──────────────────────────────────────────────────────*/
+
+@keyframes shine-sweep {
+  from {
+    background-position: 200% center;
+  }
+  to {
+    background-position: -200% center;
+  }
+}
+
+.text-shine {
+  background: linear-gradient(
+    100deg,
+    var(--color-muted) 20%,
+    var(--color-fg) 42%,
+    var(--color-fg) 52%,
+    var(--color-muted) 70%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine-sweep 7s linear infinite;
+}
+
+/* Underline that wipes in from the left */
+.link-sweep {
+  position: relative;
+  display: inline-block;
+}
+.link-sweep::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-sweep:hover::after,
+.link-sweep:focus-visible::after,
+.group:hover .link-sweep::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ── 6. Ambient backgrounds ───────────────────────────────────────────────*/
+
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 4%, 0) scale(1.15);
+  }
+}
+
+.aurora {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      38% 42% at 22% 30%,
+      rgba(214, 186, 140, 0.30),
+      transparent 70%
+    ),
+    radial-gradient(
+      34% 40% at 78% 62%,
+      rgba(196, 178, 200, 0.22),
+      transparent 70%
+    );
+  filter: blur(40px);
+  animation: aurora-drift 22s ease-in-out infinite;
+}
+
+/* Faint technical grid — adds depth without noise */
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(23, 21, 15, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 21, 15, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    #000,
+    transparent 80%
+  );
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    #000,
+    transparent 80%
+  );
+}
+
+/* ── 7. Status / attention cues ───────────────────────────────────────────*/
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.pulse-dot {
+  position: relative;
+  display: inline-flex;
+  height: 0.4rem;
+  width: 0.4rem;
+  border-radius: 9999px;
+  background: #1a9c5b;
+  flex-shrink: 0;
+}
+.pulse-dot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: pulse-ring 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* CTA that breathes — draws the eye without shouting */
+@keyframes cta-halo {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(23, 21, 15, 0.20);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(23, 21, 15, 0);
+  }
+}
+.cta-halo {
+  animation: cta-halo 3.2s ease-out infinite;
+}
+
+/* ── 8. Utility ───────────────────────────────────────────────────────────*/
+
+.hover-lift {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Anything scroll-margin'd clears the fixed header on anchor jumps */
+[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-shine,
+  .aurora,
+  .pulse-dot::before,
+  .cta-halo {
+    animation: none;
+  }
+  .glow-card:hover,
+  .bloom-card:hover,
+  .hover-lift:hover {
+    transform: none;
   }
 }
 

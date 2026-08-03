@@ -12,22 +12,22 @@ import { gsap } from "@/lib/gsap";
 import { techStack } from "@/lib/data/techStack";
 
 const W = 120;
-const H = 160;
-const RADIUS = 270;
+const H = 165;
+const RADIUS = 280;
 const SCENE_W = 580;
-const SCENE_H = 440;
+const SCENE_H = 450;
 const PERSPECTIVE = 1100;
 const OVERFLOW_FACTOR = 1.14;
 const MIN_SCALE = 0.32;
 
-const TILT_X_BASE = -13;
-const TILT_Z_BASE = 12;
+const TILT_X_BASE = -10;
+const TILT_Z_BASE = 9;
 const IDLE_SPEED = 15;        // deg/s
 const DRAG_SENSITIVITY = 0.38;
 const MOMENTUM_FRICTION = 0.975;
 const IDLE_LERP = 0.028;
 
-const HOVER_TILT_MAX = 10;     // max extra degrees on each axis from hover
+const HOVER_TILT_MAX = 2;     // max extra degrees on each axis from hover
 const TILT_LERP = 0.07;       // how quickly tilt follows the cursor (0-1)
 const SCROLL_BOOST = 0.40;    // deltaY → velocity multiplier
 
@@ -278,12 +278,12 @@ export default function RotatingFloatingCards() {
                   height: RADIUS * 2,
                   left: `calc(50% - ${RADIUS}px)`,
                   top:  `calc(50% - ${RADIUS}px)`,
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  border: "1.5px solid rgba(23,21,15,0.10)",
                   borderRadius: "50%",
                   transform: "rotateX(90deg)",
                   transformStyle: "preserve-3d",
                   boxShadow:
-                    "0 0 40px rgba(255,255,255,0.02), inset 0 0 30px rgba(255,255,255,0.015)",
+                    "0 0 20px rgba(23,21,15,0.03), inset 0 0 30px rgba(23,21,15,0.02)",
                 }}
               />
 
@@ -291,7 +291,7 @@ export default function RotatingFloatingCards() {
                 <div
                   key={tech.name}
                   ref={(el) => { cardRefs.current[i] = el; }}
-                  className="fcard absolute rounded-2xl overflow-hidden border border-white/10 bg-surface"
+                  className="fcard absolute rounded-2xl overflow-hidden border border-black/[0.07] bg-raised"
                   style={{
                     width: W,
                     height: H,
@@ -300,13 +300,17 @@ export default function RotatingFloatingCards() {
                     transform: `rotateY(${i * angleStep}deg) translateZ(${RADIUS}px)`,
                     transformStyle: "preserve-3d",
                     willChange: "transform, opacity",
+                    // On paper the cards need real elevation to separate from
+                    // the page — on the old dark theme the border alone did it.
+                    boxShadow:
+                      "0 10px 20px rgba(23,21,15,0.10), 0 2px 6px rgba(23,21,15,0.06)",
                   }}
                 >
                   <div
                     className="absolute inset-0 z-10 pointer-events-none"
                     style={{
                       background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.35) 100%)",
+                        "linear-gradient(150deg, rgba(255,255,255,0.9) 0%, rgba(23,21,15,0.05) 100%)",
                     }}
                   />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4">
@@ -317,21 +321,21 @@ export default function RotatingFloatingCards() {
                         width={48}
                         height={48}
                         className="object-contain"
-                        style={{ filter: "brightness(0) invert(1) opacity(0.85)" }}
+                        style={{ filter: "brightness(0) opacity(0.88)" }}
                         onError={(e) => {
                           const t = e.currentTarget as HTMLImageElement;
                           t.style.display = "none";
                           const p = t.parentElement;
                           if (p && !p.querySelector("span")) {
                             const sp = document.createElement("span");
-                            sp.className = "text-2xl font-bold text-white/40";
+                            sp.className = "text-2xl font-bold text-subtle";
                             sp.textContent = tech.name.slice(0, 2).toUpperCase();
                             p.appendChild(sp);
                           }
                         }}
                       />
                     </div>
-                    <span className="text-[11px] font-medium text-white/40 tracking-wide">
+                    <span className="text-[11px] font-medium text-muted tracking-wide">
                       {tech.name}
                     </span>
                   </div>

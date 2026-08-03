@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import MagneticButton from '@/components/ui/MagneticButton';
+import { site } from '@/lib/site';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 type Currency = 'USD' | 'INR' | 'EUR' | 'GBP' | 'AUD' | 'CAD' | 'AED';
@@ -98,14 +99,14 @@ const SYMBOL: Record<Currency, string> = Object.fromEntries(
 ) as Record<Currency, string>;
 
 const inputClass =
-  'w-full bg-[#141414] border border-[#242424] rounded-xl px-4 py-3 text-sm text-[#fafafa] placeholder:text-[#8a8a8a] focus:outline-none focus:border-[#8a8a8a] transition-colors duration-200';
+  'w-full bg-raised border border-border rounded-xl px-4 py-3 text-sm text-fg placeholder:text-muted focus:outline-none focus:border-muted transition-colors duration-200';
 
 const selectClass =
-  'w-full bg-[#141414] border border-[#242424] rounded-xl px-4 py-3 text-sm text-[#fafafa] focus:outline-none focus:border-[#8a8a8a] transition-colors duration-200 appearance-none cursor-pointer';
+  'w-full bg-raised border border-border rounded-xl px-4 py-3 text-sm text-fg focus:outline-none focus:border-muted transition-colors duration-200 appearance-none cursor-pointer';
 
 function ChevronDown() {
   return (
-    <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#8a8a8a]">
+    <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
@@ -242,7 +243,7 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="contact-name" className="block text-xs text-[#8a8a8a] mb-1.5">
+          <label htmlFor="contact-name" className="block text-xs text-muted mb-1.5">
             Name
           </label>
           <input
@@ -265,7 +266,7 @@ export default function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="contact-email" className="block text-xs text-[#8a8a8a] mb-1.5">
+          <label htmlFor="contact-email" className="block text-xs text-muted mb-1.5">
             Email
           </label>
           <input
@@ -290,7 +291,7 @@ export default function ContactForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="contact-phone" className="block text-xs text-[#8a8a8a] mb-1.5">
+          <label htmlFor="contact-phone" className="block text-xs text-muted mb-1.5">
             Phone
           </label>
           <input
@@ -308,7 +309,7 @@ export default function ContactForm() {
             aria-invalid={!!errors.phone}
           />
           {!errors.phone && (
-            <p id="contact-phone-hint" className="text-xs text-[#8a8a8a] mt-1.5">
+            <p id="contact-phone-hint" className="text-xs text-muted mt-1.5">
               Include your country code (e.g. +1, +44, +91).
             </p>
           )}
@@ -320,7 +321,7 @@ export default function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="contact-service" className="block text-xs text-[#8a8a8a] mb-1.5">
+          <label htmlFor="contact-service" className="block text-xs text-muted mb-1.5">
             Service
           </label>
           <div className="relative">
@@ -356,7 +357,7 @@ export default function ContactForm() {
 
       {/* Budget — currency picker + range select + optional custom amount */}
       <fieldset>
-        <legend className="block text-xs text-[#8a8a8a] mb-1.5">Budget Range</legend>
+        <legend className="block text-xs text-muted mb-1.5">Budget Range</legend>
         <div className="grid grid-cols-[112px_1fr] gap-2">
           <div className="relative">
             <label htmlFor="contact-budget-currency" className="sr-only">
@@ -407,7 +408,7 @@ export default function ContactForm() {
             <label htmlFor="contact-budget-custom" className="sr-only">
               Custom budget amount
             </label>
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#8a8a8a]">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-muted">
               {SYMBOL[form.budgetCurrency]}
             </span>
             <input
@@ -427,7 +428,7 @@ export default function ContactForm() {
           </div>
         )}
 
-        <p id="contact-budget-hint" className="text-xs text-[#8a8a8a] mt-1.5">
+        <p id="contact-budget-hint" className="text-xs text-muted mt-1.5">
           {form.budgetAmount === 'not-sure'
             ? "No problem — we'll figure it out together on the call."
             : 'Currency-converted estimates available on request.'}
@@ -440,7 +441,7 @@ export default function ContactForm() {
       </fieldset>
 
       <div>
-        <label htmlFor="contact-timeline" className="block text-xs text-[#8a8a8a] mb-1.5">
+        <label htmlFor="contact-timeline" className="block text-xs text-muted mb-1.5">
           Timeline
         </label>
         <div className="relative">
@@ -471,7 +472,7 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="contact-message" className="block text-xs text-[#8a8a8a] mb-1.5">
+        <label htmlFor="contact-message" className="block text-xs text-muted mb-1.5">
           Project Details
         </label>
         <textarea
@@ -491,11 +492,11 @@ export default function ContactForm() {
               {errors.message}
             </p>
           ) : (
-            <p id="contact-message-hint" className="text-xs text-[#8a8a8a]">
+            <p id="contact-message-hint" className="text-xs text-muted">
               Share your goals, key requirements, and what success looks like.
             </p>
           )}
-          <span className={`text-xs ${messageLength < 20 ? 'text-[#8a8a8a]' : 'text-[#fafafa]'}`}>
+          <span className={`text-xs ${messageLength < 20 ? 'text-muted' : 'text-fg'}`}>
             {messageLength}
           </span>
         </div>
@@ -504,13 +505,14 @@ export default function ContactForm() {
       <div className="space-y-3">
         <MagneticButton
           type="submit"
+          variant="solid"
           disabled={status === 'loading'}
           className="w-full justify-center"
         >
           {status === 'loading' ? 'Sending…' : 'Send Message'}
         </MagneticButton>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-[#8a8a8a]">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-muted">
           <span className="flex items-center gap-1.5">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
               <path d="M6 1L6 6M6 6L9.5 2.5M6 6L2.5 2.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
@@ -543,7 +545,11 @@ export default function ContactForm() {
       {status === 'error' && (
         <div className="p-4 rounded-xl bg-red-400/10 border border-red-400/20">
           <p role="alert" className="text-sm text-red-400 text-center">
-            Something went wrong. Please email me directly at hello@yourname.dev.
+            Something went wrong. Please email me directly at{' '}
+            <a href={`mailto:${site.social.email}`} className="underline">
+              {site.social.email}
+            </a>
+            .
           </p>
         </div>
       )}
