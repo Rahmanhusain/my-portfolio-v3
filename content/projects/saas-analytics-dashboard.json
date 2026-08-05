@@ -1,0 +1,134 @@
+{
+  "number": "02",
+  "slug": "saas-analytics-dashboard",
+  "title": "SaaS Analytics Dashboard",
+  "shortDesc": "A multi-tenant analytics product with role-based access, live charts, and CSV export — where the hard part was making one tenant's data structurally unable to reach another's.",
+  "description": "A multi-tenant analytics dashboard for a B2B product, with per-organisation isolation enforced at the database level, role-based permissions across four roles, live-updating charts, and exports that do not fall over on a million rows. Most of the engineering went into two things nobody sees: tenant isolation you cannot forget to apply, and queries that stay fast as the data grows.",
+  "year": "2024",
+  "role": "Full-stack developer",
+  "duration": "11 weeks",
+  "tags": ["React", "Node.js", "PostgreSQL", "Recharts"],
+  "keywords": [
+    "multi-tenant SaaS dashboard development",
+    "row level security PostgreSQL multi-tenancy",
+    "role based access control implementation",
+    "analytics dashboard developer",
+    "React data visualisation dashboard",
+    "SaaS reporting and CSV export"
+  ],
+  "challenge": "The product had grown to a few dozen paying organisations on a schema where every query filtered by an organisation id in application code. That works right up until one query somewhere forgets the filter — and in a review of the existing codebase I found three that had. Nothing had leaked yet, which was luck rather than design. On top of that, the reporting page took eleven seconds to load for the largest customer, and CSV export simply timed out.",
+  "solution": "I moved tenant isolation out of application code and into Postgres, using row-level security keyed to a session variable set once per request. A forgotten WHERE clause now returns zero rows instead of everyone's data. Reporting moved onto pre-aggregated rollup tables refreshed incrementally, and export became a streamed response that holds a constant amount of memory no matter how many rows it writes.",
+  "results": [
+    { "metric": "11s → 380ms", "label": "reporting page load, largest tenant" },
+    { "metric": "100%", "label": "of queries covered by database-level isolation" },
+    { "metric": "1.4M", "label": "rows exported without a timeout" },
+    { "metric": "4", "label": "roles with distinct, tested permissions" }
+  ],
+  "stack": [
+    { "group": "Frontend", "items": ["React 19", "TypeScript", "Recharts", "TanStack Query", "Vite"] },
+    { "group": "Backend", "items": ["Node.js", "Fastify", "PostgreSQL 16", "Row-Level Security", "Drizzle ORM"] },
+    { "group": "Data", "items": ["Materialised rollups", "Cursor-based pagination", "Streamed CSV export"] },
+    { "group": "Infrastructure", "items": ["Fly.io", "Neon", "Upstash Redis", "Grafana"] }
+  ],
+  "body": [
+    { "type": "h2", "text": "Multi-tenancy is a safety problem, not a filtering problem" },
+    {
+      "type": "p",
+      "text": "Every multi-tenant application starts the same way: add an organisation id column, filter by it everywhere, ship. The flaw is not that the pattern is wrong — it is that it depends on every developer, on every query, forever, remembering to apply it. The failure mode is not a bug report. It is one customer seeing another customer's revenue numbers, and that is the kind of incident a young B2B product does not recover from."
+    },
+    {
+      "type": "p",
+      "text": "So before writing any features, I inverted the default. Instead of queries being unsafe until someone adds a filter, they became unsafe only if someone actively disables a database policy — which requires table-owner privileges the application role does not have."
+    },
+    { "type": "h2", "text": "Isolation enforced by Postgres, not by discipline" },
+    {
+      "type": "p",
+      "text": "Every tenant-scoped table got row-level security enabled and a policy comparing its organisation column to a session variable. Middleware sets that variable once per request, from the authenticated session, inside the same transaction the request's queries run in."
+    },
+    {
+      "type": "code",
+      "lang": "sql",
+      "code": "ALTER TABLE events ENABLE ROW LEVEL SECURITY;\nALTER TABLE events FORCE ROW LEVEL SECURITY;\n\n-- The application role can only ever see rows belonging to the org id\n-- stamped on the current transaction. No org id set = no rows.\nCREATE POLICY tenant_isolation ON events\n  USING (org_id = current_setting('app.current_org', true)::uuid);\n\n-- And it must not be able to write rows into someone else's tenant.\nCREATE POLICY tenant_insert ON events\n  FOR INSERT\n  WITH CHECK (org_id = current_setting('app.current_org', true)::uuid);"
+    },
+    {
+      "type": "p",
+      "text": "The second argument to current_setting is what makes this fail safe. Passing true returns null when the variable is unset, and comparing a column to null matches nothing — so a query that somehow runs outside the middleware returns an empty result rather than the whole table. A missing tenant context produces a visibly broken page, which is exactly the failure you want, because it gets fixed in development instead of discovered in production."
+    },
+    {
+      "type": "p",
+      "text": "FORCE ROW LEVEL SECURITY matters too. Without it, the table's owning role bypasses its own policies, which quietly undoes the protection the moment migrations and application traffic share a connection role."
+    },
+    { "type": "h2", "text": "Four roles, one permission table" },
+    {
+      "type": "p",
+      "text": "The product needed owner, admin, analyst, and viewer roles. The version I inherited encoded this as scattered boolean checks in components and handlers — the same rule expressed slightly differently in six places, which is how a viewer ends up with a delete button that is hidden in the UI but live in the API."
+    },
+    {
+      "type": "p",
+      "text": "I replaced it with a single declarative capability map, checked in exactly one place on the server and read by the UI to decide what to render. The UI and the API cannot disagree, because they are reading the same table."
+    },
+    {
+      "type": "table",
+      "headers": ["Capability", "Owner", "Admin", "Analyst", "Viewer"],
+      "rows": [
+        ["View dashboards", "Yes", "Yes", "Yes", "Yes"],
+        ["Export CSV", "Yes", "Yes", "Yes", "No"],
+        ["Create and edit reports", "Yes", "Yes", "Yes", "No"],
+        ["Invite and remove members", "Yes", "Yes", "No", "No"],
+        ["Manage billing", "Yes", "No", "No", "No"],
+        ["Delete the organisation", "Yes", "No", "No", "No"]
+      ]
+    },
+    {
+      "type": "p",
+      "text": "Each row of that table is also a test case. The suite iterates the map and asserts that every role gets exactly the responses the table promises, so adding a capability without deciding who holds it fails the build."
+    },
+    { "type": "h2", "text": "From eleven seconds to under half a second" },
+    {
+      "type": "p",
+      "text": "The reporting page was aggregating raw event rows on every request. For a small tenant that is instant, and for the largest tenant it meant scanning tens of millions of rows to draw a chart with thirty points on it. Adding indexes helped a little, which is the usual sign that the query shape itself is the problem."
+    },
+    {
+      "type": "p",
+      "text": "The fix was to stop asking the same question repeatedly. Events roll up into hourly and daily summary tables, refreshed incrementally for the window that changed rather than recomputed wholesale. Dashboards read the rollups; only drill-downs touch raw events, and those are always bounded by a narrow time range."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Hourly rollups per organisation, metric, and dimension, with a composite primary key so refreshes are idempotent upserts.",
+        "Daily rollups derived from hourly ones, so a month-long chart reads thirty rows instead of millions.",
+        "Incremental refresh scoped to the affected hour, triggered by ingestion rather than a fixed schedule.",
+        "Cursor-based pagination everywhere, because OFFSET on a deep page gets slower the further a user scrolls."
+      ]
+    },
+    { "type": "h2", "text": "Exports that stream instead of collapse" },
+    {
+      "type": "p",
+      "text": "The original export built the entire CSV as a string in memory and then sent it. It worked in testing and died on real data, taking the process down with it. The replacement is a server-side cursor piped into a transform stream and out to the response, so peak memory is one batch of rows regardless of whether the file has a thousand rows or two million."
+    },
+    {
+      "type": "code",
+      "lang": "typescript",
+      "code": "// Constant memory: the cursor yields a batch, the transform formats it,\n// the response consumes it. Nothing accumulates.\nexport async function streamExport(reply: FastifyReply, query: ExportQuery) {\n  reply.raw.writeHead(200, {\n    'Content-Type': 'text/csv; charset=utf-8',\n    'Content-Disposition': `attachment; filename=\"${query.filename}.csv\"`,\n  });\n\n  reply.raw.write(toCsvRow(query.columns));\n\n  for await (const batch of cursor(query, { batchSize: 5_000 })) {\n    const chunk = batch.map(toCsvRow).join('');\n\n    // Respect backpressure — a slow client must not inflate the heap.\n    if (!reply.raw.write(chunk)) {\n      await once(reply.raw, 'drain');\n    }\n  }\n\n  reply.raw.end();\n}"
+    },
+    {
+      "type": "p",
+      "text": "The backpressure check is the part people skip. Without waiting for the drain event, a client on a slow connection causes the server to buffer everything it cannot send yet, and you have rebuilt the original memory problem with extra steps."
+    },
+    { "type": "h2", "text": "Charts that stay readable" },
+    {
+      "type": "p",
+      "text": "Recharts handles the drawing; the work was in restraint. Every chart uses one categorical palette shared across the app, so a given series is the same colour on every screen. Axes always start at zero unless the panel says otherwise. Empty states say which filter produced no data rather than rendering an empty grid, and every chart has an accessible table equivalent behind a toggle for screen-reader users and for anyone who just wants the numbers."
+    },
+    { "type": "hr" },
+    { "type": "h2", "text": "What I would do differently" },
+    {
+      "type": "p",
+      "text": "I built the rollups before I had usage data on which dimensions people actually grouped by, and I guessed wrong on two of them — one combination was never queried and cost storage and refresh time for months. Shipping the raw-query version behind a query log for two weeks first would have told me exactly which rollups to build."
+    },
+    {
+      "type": "p",
+      "text": "The row-level security migration also had to be done table by table under live traffic, and doing it after the product had customers cost roughly three times what doing it on day one would have. It is the clearest argument I know for setting up tenant isolation before the first paying tenant arrives."
+    }
+  ]
+}

@@ -19,11 +19,12 @@ No test framework is configured. `implementation.md` is the original build spec 
 
 **Stack:** Next.js 16 App Router, React 19, TypeScript, Tailwind v4 (via `@tailwindcss/postcss`), GSAP + `@gsap/react` + Lenis. `@/*` path alias maps to the repo root (not `src/`).
 
-**Route groups own their chrome.** `app/` uses four route groups, each with its own `layout.tsx`:
+**Route groups own their chrome.** `app/` uses five route groups, each with its own `layout.tsx`:
 
 - `app/(home)/` — homepage. Uses the client-side `Header.tsx` and wraps content in `SmoothScrollProvider`.
 - `app/(blog)/` — `/blog` and `/blog/[slug]`. Uses `HeaderServerComp.tsx` and no Lenis wrapper.
 - `app/(services)/` — `/services` and `/services/[slug]`. Same pattern as blog.
+- `app/(projects)/` — `/projects` and `/projects/[slug]` (case studies). Same pattern as blog.
 - `app/(contact)/` — `/contact`. Same pattern as blog.
 
 `app/not-found.tsx` sits outside every group, so it brings its own `HeaderServerComp` + `Footer`.
@@ -55,11 +56,13 @@ Verify colour changes with an actual contrast pass, and composite alpha when you
 
 **Scroll-reveal is a shared hook.** `lib/useScrollReveal.ts` is the standard fade/slide-up-on-scroll primitive. It respects `prefers-reduced-motion` (clears props instead of animating) and uses `gsap.context()` scoped to a container ref for cleanup. Prefer this over hand-rolled `ScrollTrigger.create` calls unless you need a non-reveal effect (pin, scrub, etc.).
 
-**Content is JSON-authored, not MDX.** Blog posts and services are plain JSON files in `content/posts/` and `content/services/`, hydrated through `lib/data/posts.ts` and `lib/data/services.ts`. Adding a new post or service requires two steps:
+**Content is JSON-authored, not MDX.** Blog posts, services, and project case studies are plain JSON files in `content/posts/`, `content/services/`, and `content/projects/`, hydrated through the matching `lib/data/*.ts`. Adding a new entry requires two steps:
 1. Create `content/<type>/<slug>.json` (filename should match the `slug` field — note two existing services already violate this: `business-email-setup.json` has slug `custom-email-setup`, and `e-commerce-solutions.json` has slug `b2b-ecommerce-solutions`. The `slug` field is what builds the URL, so key any script off that, not the filename).
 2. Import and register it in the corresponding `lib/data/*.ts` array.
 
-Services carry two separate keyword fields, and mixing them up looks broken: `keywords` is long-tail SEO phrases for metadata, `tags` is two-to-three-word chips rendered beside the title in `ServiceList`.
+Services carry two separate keyword fields, and mixing them up looks broken: `keywords` is long-tail SEO phrases for metadata, `tags` is two-to-three-word chips rendered beside the title in `ServiceList`. Projects use the same split.
+
+`Project` differs from `Service` in one load-bearing way: most of its fields are optional (`bannerImage`, `client`, `role`, `duration`, `results`, `testimonial`, `liveUrl`, `repoUrl`), and every consumer must skip the whole surrounding block when one is absent — no empty heading, no gap. That is what lets a personal project sit next to client work without looking unfinished. `ProjectCard` and the case-study banner fall back to a gradient plate with the project `number` when there is no `bannerImage`, so a case study can ship before its screenshot exists. Only the first three projects appear on the homepage (`projects.slice(0, 3)`); `/projects` shows all of them.
 
 Rich body content uses the typed `ContentBlock` union in `lib/content-blocks.tsx` (`h2`, `h3`, `p`, `ul`, `ol`, `code`, `image`, `table`, `hr`). Blocks are flat — no nesting. `renderBlock()` is the only renderer. Full schema and field reference: `content/CONTENT_GUIDE.md`.
 

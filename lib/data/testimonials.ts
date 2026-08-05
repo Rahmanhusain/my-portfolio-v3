@@ -2,8 +2,12 @@ export interface Testimonial {
   id: string;
   quote: string;
   name: string;
- 
   initials: string;
+  /** Optional attribution line under the name. Both are omitted from the card
+   *  when absent — a first-name-only reference shouldn't render a dangling
+   *  comma or an empty row. */
+  role?: string;
+  company?: string;
 }
 
 export const testimonials: Testimonial[] = [

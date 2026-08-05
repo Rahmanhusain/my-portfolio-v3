@@ -1,0 +1,132 @@
+{
+  "number": "01",
+  "slug": "ecommerce-platform",
+  "title": "E-Commerce Platform",
+  "shortDesc": "A full-stack storefront with real-time inventory, Stripe payments, and an admin dashboard — built to survive a flash sale without overselling a single unit.",
+  "description": "A production e-commerce platform built on Next.js and MongoDB, handling live inventory across two warehouses, Stripe checkout with webhook-driven fulfilment, and an admin dashboard the owner actually uses daily. The interesting problem was never the shopping cart — it was making inventory truthful when four people buy the last two units in the same second.",
+  "year": "2024",
+  "role": "Full-stack developer",
+  "duration": "9 weeks",
+  "tags": ["Next.js", "TypeScript", "MongoDB", "Stripe"],
+  "keywords": [
+    "custom e-commerce development Next.js",
+    "Stripe checkout integration developer",
+    "real-time inventory management system",
+    "MongoDB transactions e-commerce",
+    "headless e-commerce build",
+    "e-commerce admin dashboard development"
+  ],
+  "challenge": "The existing store ran on an off-the-shelf platform that treated stock as a number it updated after the fact. During any promotion it oversold — the team was refunding and apologising for roughly one order in twenty, and reconciling two warehouses by hand in a spreadsheet every morning. They needed a storefront that could take a traffic spike without lying about what was in stock.",
+  "solution": "I rebuilt the store as a Next.js application with inventory as the source of truth rather than a cached counter. Stock is reserved inside a MongoDB transaction the moment checkout starts, released automatically when a session expires, and only converted to a sale by a Stripe webhook. Overselling stopped being a race the code could lose, and the morning spreadsheet went away because both warehouses write to the same ledger.",
+  "results": [
+    { "metric": "0", "label": "oversold orders since launch" },
+    { "metric": "1.2s", "label": "median LCP on product pages" },
+    { "metric": "+38%", "label": "checkout completion rate" },
+    { "metric": "6h → 0", "label": "weekly hours spent reconciling stock" }
+  ],
+  "stack": [
+    { "group": "Frontend", "items": ["Next.js 15 (App Router)", "TypeScript", "Tailwind CSS", "React Server Components"] },
+    { "group": "Backend", "items": ["Route Handlers", "MongoDB (replica set)", "Zod", "Stripe Webhooks"] },
+    { "group": "Payments", "items": ["Stripe Checkout", "Payment Intents", "Stripe Tax"] },
+    { "group": "Infrastructure", "items": ["Vercel", "MongoDB Atlas", "Cloudflare R2", "Resend"] }
+  ],
+  "body": [
+    { "type": "h2", "text": "The oversell problem, stated honestly" },
+    {
+      "type": "p",
+      "text": "Most e-commerce tutorials treat inventory as a display field. You read a number, you show it, you decrement it after the payment succeeds. That works perfectly until two customers reach for the same last unit — and on this store, that happened every single promotion, because the entire month's traffic arrived in a ninety-minute window."
+    },
+    {
+      "type": "p",
+      "text": "The failure sequence was always identical. Four shoppers load a product page showing two units left. All four add to cart. All four pay. Stripe happily charges all four, because Stripe does not know or care what a warehouse contains. Two people get their order, two get an apology email and a refund three days later, and one of them never comes back."
+    },
+    {
+      "type": "p",
+      "text": "So the first decision on this project was that stock would not be a number rendered on a page. It would be a ledger of reservations, and a product page would render what the ledger said was uncommitted at that instant."
+    },
+    { "type": "h2", "text": "Reserving stock inside a transaction" },
+    {
+      "type": "p",
+      "text": "When a shopper starts checkout, the server does not create a Stripe session first. It opens a MongoDB transaction, conditionally decrements the available count for every line item, and writes a reservation document with a fifteen-minute expiry. The conditional update is what does the real work: if the decrement would take availability below zero, the write matches nothing, and the whole transaction aborts."
+    },
+    {
+      "type": "code",
+      "lang": "typescript",
+      "code": "// One atomic conditional decrement per line item. If any of them fails to\n// match, the transaction aborts and nothing is reserved — no partial holds.\nasync function reserve(items: CartItem[], sessionId: string) {\n  const session = client.startSession();\n\n  try {\n    return await session.withTransaction(async () => {\n      for (const item of items) {\n        const res = await variants.updateOne(\n          { _id: item.variantId, available: { $gte: item.qty } },\n          { $inc: { available: -item.qty, reserved: item.qty } },\n          { session }\n        );\n\n        // No match means someone else took the last units mid-flight.\n        if (res.matchedCount === 0) {\n          throw new OutOfStockError(item.variantId);\n        }\n      }\n\n      await reservations.insertOne(\n        {\n          sessionId,\n          items,\n          expiresAt: new Date(Date.now() + 15 * 60_000),\n          status: 'held',\n        },\n        { session }\n      );\n    });\n  } finally {\n    await session.endSession();\n  }\n}"
+    },
+    {
+      "type": "p",
+      "text": "Only after the reservation commits does the server create the Stripe Checkout session. The ordering matters: a reservation without a payment costs the business fifteen minutes of held stock, while a payment without a reservation costs it a refund, an apology, and a customer."
+    },
+    { "type": "h2", "text": "Letting expiry clean up after itself" },
+    {
+      "type": "p",
+      "text": "Abandoned checkouts are the normal case, not the edge case — most people who reach the payment step do not finish it. Rather than run a cron job that sweeps stale holds, the reservation collection carries a TTL index on its expiry field, and a change stream watches for the resulting deletions and returns the units."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "A TTL index on the expiry timestamp, so MongoDB deletes stale holds without any application code running.",
+        "A change stream on that delete event, moving reserved units back into available in a single atomic update.",
+        "An idempotency key on every release, so a replayed change-stream event cannot credit the same units twice.",
+        "Webhook precedence — if Stripe confirms payment, the reservation is marked committed first, which makes the later TTL deletion a no-op."
+      ]
+    },
+    {
+      "type": "p",
+      "text": "The result is that stock returns to the shelf on its own within seconds of a checkout going cold, with no scheduled job to monitor and no chance of a sweep running twice."
+    },
+    { "type": "h2", "text": "Payment is not confirmation" },
+    {
+      "type": "p",
+      "text": "The single most common mistake I see in Stripe integrations is treating the redirect back to the success page as proof of payment. It is not. The customer can close the tab, lose signal, or simply never be redirected, and the money still moves. The success page is a UI courtesy; the webhook is the truth."
+    },
+    {
+      "type": "p",
+      "text": "Fulfilment on this build is driven entirely by the checkout.session.completed event, with the signature verified against the raw request body, and every event written to an events collection keyed by Stripe's event id before any business logic runs. Stripe retries aggressively on non-2xx responses, so that key is the difference between one shipment and three."
+    },
+    {
+      "type": "table",
+      "headers": ["Signal", "What it actually proves", "What it triggers"],
+      "rows": [
+        ["Redirect to the success page", "The browser followed a link", "A thank-you screen only"],
+        ["checkout.session.completed", "Stripe accepted the payment", "Commit reservation, create order, email receipt"],
+        ["payment_intent.payment_failed", "The charge was declined", "Release reservation, restore stock"],
+        ["charge.refunded", "Money went back", "Restock, flag order, notify admin"]
+      ]
+    },
+    { "type": "h2", "text": "Two warehouses, one ledger" },
+    {
+      "type": "p",
+      "text": "The team shipped from two locations and had been tracking each one in its own spreadsheet, then eyeballing the sum every morning. Every stock movement now writes a line to an append-only ledger — received, reserved, committed, returned, adjusted — tagged with a location and an actor."
+    },
+    {
+      "type": "p",
+      "text": "Nothing in the system ever edits a stock number directly. The current count for a variant is derived from its ledger lines and cached, which means any discrepancy has a paper trail rather than a shrug. When a count is wrong, the question changed from \"which spreadsheet is right?\" to \"which line is wrong?\", and that question has an answer."
+    },
+    { "type": "h2", "text": "Making the storefront fast" },
+    {
+      "type": "p",
+      "text": "Product pages are statically rendered and revalidated on a tag, so a price or copy change is live in under a second without a rebuild. The only thing rendered dynamically is the stock badge, which streams in as a Suspense boundary — the page is interactive long before the availability number resolves."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Catalogue and product pages prerendered, invalidated by a tagged revalidation call from the admin dashboard.",
+        "Stock badge and cart in Suspense boundaries so a slow database read never blocks first paint.",
+        "Images through `next/image` with AVIF, served from R2 behind Cloudflare.",
+        "Zero client-side data fetching on the catalogue — the filter UI drives URL state and lets the server render the result."
+      ]
+    },
+    { "type": "hr" },
+    { "type": "h2", "text": "What I would do differently" },
+    {
+      "type": "p",
+      "text": "The fifteen-minute reservation window was a guess, and it was too generous. On the busiest drops, held-but-abandoned stock made popular variants look unavailable to people who would have bought immediately. A shorter window for high-demand items — or one that tightens as availability drops — would have converted better. That is the change queued for the next release."
+    },
+    {
+      "type": "p",
+      "text": "I would also reach for Postgres if I started this again. MongoDB transactions did the job and did it correctly, but almost every reporting question the client asked afterwards was relational, and I wrote aggregation pipelines to answer questions a join would have handled in a line."
+    }
+  ]
+}

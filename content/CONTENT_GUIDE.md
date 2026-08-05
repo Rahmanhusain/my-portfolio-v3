@@ -1,14 +1,15 @@
 # Content Authoring Guide
 
-This guide covers everything you need to add or edit blog posts and services.
-All content lives in the `content/` folder as plain JSON files — no code changes
-required unless you are adding a brand-new entry (see the registration step at
-the end of each section).
+This guide covers everything you need to add or edit blog posts, services, and
+project case studies. All content lives in the `content/` folder as plain JSON
+files — no code changes required unless you are adding a brand-new entry (see
+the registration step at the end of each section).
 
 ```
 content/
 ├── posts/          ← one JSON file per blog post
 ├── services/       ← one JSON file per service
+├── projects/       ← one JSON file per project case study
 └── CONTENT_GUIDE.md
 ```
 
@@ -275,10 +276,143 @@ The service will automatically appear:
 
 ---
 
-## Part 3 — Content Blocks (`body` field)
+## Part 3 — Project Case Studies
 
-Both posts and services share the same `body` array made up of typed content
-blocks. Every block is a JSON object with a `"type"` field.
+### File location
+
+```
+content/projects/<your-slug>.json
+```
+
+The filename **must exactly match** the `slug` field inside the file.
+
+---
+
+### Required fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `number` | string | `"01"`, `"02"` — the eyebrow, and the big numeral on the placeholder cover. Also sets the array order. |
+| `slug` | string | URL segment. `/projects/<slug>`. |
+| `title` | string | The `h1`. Keep it short — it also appears on cards. |
+| `shortDesc` | string | Card blurb, clamped to two lines. Also the meta description. Aim for 140–180 characters. |
+| `description` | string | Hero paragraph under the `h1`. Two or three sentences setting up what the project is. |
+| `year` | string | `"2024"`. Shown as a chip on the card and in the fact strip. |
+| `tags` | string[] | Three or four short chips — `"Next.js"`, `"Stripe"`. The first one is used in the closing CTA sentence, so lead with the most representative. |
+| `keywords` | string[] | Long-tail SEO phrases. **Never rendered** — these feed `<meta name="keywords">` and JSON-LD only. |
+| `challenge` | string | "The problem" column. What was actually broken or missing, in business terms. |
+| `solution` | string | "What I built" column. The approach, not the feature list. |
+| `stack` | array | Grouped tech. Each item is `{ "group": "Frontend", "items": ["Next.js", "TypeScript"] }`. |
+| `body` | array | The long-form case study. See Part 4. |
+
+---
+
+### Optional fields — omit them and the UI disappears
+
+This is the important difference from services. Every field below is optional,
+and when it is missing the component that renders it is **not rendered at all** —
+no empty heading, no gap, no `undefined`. That is deliberate, so a personal
+project can skip the client-work fields without looking broken.
+
+| Field | Type | What appears when present |
+|---|---|---|
+| `bannerImage` | string | Full-bleed banner at the top, and the card cover. **When absent**, both fall back to a gradient plate with the project `number` — which is why you can ship a case study before you have a screenshot. Put files in `public/projectsimage/`. |
+| `bannerAlt` | string | Alt text for the banner. Required *if* `bannerImage` is set — falls back to the title otherwise, which is worse for SEO. |
+| `client` | string | A "Client" pair in the fact strip. Omit for personal work. |
+| `role` | string | A "Role" pair — `"Full-stack developer"`, `"Solo build"`. |
+| `duration` | string | A "Timeline" pair — `"9 weeks"`, `"Ongoing side project"`. |
+| `results` | array | The "Outcome" metric grid, placed before the body so the payoff is up front. Each item is `{ "metric": "+38%", "label": "checkout completion rate" }`. Use three or four — the grid is four columns wide. `metric` is a string, so `"11s → 380ms"` and `"0"` work as well as a percentage. |
+| `testimonial` | object | A pull-quote card: `{ "quote": "…", "author": "Jane Doe", "role": "CTO, Acme" }`. `role` is itself optional. |
+| `liveUrl` | string | A solid "View Live ↗" button in the header. |
+| `repoUrl` | string | An outline "Source ↗" button. Omit for private client work — the `/projects` page carries the general GitHub link. |
+
+If both `liveUrl` and `repoUrl` are missing, the whole button row is skipped.
+
+---
+
+### Sample project JSON
+
+```json
+{
+  "number": "04",
+  "slug": "inventory-sync-tool",
+  "title": "Inventory Sync Tool",
+  "shortDesc": "A one-way sync that keeps a Shopify catalogue and a warehouse system in agreement without a nightly CSV.",
+  "description": "An internal tool that replaced a fragile nightly CSV import with an event-driven sync, so stock levels in Shopify match the warehouse within seconds instead of hours.",
+  "year": "2025",
+  "role": "Full-stack developer",
+  "duration": "5 weeks",
+  "tags": ["Node.js", "Shopify API", "PostgreSQL"],
+  "keywords": ["Shopify inventory sync development", "warehouse integration developer"],
+  "challenge": "Stock was imported once a night from a CSV, so the storefront was wrong for most of the working day and the team oversold on every busy afternoon.",
+  "solution": "I replaced the import with a webhook-driven sync backed by a durable job queue, so a stock movement in the warehouse reaches the storefront in seconds and retries on its own when an API is down.",
+  "results": [
+    { "metric": "8h → 4s", "label": "stock propagation delay" },
+    { "metric": "99.98%", "label": "sync success rate" }
+  ],
+  "stack": [
+    { "group": "Backend", "items": ["Node.js", "PostgreSQL", "BullMQ"] },
+    { "group": "Integrations", "items": ["Shopify Admin API", "Webhooks"] }
+  ],
+  "body": [
+    { "type": "h2", "text": "Why the nightly CSV had to go" },
+    { "type": "p", "text": "…" }
+  ]
+}
+```
+
+Note what is *not* in that sample: no `bannerImage`, no `client`, no
+`testimonial`, no links. It renders correctly as-is.
+
+---
+
+### Registering a new project
+
+After creating the JSON file, add it to `lib/data/projects.ts`:
+
+```ts
+// 1. Import the file
+import inventory from '@/content/projects/inventory-sync-tool.json';
+
+// 2. Add it to the array in the order you want it displayed
+export const projects: Project[] = [
+  ecommerce,
+  analytics,
+  cms,
+  inventory,   // ← add this line
+] as Project[];
+```
+
+The project will automatically appear:
+- On the home page projects section (the **first three** only — order the array accordingly)
+- On the `/projects` listing page (all projects)
+- At `/projects/<your-slug>`
+- In the "Other projects" list on every sibling case study
+- In the sitemap at `/sitemap.xml`
+
+---
+
+### Writing the case study itself
+
+The `body` is where a case study earns its place. What makes these pages work is
+specificity, so a rough shape that has held up:
+
+1. **Name the real problem** — the business consequence, not the technical one. "Refunding one order in twenty" beats "race condition in inventory".
+2. **Show one decision in depth** — a `code` block with a comment explaining *why*, not what.
+3. **Include a trade-off you got wrong.** A "What I would do differently" section at the end is the single most credible thing on the page, and it is the section prospects quote back on calls.
+4. Aim for 800–1200 words, at least three `h2` blocks (fewer than three and the table of contents hides itself), and one `table` or `code` block to break up the prose.
+
+---
+
+## Part 4 — Content Blocks (`body` field)
+
+Posts, services, and projects all share the same `body` array made up of typed
+content blocks. Every block is a JSON object with a `"type"` field.
+
+> **Plain text only.** There is no inline `**bold**`, `_italic_`, or
+> `` `code` `` formatting — the renderer would print those characters
+> literally. Links are the one exception (see below). For code, use a `code`
+> block.
 
 ### Inline links (backlinks / anchors)
 

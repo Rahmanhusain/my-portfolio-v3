@@ -802,6 +802,20 @@ section {
   scroll-margin-top: 5.5rem;
 }
 
+/* Hides the scrollbar on a snap track without disabling the scrolling itself.
+   Used by the testimonial carousel, where the dots and arrows already say the
+   content is scrollable and a raw scrollbar reads as an accident.
+   Note this is presentational only — keyboard and swipe scrolling still work,
+   which is why the track also carries a visible focus ring. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .text-shine,
   .aurora,

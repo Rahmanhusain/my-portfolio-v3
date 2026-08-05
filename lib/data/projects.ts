@@ -1,42 +1,70 @@
-export interface Project {
-  slug: string;
-  title: string;
-  description: string;
-  tags: string[];
-  image: string;
-  href: string;
-  year: string;
+import type { ContentBlock } from '@/lib/content-blocks';
+export type { ContentBlock } from '@/lib/content-blocks';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface ProjectResult {
+  /** The headline figure — '+38%', '11s → 380ms', '0'. Kept as a string so a
+   *  before/after or a ratio reads as well as a percentage. */
+  metric: string;
+  label:  string;
 }
 
+export interface ProjectStack {
+  /** 'Frontend', 'Backend', 'Infrastructure' — the grouping heading. */
+  group: string;
+  items: string[];
+}
+
+export interface ProjectTestimonial {
+  quote:  string;
+  author: string;
+  role?:  string;
+}
+
+export interface Project {
+  number:      string;
+  slug:        string;
+  /** Card blurb — clamped to two lines in ProjectCard. */
+  shortDesc:   string;
+  /** Hero paragraph on the case study. Longer, sets up the problem. */
+  description: string;
+  title:       string;
+  year:        string;
+  /** Two-to-three-word display chips. Separate from `keywords`, which is far
+   *  too wordy to render — same split as `Service`. */
+  tags:        string[];
+  /** Long-tail phrases for `<meta name="keywords">` and JSON-LD. Never rendered. */
+  keywords:    string[];
+  challenge:   string;
+  solution:    string;
+  stack:       ProjectStack[];
+  body:        ContentBlock[];
+
+  // ── Optional. Omit the field and its UI block is not rendered at all, so a
+  //    personal project can skip client/testimonial/metrics without leaving
+  //    an empty heading or a gap behind. ───────────────────────────────────
+  bannerImage?: string;
+  bannerAlt?:   string;
+  client?:      string;
+  role?:        string;
+  duration?:    string;
+  results?:     ProjectResult[];
+  testimonial?: ProjectTestimonial;
+  liveUrl?:     string;
+  repoUrl?:     string;
+}
+
+// ─── Load from JSON files ────────────────────────────────────────────────────
+// Import each file explicitly — Next.js static analysis needs literal paths.
+
+import ecommerce from '@/content/projects/ecommerce-platform.json';
+import analytics from '@/content/projects/saas-analytics-dashboard.json';
+import cms       from '@/content/projects/portfolio-cms.json';
+
+// Ordered by project number
 export const projects: Project[] = [
-  {
-    slug: 'project-one',
-    title: 'E-Commerce Platform',
-    description:
-      'A full-stack e-commerce platform with real-time inventory, Stripe payments, and an admin dashboard built with Next.js and MongoDB.',
-    tags: ['Next.js', 'TypeScript', 'MongoDB', 'Stripe'],
-    image: '/projects/project-one.png',
-    href: '#',
-    year: '2024',
-  },
-  {
-    slug: 'project-two',
-    title: 'SaaS Analytics Dashboard',
-    description:
-      'Multi-tenant analytics dashboard with real-time data visualization, role-based access control, and CSV export functionality.',
-    tags: ['React', 'Node.js', 'PostgreSQL', 'Recharts'],
-    image: '/projects/project-two.png',
-    href: '#',
-    year: '2024',
-  },
-  {
-    slug: 'project-three',
-    title: 'Developer Portfolio CMS',
-    description:
-      'Headless CMS powering developer portfolios with a visual editor, custom domain support, and built-in SEO optimization.',
-    tags: ['Next.js', 'GraphQL', 'Tailwind CSS', 'Docker'],
-    image: '/projects/project-three.png',
-    href: '#',
-    year: '2023',
-  },
-];
+  ecommerce,
+  analytics,
+  cms,
+] as Project[];

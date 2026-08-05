@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import { useScrollReveal } from '@/lib/useScrollReveal';
 import SectionHeading from '@/components/ui/SectionHeading';
-import TestimonialCard from '@/components/ui/TestimonialCard';
+import TestimonialCarousel from '@/components/ui/TestimonialCarousel';
 import { testimonials } from '@/lib/data/testimonials';
 
 export default function Testimonials() {
@@ -33,11 +33,7 @@ export default function Testimonials() {
           centered={false}
         />
 
-        <div className="testimonials-grid grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((testimonial) => (
-            <TestimonialCard key={testimonial.id} testimonial={testimonial} />
-          ))}
-        </div>
+        <TestimonialCarousel testimonials={testimonials} />
       </div>
     </section>
   );

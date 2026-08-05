@@ -1,0 +1,126 @@
+{
+  "number": "03",
+  "slug": "portfolio-cms",
+  "title": "Developer Portfolio CMS",
+  "shortDesc": "A headless CMS for developer portfolios — visual editing, custom domains, and SEO that is generated rather than remembered.",
+  "description": "A headless CMS that powers developer portfolio sites: a visual editor over a typed content schema, custom domain support with automatic certificates, and an SEO layer that emits metadata, structured data, and sitemaps from the content itself. Built as a side project to answer a question I kept hitting on client work — why does every portfolio rebuild the same five things?",
+  "year": "2023",
+  "role": "Solo build",
+  "duration": "Ongoing side project",
+  "tags": ["Next.js", "GraphQL", "Tailwind CSS", "Docker"],
+  "keywords": [
+    "headless CMS for developer portfolio",
+    "custom domain multi-tenant Next.js",
+    "visual content editor build",
+    "automatic SEO metadata generation",
+    "GraphQL content API",
+    "portfolio site builder self-hosted"
+  ],
+  "challenge": "Every portfolio I built — mine included — reimplemented the same infrastructure: a content model, an editing surface, metadata, structured data, a sitemap, and a deploy pipeline. The content differed; the plumbing never did. Meanwhile the general-purpose CMS options either assumed a marketing team or turned a developer portfolio into a bag of loose fields with no opinion about what a project page actually needs.",
+  "solution": "A CMS with a deliberately narrow scope: it knows what a portfolio is. Content types for projects, posts, and services are fixed and typed, which is precisely what allows the editor to be visual and the SEO output to be generated. Sites get a subdomain immediately and a custom domain in a few clicks, with certificates issued on demand and no per-tenant configuration to maintain.",
+  "results": [
+    { "metric": "5 min", "label": "from signup to a live site on a custom domain" },
+    { "metric": "100", "label": "Lighthouse SEO score on generated sites" },
+    { "metric": "0", "label": "per-tenant config files to maintain" }
+  ],
+  "stack": [
+    { "group": "Frontend", "items": ["Next.js (App Router)", "TypeScript", "Tailwind CSS", "Radix UI"] },
+    { "group": "API", "items": ["GraphQL", "Pothos schema builder", "Prisma", "PostgreSQL"] },
+    { "group": "Editing", "items": ["Typed block schema", "Optimistic autosave", "Draft and publish states"] },
+    { "group": "Infrastructure", "items": ["Docker", "Traefik", "Let's Encrypt", "S3-compatible storage"] }
+  ],
+  "body": [
+    { "type": "h2", "text": "A narrow CMS beats a flexible one" },
+    {
+      "type": "p",
+      "text": "The instinct when building a content system is to make everything configurable, because that is what makes it useful to everyone. It is also what makes it useful to no one in particular. A fully generic CMS cannot give you a meaningful editing preview, cannot generate correct structured data, and cannot tell you that a project page is missing the thing that makes a project page work — because it does not know what a project is."
+    },
+    {
+      "type": "p",
+      "text": "This one does. There are three content types, and they are not user-definable. That single constraint is what unlocks everything else: the editor can render a real preview because it knows the layout, the SEO layer can emit correct schema.org types because it knows what it is describing, and validation can insist on a description and an image because it knows those fields will be rendered."
+    },
+    { "type": "h2", "text": "Typed blocks as the content primitive" },
+    {
+      "type": "p",
+      "text": "Body content is a flat array of typed blocks — headings, paragraphs, lists, code, images, tables, dividers — rather than a rich-text HTML blob. Flat, because nesting is where content models go to die: once a list can contain a table that contains a callout, every renderer and every migration becomes a recursive special case."
+    },
+    {
+      "type": "p",
+      "text": "The schema is defined once and drives three consumers, which is the whole point. The editor derives its block palette from it, the renderer switches on the same union, and the GraphQL API exposes it as a discriminated type so a client can never receive a block shape it has no branch for."
+    },
+    {
+      "type": "code",
+      "lang": "typescript",
+      "code": "// One schema, three consumers: editor palette, renderer, GraphQL types.\n// Adding a block type here makes TypeScript demand a renderer branch for it.\nexport const blockSchema = z.discriminatedUnion('type', [\n  z.object({ type: z.literal('h2'), text: z.string().min(1) }),\n  z.object({ type: z.literal('h3'), text: z.string().min(1) }),\n  z.object({ type: z.literal('p'),  text: z.string().min(1) }),\n  z.object({ type: z.literal('ul'), items: z.array(z.string()).min(1) }),\n  z.object({ type: z.literal('code'), lang: z.string(), code: z.string() }),\n  z.object({\n    type: z.literal('image'),\n    src: z.string(),\n    // Required, not optional — an empty alt is a decision, not a default.\n    alt: z.string(),\n    caption: z.string().optional(),\n  }),\n  z.object({ type: z.literal('hr') }),\n]);\n\nexport type Block = z.infer<typeof blockSchema>;"
+    },
+    {
+      "type": "p",
+      "text": "Making alt text required rather than optional was a small decision with an outsized effect. Optional alt text means most images ship without it. Required alt text means the author has to type something, even if that something is an explicit note that the image is decorative."
+    },
+    { "type": "h2", "text": "The visual editor" },
+    {
+      "type": "p",
+      "text": "The editor is a two-pane surface: blocks on the left, the actual rendered page on the right, using the same renderer the published site uses. Not an approximation of the output — the output. Anything else eventually drifts, and then the preview is a liability, because authors stop trusting it and start publishing to check."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Autosave with optimistic updates, so typing never blocks on the network.",
+        "Draft and published as separate versions, with a diff view before publishing.",
+        "Keyboard-first block manipulation — reorder, duplicate, and delete without reaching for the mouse.",
+        "Validation surfaced inline as warnings, not as a wall of errors at publish time."
+      ]
+    },
+    {
+      "type": "p",
+      "text": "Publishing writes a new immutable version and repoints a pointer, which makes rollback a pointer move rather than a restore. That turned out to matter more than any editing feature: knowing a bad publish is one click from undone changes how willing someone is to publish at all."
+    },
+    { "type": "h2", "text": "Custom domains without per-tenant config" },
+    {
+      "type": "p",
+      "text": "Custom domains are the feature that separates a real product from a demo, and the naive implementation — a config file and a certificate per tenant — becomes unmaintainable at around the tenth site. Here, Traefik reads its routing from labels and resolves the tenant from the incoming Host header, while certificates are issued on demand through the ACME TLS challenge and cached in shared storage."
+    },
+    {
+      "type": "table",
+      "headers": ["Step", "What the user does", "What the system does"],
+      "rows": [
+        ["Add domain", "Types the hostname", "Stores it as pending, shows the DNS record to create"],
+        ["Verify", "Points a CNAME at the platform", "Polls DNS, confirms the record resolves"],
+        ["Issue certificate", "Nothing", "Requests a certificate on the first request to that host"],
+        ["Serve", "Visits the domain", "Resolves the tenant from the Host header and serves its content"]
+      ]
+    },
+    {
+      "type": "p",
+      "text": "Adding a site is a database row. There is no file to write, no container to restart, and no certificate to renew by hand — which is the only version of this feature that survives contact with more than a handful of users."
+    },
+    { "type": "h2", "text": "SEO as output, not as a checklist" },
+    {
+      "type": "p",
+      "text": "The reason portfolio sites have bad SEO is not ignorance — it is that the work is manual, repetitive, and invisible when done right. So none of it is manual here. Metadata, Open Graph tags, structured data, sitemap, and robots rules are all derived from the content that already exists."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Canonical URLs, titles, and descriptions generated per page from the content record.",
+        "Structured data as a linked graph — one Person node, one WebSite node, and page-level nodes that reference them by id rather than restating them.",
+        "A BreadcrumbList on every nested page, built from the route rather than hand-authored.",
+        "Sitemap regenerated on publish, with image entries and real modification dates from version history."
+      ]
+    },
+    {
+      "type": "p",
+      "text": "Emitting one linked graph instead of a pile of independent blobs is the detail most implementations miss. Restating an author on every page gives a search engine several similar-looking entities and no reason to merge them; referencing a single node by id gives it one entity with many pages of evidence."
+    },
+    { "type": "hr" },
+    { "type": "h2", "text": "What I would do differently" },
+    {
+      "type": "p",
+      "text": "GraphQL was the wrong call for a project with one first-party client. I got a typed schema and paid for it with a resolver layer, a client cache, and a code-generation step — all to solve an over-fetching problem a handful of typed endpoints would not have had. A thin typed RPC layer would have shipped the same features in noticeably less code."
+    },
+    {
+      "type": "p",
+      "text": "I also underestimated media. Uploads, variants, cropping, and cleanup of orphaned files quietly consumed weeks that were budgeted for editing features. If I started again, media would be a first-class part of the schema from the beginning rather than something bolted alongside it."
+    }
+  ]
+}

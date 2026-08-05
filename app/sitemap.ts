@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { posts } from '@/lib/data/posts';
 import { services } from '@/lib/data/services';
+import { projects } from '@/lib/data/projects';
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
@@ -19,6 +20,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${siteUrl}/services`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${siteUrl}/projects`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.9,
@@ -50,6 +57,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ],
   }));
 
+  const projectRoutes: MetadataRoute.Sitemap = projects.map((project) => ({
+    url: `${siteUrl}/projects/${project.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+    // `images` is omitted rather than empty for projects without a banner —
+    // an empty array would emit a stray, meaningless <image:image> block.
+    ...(project.bannerImage && {
+      images: [
+        project.bannerImage.startsWith('/')
+          ? `${siteUrl}${project.bannerImage}`
+          : project.bannerImage,
+      ],
+    }),
+  }));
+
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,
     lastModified: post.updatedAt,
@@ -62,5 +85,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ],
   }));
 
-  return [...staticRoutes, ...serviceRoutes, ...postRoutes];
+  return [...staticRoutes, ...serviceRoutes, ...projectRoutes, ...postRoutes];
 }

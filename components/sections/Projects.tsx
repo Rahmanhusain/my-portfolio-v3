@@ -6,7 +6,6 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import ProjectCard from '@/components/ui/ProjectCard';
 import MagneticButton from '@/components/ui/MagneticButton';
 import { projects } from '@/lib/data/projects';
-import { site } from '@/lib/site';
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -38,17 +37,15 @@ export default function Projects() {
           />
           <MagneticButton
             as="a"
-            href={site.social.github}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/projects"
             className="shrink-0 self-start md:self-auto mb-2"
           >
-            All on GitHub ↗
+            All Projects →
           </MagneticButton>
         </div>
 
         <div className="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project, i) => (
+          {projects.slice(0, 3).map((project, i) => (
             <ProjectCard key={project.slug} project={project} index={i} />
           ))}
         </div>
