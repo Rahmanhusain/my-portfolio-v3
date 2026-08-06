@@ -182,7 +182,7 @@ export default function Workflow() {
     <section
       ref={sectionRef}
       id="workflow"
-      className="py-32 md:py-40 border-t border-border"
+      className="py-20 sm:py-24 md:py-40 border-t border-border"
       aria-labelledby="workflow-heading"
     >
       <div className="max-w-6xl mx-auto px-6">

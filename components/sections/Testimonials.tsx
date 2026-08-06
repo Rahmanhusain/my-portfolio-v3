@@ -21,7 +21,7 @@ export default function Testimonials() {
     <section
       ref={sectionRef}
       id="testimonials"
-      className="py-32 md:py-40 border-t border-border"
+      className="py-20 sm:py-24 md:py-40 border-t border-border"
       aria-labelledby="testimonials-heading"
     >
       <div className="max-w-6xl mx-auto px-6">

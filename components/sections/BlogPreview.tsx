@@ -25,7 +25,7 @@ export default function BlogPreview() {
     <section
       ref={sectionRef}
       id="blog"
-      className="py-32 md:py-40 border-t border-border"
+      className="py-20 sm:py-24 md:py-40 border-t border-border"
       aria-labelledby="blog-heading"
     >
       <div className="max-w-6xl mx-auto px-6">
@@ -38,7 +38,7 @@ export default function BlogPreview() {
           />
           <Link
             href="/blog"
-            className="shrink-0 self-start md:self-auto text-sm text-muted hover:text-fg transition-colors duration-200 mb-2"
+            className="shrink-0 self-start md:self-auto text-sm text-muted hover:text-fg transition-colors duration-200 sm:mb-2"
           >
             All posts →
           </Link>

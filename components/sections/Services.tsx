@@ -21,7 +21,7 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="py-32 md:py-40 border-t border-border"
+      className="py-20 sm:py-24 border-t border-border"
       aria-labelledby="services-heading"
     >
       <div className="max-w-6xl mx-auto px-6">
@@ -35,7 +35,7 @@ export default function Services() {
           <MagneticButton
             as="a"
             href="/services"
-            className="shrink-0 self-start md:self-auto mb-2"
+            className="shrink-0 self-start md:self-auto sm:mb-2"
           >
             See All Services ↗
           </MagneticButton>

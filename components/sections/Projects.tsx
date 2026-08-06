@@ -24,7 +24,7 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="py-32 md:py-40 border-t border-border"
+      className="py-20 sm:py-24 md:py-40 border-t border-border"
       aria-labelledby="projects-heading"
     >
       <div className="max-w-6xl mx-auto px-6">
@@ -38,7 +38,7 @@ export default function Projects() {
           <MagneticButton
             as="a"
             href="/projects"
-            className="shrink-0 self-start md:self-auto mb-2"
+            className="shrink-0 self-start md:self-auto sm:mb-2"
           >
             All Projects →
           </MagneticButton>

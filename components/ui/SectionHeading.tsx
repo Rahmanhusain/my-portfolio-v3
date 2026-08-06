@@ -66,7 +66,7 @@ export default function SectionHeading({
   return (
     <div
       ref={containerRef}
-      className={clsx('mb-16', centered && 'text-center')}
+      className={clsx(' mb-5 sm:mb-8 md:mb-16', centered && 'text-center')}
     >
       {eyebrow && (
         <p
