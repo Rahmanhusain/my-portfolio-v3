@@ -816,11 +816,34 @@ section {
   display: none;
 }
 
+/* Countdown that fills the active carousel dot while autoplay is running, so
+   the movement is announced before it happens instead of surprising the reader.
+   The duration is set inline from the carousel's own interval — keep them in
+   step by passing it, never by hardcoding a second value here.
+   Resting state is a full bar, which is exactly what the dot should look like
+   if the animation never runs. */
+@keyframes dot-countdown {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.dot-countdown {
+  transform-origin: left center;
+  animation-name: dot-countdown;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .text-shine,
   .aurora,
   .pulse-dot::before,
-  .cta-halo {
+  .cta-halo,
+  .dot-countdown {
     animation: none;
   }
   .glow-card:hover,

@@ -37,7 +37,12 @@ export default function ServiceList({
               </Link>
             </Heading>
 
-            <div className="flex shrink-0 items-center gap-2.5 text-sm text-muted transition-colors duration-300 group-hover:text-strong">
+            {/* Wraps below `md`, where the row stacks and the tags get only the
+                content column to sit in — a nowrap track of three tags is wider
+                than a 320px viewport and would scroll the whole page sideways.
+                From `md` up the row is horizontal again, so the tags go back to
+                a single unshrinkable line beside the title. */}
+            <div className="flex flex-wrap items-center gap-2.5 text-sm text-muted transition-colors duration-300 group-hover:text-strong md:shrink-0 md:flex-nowrap">
               {service.tags.map((tag, i) => (
                 <span key={tag} className="flex items-center gap-2.5">
                   {i > 0 && (
