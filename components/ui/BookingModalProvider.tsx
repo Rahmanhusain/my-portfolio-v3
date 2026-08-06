@@ -237,7 +237,7 @@ export default function BookingModalProvider({
       {children}
 
       <div
-        className={`fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 sm:p-5 overflow-y-auto transition-opacity duration-200 motion-reduce:transition-none ${
+        className={`fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 sm:p-5 overflow-hidden transition-opacity duration-200 motion-reduce:transition-none ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         role="presentation"
