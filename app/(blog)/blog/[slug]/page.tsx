@@ -147,13 +147,13 @@ export default async function BlogPostPage({ params }: Props) {
 
       <article className="min-h-screen pb-20">
         {/* Banner image */}
-        <div className="relative w-full mt-14 sm:mt-14.5 sm:aspect-21/4.5 aspect-21/8 max-h-80 overflow-hidden bg-bg">
+        <div className="relative mt-14 sm:mt-14.5 w-full aspect-21/8 sm:aspect-21/4.5  max-h-80 overflow-hidden bg-bg">
           <Image
             src={post.bannerImage}
             alt={post.bannerAlt}
             fill
             priority
-            className="object-fit"
+            className="object-cover sm:object-fit"
             sizes="100vw"
           />
           {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg" /> */}
