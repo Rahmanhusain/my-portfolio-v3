@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import clsx from 'clsx';
-import { services } from '@/lib/data/services';
+import type { Service } from '@/lib/types/content';
 
 /**
  * The services index, as an editorial row list: name on the left, scope tags
@@ -10,12 +10,17 @@ import { services } from '@/lib/data/services';
  * menu. The whole row is the click target (via the title link's `::after`
  * overlay) while the anchor itself stays a plain, crawlable link.
  *
- * Server Component; hover motion is CSS only.
+ * Hover motion is CSS only. Services arrive as a prop rather than being
+ * imported: the homepage renders this from the `'use client'` Services
+ * section, which would drag `lib/data/services` — and with it the MongoDB
+ * driver — into the browser bundle.
  */
 export default function ServiceList({
+  services,
   className,
   headingLevel = 'h3',
 }: {
+  services: Service[];
   className?: string;
   /** `h3` under a section heading on the homepage, `h2` on /services where
    *  the page title is the only h1. */

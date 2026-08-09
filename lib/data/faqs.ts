@@ -1,10 +1,13 @@
-export interface Faq {
-  question: string;
-  answer: string;
-}
+import { CACHE_TAGS, faqsCollection } from '@/lib/db/collections';
+import { cachedContent, emptyArray } from '@/lib/data/loader';
+import type { Faq } from '@/lib/types/content';
 
-// Freelancer FAQs for the /services page. Edit these to match your real offer.
-export const faqs: Faq[] = [
+export type { Faq } from '@/lib/types/content';
+
+// ─── Bundled fallback ────────────────────────────────────────────────────────
+
+/** Freelancer FAQs for the `/services` page and the homepage FAQ section. */
+export const fallbackFaqs: Faq[] = [
   {
     question: 'How much do your services cost?',
     answer:
@@ -41,3 +44,19 @@ export const faqs: Faq[] = [
       'You do. On handover you receive the full source code in a private Git repository, plus deployment and environment documentation. Nothing is locked behind me — you are free to extend or host it anywhere.',
   },
 ];
+
+// ─── Public API ──────────────────────────────────────────────────────────────
+
+export const getFaqs = cachedContent<Faq[]>(
+  CACHE_TAGS.faqs,
+  async () => {
+    const collection = await faqsCollection();
+    const docs = await collection
+      .find({ published: true })
+      .sort({ order: 1 })
+      .toArray();
+    return docs.map((doc) => doc.data);
+  },
+  () => fallbackFaqs,
+  emptyArray,
+);

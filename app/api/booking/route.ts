@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { saveLead } from '@/lib/db/leads';
 
 interface BookingPayload {
   name?: string;
@@ -37,6 +38,32 @@ export async function POST(request: NextRequest) {
     const ip = forwarded
       ? forwarded.split(',')[0].trim()
       : (request.headers.get('x-real-ip') ?? 'unknown');
+
+    // Archive before the Telegram branch below, so a booking is still captured
+    // when notifications are not configured. `saveLead` never throws.
+    const asText = (value: unknown) =>
+      typeof value === 'string' && value.trim() ? value.trim() : undefined;
+
+    await saveLead({
+      type: 'booking',
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      service: asText(service),
+      details: asText(details),
+      source: asText(source),
+      meta: {
+        ip,
+        userAgent: asText(device?.userAgent),
+        referrer: asText(device?.referrer),
+        path: asText(device?.path),
+        timezone: asText(device?.timezone),
+        language: asText(device?.language),
+        platform: asText(device?.platform),
+        deviceType: asText(device?.deviceType),
+        screen: asText(device?.screen),
+      },
+    });
 
     // If Telegram isn't wired up yet, don't break the booking flow.
     if (!token || !chatId) {

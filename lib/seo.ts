@@ -1,11 +1,17 @@
 import type { Metadata } from 'next';
-import { site } from '@/lib/site';
+import { defaultSite } from '@/lib/site';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
 const siteName = 'Rahman — Software Developer';
 const defaultDescription =
   'Software Developer building fast, accessible, and beautifully crafted web products. Available for freelance.';
 
+/**
+ * Synchronous metadata defaults. Uses `defaultSite` rather than the live
+ * config on purpose — it is not async, so it cannot read the database. Pages
+ * that need the editable site config build their metadata in their own
+ * `generateMetadata()` instead.
+ */
 export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
   return {
     metadataBase: new URL(siteUrl),
@@ -27,8 +33,8 @@ export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
       card: 'summary_large_image',
       title: siteName,
       description: defaultDescription,
-      site: site.social.twitterHandle,
-      creator: site.social.twitterHandle,
+      site: defaultSite.social.twitterHandle,
+      creator: defaultSite.social.twitterHandle,
     },
     robots: { index: true, follow: true },
     alternates: { canonical: '/' },

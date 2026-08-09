@@ -1,7 +1,8 @@
-import { faqs as globalFaqs, type Faq } from '@/lib/data/faqs';
+import { getFaqs } from '@/lib/data/faqs';
+import type { Faq } from '@/lib/types/content';
 
-export default function Faq({ faqs }: { faqs?: Faq[] }) {
-  const items = faqs && faqs.length > 0 ? faqs : globalFaqs;
+export default async function Faq({ faqs }: { faqs?: Faq[] }) {
+  const items = faqs && faqs.length > 0 ? faqs : await getFaqs();
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',

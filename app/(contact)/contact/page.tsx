@@ -2,21 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { siteUrl } from "@/lib/seo";
 import {
-  site,
-  locationLabel,
-  mailto,
-  telHref,
-  whatsappHref,
+  locationLabelFor,
+  mailtoFor,
+  telHrefFor,
+  whatsappHrefFor,
 } from "@/lib/site";
+import { getSite } from "@/lib/data/site";
 import ContactForm from "@/components/ui/ContactForm";
 import BookingTrigger from "@/components/ui/BookingTrigger";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import { PhoneIcon, WhatsAppIcon } from "@/components/icons";
 
-export const metadata: Metadata = {
+const pageDescription =
+  "Get in touch about a web app, custom CRM, e-commerce build, or automation project. Free 30-minute discovery call, written quote, and a reply within one business day.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+
+  return {
   title: "Contact — Let's Build Something Together",
-  description:
-    "Get in touch about a web app, custom CRM, e-commerce build, or automation project. Free 30-minute discovery call, written quote, and a reply within one business day.",
+  description: pageDescription,
   keywords: [
     "contact web developer",
     "hire developer",
@@ -41,14 +46,15 @@ export const metadata: Metadata = {
     site: site.social.twitterHandle,
     creator: site.social.twitterHandle,
   },
-};
+  };
+}
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
   "@id": `${siteUrl}/contact#page`,
   name: "Contact — Rahman Software Developer",
-  description: metadata.description,
+  description: pageDescription,
   url: `${siteUrl}/contact`,
   isPartOf: { "@id": `${siteUrl}/#website` },
   inLanguage: "en-US",
@@ -85,7 +91,9 @@ const nextSteps = [
   },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const site = await getSite();
+
   return (
     <>
       <script
@@ -161,7 +169,7 @@ export default function ContactPage() {
                 </h2>
                 <div className="space-y-3">
                   <a
-                    href={mailto}
+                    href={mailtoFor(site)}
                     className="group flex items-center gap-3 text-sm text-muted transition-colors hover:text-fg"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border transition-colors group-hover:border-faint">
@@ -191,7 +199,7 @@ export default function ContactPage() {
                   </a>
 
                   <a
-                    href={telHref}
+                    href={telHrefFor(site)}
                     className="group flex items-center gap-3 text-sm text-muted transition-colors hover:text-fg"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border transition-colors group-hover:border-faint">
@@ -201,7 +209,7 @@ export default function ContactPage() {
                   </a>
 
                   <a
-                    href={whatsappHref}
+                    href={whatsappHrefFor(site)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex items-center gap-3 text-sm text-muted transition-colors hover:text-fg"
@@ -222,7 +230,7 @@ export default function ContactPage() {
                   <span className="pulse-dot" aria-hidden="true" />
                   {site.responseTime}.
                 </div>
-                <p className="text-sm text-muted">{locationLabel}</p>
+                <p className="text-sm text-muted">{locationLabelFor(site)}</p>
               </section>
 
               {/* What happens next — removes the black-box feeling */}
@@ -263,7 +271,7 @@ export default function ContactPage() {
                   Tell me about your project and I&apos;ll get back to you
                   within one business day.
                 </p>
-                <ContactForm />
+                <ContactForm site={site} />
               </div>
             </div>
           </div>

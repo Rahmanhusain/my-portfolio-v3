@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useBookingModal } from '@/components/ui/BookingModalProvider';
-import { site, whatsappHref } from '@/lib/site';
+import { whatsappHrefFor } from '@/lib/site';
+import type { SiteConfig } from '@/lib/types/content';
 
 /**
  * Persistent booking CTA that slides up once the visitor is past the fold.
@@ -15,7 +16,7 @@ import { site, whatsappHref } from '@/lib/site';
  * Hidden on /contact (the form is already the page) and while the booking
  * modal itself is open.
  */
-export default function StickyCta() {
+export default function StickyCta({ site }: { site: SiteConfig }) {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const { open, isOpen } = useBookingModal();
@@ -67,7 +68,7 @@ export default function StickyCta() {
         </div>
 
         <a
-          href={whatsappHref}
+          href={whatsappHrefFor(site)}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Message on WhatsApp"

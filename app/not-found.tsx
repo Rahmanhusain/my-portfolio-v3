@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Header from '@/components/layout/HeaderServerComp';
 import Footer from '@/components/layout/Footer';
-import { posts } from '@/lib/data/posts';
-import { services } from '@/lib/data/services';
+import { getPosts } from '@/lib/data/posts';
+import { getServices } from '@/lib/data/services';
 
 export const metadata: Metadata = {
   title: 'Page not found',
@@ -16,7 +16,9 @@ export const metadata: Metadata = {
  * 404 with somewhere to go. Rendered outside the route groups, so it brings
  * its own header and footer.
  */
-export default function NotFound() {
+export default async function NotFound() {
+  const [services, posts] = await Promise.all([getServices(), getPosts()]);
+
   const suggestions = [
     ...services.slice(0, 3).map((s) => ({
       href: `/services/${s.slug}`,

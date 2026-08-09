@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { projects } from "@/lib/data/projects";
+import { getProjects } from "@/lib/data/projects";
+import type { Project } from "@/lib/types/content";
 import { siteUrl } from "@/lib/seo";
-import { site } from "@/lib/site";
+import { getSite } from "@/lib/data/site";
 import ProjectCard from "@/components/ui/ProjectCard";
 import CtaBand from "@/components/sections/CtaBand";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import BackToTop from "@/components/ui/BackToTop";
 
-export const metadata: Metadata = {
+const pageDescription =
+  "Case studies of software I've built: a real-time e-commerce platform, a multi-tenant SaaS analytics dashboard, and a headless portfolio CMS. The problem, the approach, and what actually shipped.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+
+  return {
   title: "Projects — Case Studies of Shipped Work",
-  description:
-    "Case studies of software I've built: a real-time e-commerce platform, a multi-tenant SaaS analytics dashboard, and a headless portfolio CMS. The problem, the approach, and what actually shipped.",
+  description: pageDescription,
   keywords: [
     "web developer portfolio case studies",
     "full-stack developer projects",
@@ -37,14 +43,15 @@ export const metadata: Metadata = {
     site: site.social.twitterHandle,
     creator: site.social.twitterHandle,
   },
-};
+  };
+}
 
-const jsonLd = {
+const buildJsonLd = (projects: Project[]) => ({
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "@id": `${siteUrl}/projects#page`,
   name: "Projects — Rahman Software Developer",
-  description: metadata.description,
+  description: pageDescription,
   url: `${siteUrl}/projects`,
   isPartOf: { "@id": `${siteUrl}/#website` },
   about: { "@id": `${siteUrl}/#person` },
@@ -59,7 +66,7 @@ const jsonLd = {
       url: `${siteUrl}/projects/${p.slug}`,
     })),
   },
-};
+});
 
 const breadcrumbJsonLd = {
   "@context": "https://schema.org",
@@ -75,7 +82,10 @@ const breadcrumbJsonLd = {
   ],
 };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const [projects, site] = await Promise.all([getProjects(), getSite()]);
+  const jsonLd = buildJsonLd(projects);
+
   return (
     <>
       <script

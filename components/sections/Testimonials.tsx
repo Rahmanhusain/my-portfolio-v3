@@ -4,9 +4,13 @@ import { useRef } from 'react';
 import { useScrollReveal } from '@/lib/useScrollReveal';
 import SectionHeading from '@/components/ui/SectionHeading';
 import TestimonialCarousel from '@/components/ui/TestimonialCarousel';
-import { testimonials } from '@/lib/data/testimonials';
+import type { Testimonial } from '@/lib/types/content';
 
-export default function Testimonials() {
+export default function Testimonials({
+  testimonials,
+}: {
+  testimonials: Testimonial[];
+}) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useScrollReveal(sectionRef, {

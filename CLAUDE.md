@@ -15,6 +15,8 @@ npm run lint    # eslint (flat config, eslint.config.mjs)
 
 No test framework is configured. `implementation.md` is the original build spec — useful context but not a source of truth; the code has diverged.
 
+Content is edited from the sibling `admin_rahmanhusaindev` app, which writes to the same MongoDB database this site reads. Its `npm run seed` imports `content/**` into that database; see its README. This repo needs `MONGODB_URI`, `REVALIDATE_SECRET` and `R2_PUBLIC_BASE_URL` in `.env.local` to participate — without them it runs entirely from the bundled JSON.
+
 ## Architecture
 
 **Stack:** Next.js 16 App Router, React 19, TypeScript, Tailwind v4 (via `@tailwindcss/postcss`), GSAP + `@gsap/react` + Lenis. `@/*` path alias maps to the repo root (not `src/`).
@@ -56,9 +58,18 @@ Verify colour changes with an actual contrast pass, and composite alpha when you
 
 **Scroll-reveal is a shared hook.** `lib/useScrollReveal.ts` is the standard fade/slide-up-on-scroll primitive. It respects `prefers-reduced-motion` (clears props instead of animating) and uses `gsap.context()` scoped to a container ref for cleanup. Prefer this over hand-rolled `ScrollTrigger.create` calls unless you need a non-reveal effect (pin, scrub, etc.).
 
-**Content is JSON-authored, not MDX.** Blog posts, services, and project case studies are plain JSON files in `content/posts/`, `content/services/`, and `content/projects/`, hydrated through the matching `lib/data/*.ts`. Adding a new entry requires two steps:
-1. Create `content/<type>/<slug>.json` (filename should match the `slug` field — note two existing services already violate this: `business-email-setup.json` has slug `custom-email-setup`, and `e-commerce-solutions.json` has slug `b2b-ecommerce-solutions`. The `slug` field is what builds the URL, so key any script off that, not the filename).
-2. Import and register it in the corresponding `lib/data/*.ts` array.
+**Content lives in MongoDB, with the JSON files as a fallback.** Blog posts, services, and project case studies are authored as JSON — the same shape as ever — but the source of truth is now the database that the sibling `admin_rahmanhusaindev` app writes to. `content/*.json` is kept as the seed for that database and as the safety net described below.
+
+`lib/data/*.ts` no longer export arrays. Each exports an **async getter** (`getServices()`, `getProjects()`, `getPosts()`, `getTestimonials()`, `getFaqs()`) built by `cachedContent()` in `lib/data/loader.ts`, which wraps the query in `unstable_cache` under a tag and falls back to the bundled JSON when `MONGODB_URI` is unset, the read fails, *or the collection is empty*. That last case is what makes the database optional: until it is seeded, the site renders exactly as it did before, and `next build` works with no database at all.
+
+Two consequences worth internalising:
+
+- **Server Components fetch for themselves** — `Footer`, `CtaBand`, `TrustStrip`, `ServiceMarquee`, `Faq` and `ShareLinks` are all `async` now and call the getters directly.
+- **Client Components must receive data as props.** `lib/data/*.ts` imports the MongoDB driver, so it must never be reachable from browser code. The homepage sections (`Services`, `Projects`, `BlogPreview`, `Testimonials`, `FaqHome`, `Contact`) and `StickyCta` / `BookingModalProvider` take their data from the nearest Server Component. `ServiceList` takes `services` as a prop for exactly this reason — the `'use client'` `Services` section imports it, which pulls it into the client bundle. **Import types from `lib/types/content.ts`, never from `lib/data/*.ts`**, in anything a Client Component can reach.
+
+Editing content is now the admin panel's job. To add an entry by hand, insert a document into the matching collection shaped `{ slug, order, published, data, createdAt, updatedAt }`, where `data` is the JSON the renderer already expects. The `slug` field inside `data` is what builds the URL — note two existing services have a filename that disagrees with it (`business-email-setup.json` has slug `custom-email-setup`, `e-commerce-solutions.json` has slug `b2b-ecommerce-solutions`), so key any script off the slug, not the filename.
+
+After any write, `POST /api/revalidate` with `x-revalidate-secret` and `{ tags: [...] }` to drop the site's cache; otherwise the change appears within the hour. Tags are defined in `lib/db/collections.ts`.
 
 Services carry two separate keyword fields, and mixing them up looks broken: `keywords` is long-tail SEO phrases for metadata, `tags` is two-to-three-word chips rendered beside the title in `ServiceList`. Projects use the same split.
 
@@ -72,6 +83,10 @@ Rich body content uses the typed `ContentBlock` union in `lib/content-blocks.tsx
 
 Structured data is a linked graph, not a pile of loose blobs. The root layout declares `#person`, `#website`, and `#business`; every page-level node references those by `@id` (`author: { '@id': …/#person }`) instead of re-describing the entity. Each route also emits its own `BreadcrumbList`. Keep exactly one `h1` per page.
 
-**`lib/site.ts` is the single source of truth for contact details.** Email, phone, and WhatsApp are exported as ready-made `mailto` / `telHref` / `whatsappHref`. Never hardcode them in a component — inconsistent NAP data across pages is an SEO problem, and this file exists because the site previously had two different emails and two different phone numbers in circulation.
+**Contact details come from `getSite()`, with `lib/site.ts` holding the defaults.** `lib/site.ts` exports `defaultSite` plus the composers `mailtoFor` / `telHrefFor` / `whatsappHrefFor` / `locationLabelFor` / `availabilityLabelFor`, all of which take a `SiteConfig`. `lib/data/site.ts` exports `getSite()`, which merges the admin panel's stored settings over those defaults, group by group (a shallow spread would let a partial `social` object wipe out `phoneDigits` and silently break every `tel:` and `wa.me` link).
 
-**Contact form is stubbed.** `app/api/contact/route.ts` validates input but doesn't send email yet (Resend wiring is commented out). If touching contact flow, note the `RESEND` / `CONTACT_EMAIL` env vars it expects.
+The old bare `site` / `mailto` / `telHref` constants were deliberately removed rather than kept as aliases — a stale constant would render the placeholder email while the panel showed the real one, and nothing would fail loudly. Never hardcode contact details in a component: inconsistent NAP data across pages is an SEO problem, and this file exists because the site previously had two different emails and two different phone numbers in circulation.
+
+Because these values feed `generateMetadata()` and the JSON-LD graph, pages that need them export `generateMetadata()` rather than a static `metadata` object.
+
+**Leads are archived, then notified.** `app/api/contact/route.ts` and `app/api/booking/route.ts` both call `saveLead()` (`lib/db/leads.ts`) before touching Telegram or Resend, which is what fills the admin panel's inbox. `saveLead` swallows every error on purpose: a lead that reaches Telegram but not MongoDB is an annoyance, while a 500 on the contact form because the database blinked is a lost customer. The notification channels remain the system of record. Note the `TELEGRAM_*` / `RESEND_API_KEY` / `CONTACT_EMAIL` env vars these routes expect.

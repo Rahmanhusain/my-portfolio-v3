@@ -6,9 +6,10 @@ import { gsap } from '@/lib/gsap';
 import SectionHeading from '@/components/ui/SectionHeading';
 import BookingTrigger from '@/components/ui/BookingTrigger';
 import ContactForm from '@/components/ui/ContactForm';
-import { site, locationLabel, mailto, whatsappHref } from '@/lib/site';
+import { locationLabelFor, mailtoFor, whatsappHrefFor } from '@/lib/site';
+import type { SiteConfig } from '@/lib/types/content';
 
-export default function Contact() {
+export default function Contact({ site }: { site: SiteConfig }) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -49,7 +50,7 @@ export default function Contact() {
 
             <div className="space-y-3.5">
               <a
-                href={mailto}
+                href={mailtoFor(site)}
                 className="flex items-center gap-3 text-muted hover:text-fg transition-colors text-sm group"
               >
                 <span className="w-9 h-9 rounded-lg border border-border flex items-center justify-center group-hover:border-faint transition-colors shrink-0">
@@ -61,7 +62,7 @@ export default function Contact() {
                 <span className="link-sweep">{site.social.email}</span>
               </a>
               <a
-                href={whatsappHref}
+                href={whatsappHrefFor(site)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-muted hover:text-fg transition-colors text-sm group"
@@ -111,7 +112,7 @@ export default function Contact() {
                 </span>
                 {site.responseTime}.
               </div>
-              <p className="text-sm text-muted">{locationLabel}</p>
+              <p className="text-sm text-muted">{locationLabelFor(site)}</p>
             </div>
 
             {/* Book a call CTA — match the page's outline button language */}
@@ -127,7 +128,7 @@ export default function Contact() {
 
           {/* Right — shared form (currency-aware budget, etc.) */}
           <div className="md:sticky md:top-24 md:self-start">
-            <ContactForm />
+            <ContactForm site={site} />
           </div>
         </div>
       </div>

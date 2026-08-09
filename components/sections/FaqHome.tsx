@@ -3,9 +3,9 @@
 import { useRef } from 'react';
 import { useScrollReveal } from '@/lib/useScrollReveal';
 import SectionHeading from '@/components/ui/SectionHeading';
-import { faqs } from '@/lib/data/faqs';
+import type { Faq } from '@/lib/types/content';
 
-export default function FaqHome() {
+export default function FaqHome({ faqs }: { faqs: Faq[] }) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useScrollReveal(sectionRef, {

@@ -14,9 +14,17 @@ import ServiceMarquee from '@/components/ui/ServiceMarquee';
 import ScrollProgress from '@/components/ui/ScrollProgress';
 import BackToTop from '@/components/ui/BackToTop';
 import { siteUrl } from '@/lib/seo';
-import { site } from '@/lib/site';
+import { getSite } from '@/lib/data/site';
+import { getServices } from '@/lib/data/services';
+import { getProjects } from '@/lib/data/projects';
+import { getPosts } from '@/lib/data/posts';
+import { getTestimonials } from '@/lib/data/testimonials';
+import { getFaqs } from '@/lib/data/faqs';
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+
+  return {
   // `absolute` skips the "%s | Rahman" template — the brand is already in the
   // title, and "… | Rahman" twice reads like a bug in the SERP.
   title: {
@@ -51,7 +59,8 @@ export const metadata: Metadata = {
     site: site.social.twitterHandle,
     creator: site.social.twitterHandle,
   },
-};
+  };
+}
 
 /** ProfilePage tells Google this URL is the canonical page *about* the Person
  *  entity declared in the root layout — the pairing that makes an author/
@@ -68,7 +77,21 @@ const profileJsonLd = {
   inLanguage: 'en-US',
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetched once here and handed to the `'use client'` sections as props.
+  // Those sections own GSAP timelines, so they cannot fetch for themselves —
+  // and pulling the data layer into them would drag the MongoDB driver into
+  // the browser bundle.
+  const [site, services, projects, posts, testimonials, faqs] =
+    await Promise.all([
+      getSite(),
+      getServices(),
+      getProjects(),
+      getPosts(),
+      getTestimonials(),
+      getFaqs(),
+    ]);
+
   return (
     <>
       <script
@@ -81,14 +104,14 @@ export default function HomePage() {
         <Hero />
         <TrustStrip />
         <About />
-        <Services />
+        <Services services={services} />
         <ServiceMarquee />
-        <Projects />
-        <Testimonials />
+        <Projects projects={projects} />
+        <Testimonials testimonials={testimonials} />
         <Workflow />
-        <BlogPreview />
-        <FaqHome />
-        <Contact />
+        <BlogPreview posts={posts} />
+        <FaqHome faqs={faqs} />
+        <Contact site={site} />
       </SmoothScrollProvider>
 
       <BackToTop />

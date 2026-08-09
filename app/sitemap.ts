@@ -1,12 +1,18 @@
 import type { MetadataRoute } from 'next';
-import { posts } from '@/lib/data/posts';
-import { services } from '@/lib/data/services';
-import { projects } from '@/lib/data/projects';
+import { getPosts } from '@/lib/data/posts';
+import { getServices } from '@/lib/data/services';
+import { getProjects } from '@/lib/data/projects';
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [services, projects, posts] = await Promise.all([
+    getServices(),
+    getProjects(),
+    getPosts(),
+  ]);
+
   // One shared timestamp so every static route reports the same build time
   // instead of drifting by milliseconds.
   const now = new Date();

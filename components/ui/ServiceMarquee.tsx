@@ -1,17 +1,19 @@
 import Link from 'next/link';
 import Marquee from '@/components/ui/Marquee';
-import { services } from '@/lib/data/services';
+import { getServices } from '@/lib/data/services';
 
 /**
  * Scrolling band of every service, each one linked. Doubles as internal
  * linking: every page that renders this passes crawl equity to all eight
  * service pages, and a visitor always has a next click available.
  */
-export default function ServiceMarquee({
+export default async function ServiceMarquee({
   reverse = false,
 }: {
   reverse?: boolean;
 }) {
+  const services = await getServices();
+
   return (
     <div
       className="border-y border-border py-5"

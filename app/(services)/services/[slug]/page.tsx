@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { services } from "@/lib/data/services";
+import { getServices, getServiceBySlug } from "@/lib/data/services";
+import { getSite } from "@/lib/data/site";
 import { siteUrl } from "@/lib/seo";
-import { site } from "@/lib/site";
 import { renderBlock } from "@/lib/content-blocks";
 import TableOfContents from "@/components/ui/TableOfContents";
 import Faq from "@/components/ui/Faq";
@@ -16,12 +16,13 @@ import BackToTop from "@/components/ui/BackToTop";
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
+  const services = await getServices();
   return services.map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const service = services.find((s) => s.slug === slug);
+  const [service, site] = await Promise.all([getServiceBySlug(slug), getSite()]);
   if (!service) return {};
 
   const canonical = `${siteUrl}/services/${service.slug}`;
@@ -56,6 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ServicePage({ params }: Props) {
   const { slug } = await params;
+  const [services, site] = await Promise.all([getServices(), getSite()]);
   const service = services.find((s) => s.slug === slug);
   if (!service) notFound();
 

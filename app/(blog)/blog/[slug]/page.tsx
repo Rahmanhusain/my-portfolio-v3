@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { posts } from "@/lib/data/posts";
+import { getPosts } from "@/lib/data/posts";
+import { getSite } from "@/lib/data/site";
 import { siteUrl } from "@/lib/seo";
-import { site } from "@/lib/site";
+import type { Post } from "@/lib/types/content";
 import { renderBlock } from "@/lib/content-blocks";
 import TableOfContents from "@/components/ui/TableOfContents";
 import ShareLinks from "@/components/ui/ShareLinks";
@@ -15,12 +16,13 @@ import BackToTop from "@/components/ui/BackToTop";
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
+  const posts = await getPosts();
   return posts.map((p) => ({ slug: p.slug }));
 }
 
 /** Rough word count from the body blocks — feeds `wordCount` in the schema,
  *  which is one of the signals Google uses to judge article depth. */
-function countWords(post: (typeof posts)[number]): number {
+function countWords(post: Post): number {
   return post.body.reduce((total, block) => {
     if ("text" in block) return total + block.text.split(/\s+/).length;
     if ("items" in block)
@@ -31,6 +33,7 @@ function countWords(post: (typeof posts)[number]): number {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const [posts, site] = await Promise.all([getPosts(), getSite()]);
   const post = posts.find((p) => p.slug === slug);
   if (!post) return {};
 
@@ -71,6 +74,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
+  const [posts, site] = await Promise.all([getPosts(), getSite()]);
   const index = posts.findIndex((p) => p.slug === slug);
   const post = posts[index];
   if (!post) notFound();

@@ -1,16 +1,12 @@
-export interface Testimonial {
-  id: string;
-  quote: string;
-  name: string;
-  initials: string;
-  /** Optional attribution line under the name. Both are omitted from the card
-   *  when absent — a first-name-only reference shouldn't render a dangling
-   *  comma or an empty row. */
-  role?: string;
-  company?: string;
-}
+import { CACHE_TAGS, testimonialsCollection } from '@/lib/db/collections';
+import { cachedContent, emptyArray } from '@/lib/data/loader';
+import type { Testimonial } from '@/lib/types/content';
 
-export const testimonials: Testimonial[] = [
+export type { Testimonial } from '@/lib/types/content';
+
+// ─── Bundled fallback ────────────────────────────────────────────────────────
+
+export const fallbackTestimonials: Testimonial[] = [
   {
     id: '1',
     quote:
@@ -21,15 +17,31 @@ export const testimonials: Testimonial[] = [
   {
     id: '2',
     quote:
-      'He helped us set up a custom business email with our domain. The process was quick, and it has improved our brand\'s professional image.',
+      "He helped us set up a custom business email with our domain. The process was quick, and it has improved our brand's professional image.",
     name: 'Shivam Shukla',
     initials: 'SS',
   },
   {
     id: '3',
     quote:
-      'The calling automation has improved our workflow and customer experience. It\'s been a valuable solution for our business. his expertise in web development and automation is commendable.',
+      "The calling automation has improved our workflow and customer experience. It's been a valuable solution for our business. his expertise in web development and automation is commendable.",
     name: 'Fatima Ahmed',
     initials: 'FA',
   },
 ];
+
+// ─── Public API ──────────────────────────────────────────────────────────────
+
+export const getTestimonials = cachedContent<Testimonial[]>(
+  CACHE_TAGS.testimonials,
+  async () => {
+    const collection = await testimonialsCollection();
+    const docs = await collection
+      .find({ published: true })
+      .sort({ order: 1 })
+      .toArray();
+    return docs.map((doc) => doc.data);
+  },
+  () => fallbackTestimonials,
+  emptyArray,
+);

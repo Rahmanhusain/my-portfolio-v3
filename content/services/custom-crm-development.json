@@ -78,7 +78,7 @@
     },
     {
       "type": "code",
-      "language": "typescript",
+      "lang": "typescript",
       "code": "type Deal = {\n  id: string;\n  stage: \"new\" | \"contacted\" | \"proposal\" | \"closed\";\n  lastContactedAt: Date;\n};\n\nfunction flagColdDeals(deals: Deal[]): Deal[] {\n  const THREE_DAYS_MS = 1000 * 60 * 60 * 24 * 3;\n  const now = Date.now();\n\n  return deals.filter((deal) => {\n    const isOpen = deal.stage !== \"closed\";\n    const isStale = now - deal.lastContactedAt.getTime() > THREE_DAYS_MS;\n    return isOpen && isStale;\n  });\n}"
     },
     {

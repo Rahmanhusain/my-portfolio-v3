@@ -1,18 +1,20 @@
 import Link from 'next/link';
-import { site, locationLabel } from '@/lib/site';
+import { locationLabelFor } from '@/lib/site';
+import { getSite } from '@/lib/data/site';
 import FooterBookingButton from '@/components/layout/FooterBookingButton';
-
-const socialLinks = [
-  { label: 'GitHub',     href: site.social.github },
-  { label: 'LinkedIn',   href: site.social.linkedin },
-  { label: 'X / Twitter', href: site.social.twitter },
-];
 
 const linkClass =
   'text-sm text-muted hover:text-fg transition-colors duration-200';
 
-export default function Footer() {
+export default async function Footer() {
+  const site = await getSite();
   const year = new Date().getFullYear();
+
+  const socialLinks = [
+    { label: 'GitHub',      href: site.social.github },
+    { label: 'LinkedIn',    href: site.social.linkedin },
+    { label: 'X / Twitter', href: site.social.twitter },
+  ];
 
   return (
     <footer className="border-t border-border bg-bg">
@@ -26,7 +28,7 @@ export default function Footer() {
             © {year} — All rights reserved.
           </p>
           <p className="text-xs text-muted mt-1">
-            {locationLabel}
+            {locationLabelFor(site)}
           </p>
           <div className="flex items-center gap-2 mt-3">
             <span

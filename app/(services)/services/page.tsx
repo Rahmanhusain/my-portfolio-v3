@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { services } from "@/lib/data/services";
+import { getServices } from "@/lib/data/services";
+import { getSite } from "@/lib/data/site";
 import { siteUrl } from "@/lib/seo";
-import { site } from "@/lib/site";
+import type { Service } from "@/lib/types/content";
 import Faq from "@/components/ui/Faq";
 import CtaBand from "@/components/sections/CtaBand";
 import ScrollProgress from "@/components/ui/ScrollProgress";
@@ -10,10 +11,15 @@ import BackToTop from "@/components/ui/BackToTop";
 import ServiceMarquee from "@/components/ui/ServiceMarquee";
 import ServiceList from "@/components/ui/ServiceList";
 
-export const metadata: Metadata = {
+const pageDescription =
+  "Web app development, UI/UX design, custom CRM, e-commerce, API and backend work, business email setup, hosting, and AI automation — built end to end by one developer. Free 30-minute scoping call.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+
+  return {
   title: "Services — Web Apps, CRMs, E-Commerce, APIs & Automation",
-  description:
-    "Web app development, UI/UX design, custom CRM, e-commerce, API and backend work, business email setup, hosting, and AI automation — built end to end by one developer. Free 30-minute scoping call.",
+  description: pageDescription,
   keywords: [
     "web development services",
     "full-stack developer for hire",
@@ -43,14 +49,15 @@ export const metadata: Metadata = {
     site: site.social.twitterHandle,
     creator: site.social.twitterHandle,
   },
-};
+  };
+}
 
-const jsonLd = {
+const buildJsonLd = (services: Service[]) => ({
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "@id": `${siteUrl}/services#page`,
   name: "Services — Rahman Software Developer",
-  description: metadata.description,
+  description: pageDescription,
   url: `${siteUrl}/services`,
   isPartOf: { "@id": `${siteUrl}/#website` },
   about: { "@id": `${siteUrl}/#business` },
@@ -65,7 +72,7 @@ const jsonLd = {
       url: `${siteUrl}/services/${s.slug}`,
     })),
   },
-};
+});
 
 const breadcrumbJsonLd = {
   "@context": "https://schema.org",
@@ -97,7 +104,10 @@ const guarantees = [
   },
 ];
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getServices();
+  const jsonLd = buildJsonLd(services);
+
   return (
     <>
       <script
@@ -149,7 +159,7 @@ export default function ServicesPage() {
       {/* ── List ────────────────────────────────────────────────────────── */}
       <div className="pb-20 pt-20">
         <div className="mx-auto max-w-6xl px-6">
-          <ServiceList headingLevel="h2" />
+          <ServiceList services={services} headingLevel="h2" />
 
           {/* ── Guarantees ────────────────────────────────────────────── */}
           <section

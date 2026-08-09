@@ -4,8 +4,9 @@ import './globals.css';
 import BookingModalProvider from '@/components/ui/BookingModalProvider';
 import ContactFormS from '@/components/ui/ContactFormS';
 import StickyCta from '@/components/layout/StickyCta';
-import { site } from '@/lib/site';
-import { services } from '@/lib/data/services';
+import { getSite } from '@/lib/data/site';
+import { getServices } from '@/lib/data/services';
+import type { SiteConfig, Service } from '@/lib/types/content';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -31,7 +32,13 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://yourname.dev';
 const rootDescription =
   'Freelance full-stack developer building fast, accessible web apps, custom CRMs, e-commerce stores, APIs, and AI automations with Next.js and TypeScript.';
 
-export const metadata: Metadata = {
+/** Async because `twitter.site`/`twitter.creator` come from the editable site
+ *  config. Next still evaluates this once at build for a static route, so this
+ *  costs nothing at request time. */
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+
+  return {
   metadataBase: new URL(siteUrl),
   title: {
     default: 'Rahman — Full-Stack Web Developer',
@@ -88,7 +95,8 @@ export const metadata: Metadata = {
     },
   },
   alternates: { canonical: '/' },
-};
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: '#f5f2ec',
@@ -98,7 +106,7 @@ export const viewport: Viewport = {
 };
 
 // Person schema — enriched for richer knowledge-panel / rich-result eligibility.
-const personJsonLd = {
+const buildPersonJsonLd = (site: SiteConfig) => ({
   '@context': 'https://schema.org',
   '@type': 'Person',
   '@id': `${siteUrl}/#person`,
@@ -127,7 +135,7 @@ const personJsonLd = {
     'Workflow Automation',
   ],
   sameAs: [site.social.github, site.social.linkedin, site.social.twitter],
-};
+});
 
 // WebSite schema — helps search engines understand the site entity.
 const websiteJsonLd = {
@@ -144,7 +152,7 @@ const websiteJsonLd = {
 // ProfessionalService — the schema that actually describes the *business*.
 // The offer catalogue is generated from the real service list, so it can never
 // drift out of sync with what the site says it sells.
-const businessJsonLd = {
+const buildBusinessJsonLd = (site: SiteConfig, services: Service[]) => ({
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   '@id': `${siteUrl}/#business`,
@@ -176,13 +184,20 @@ const businessJsonLd = {
       },
     })),
   },
-};
+});
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Both reads are cached and tag-invalidated, so this is a memory hit on
+  // every render after the first.
+  const [site, services] = await Promise.all([getSite(), getServices()]);
+
+  const personJsonLd = buildPersonJsonLd(site);
+  const businessJsonLd = buildBusinessJsonLd(site, services);
+
   return (
     <html
       lang="en"
@@ -210,9 +225,9 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        <BookingModalProvider>
+        <BookingModalProvider site={site}>
           {children}
-          <StickyCta />
+          <StickyCta site={site} />
         </BookingModalProvider>
         <ContactFormS />
       </body>

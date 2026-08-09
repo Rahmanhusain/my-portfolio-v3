@@ -1,16 +1,17 @@
-import { site } from '@/lib/site';
+import { getSite } from '@/lib/data/site';
 
 /**
  * Share row for articles. Plain links to each network's intent URL — no SDKs,
  * no tracking pixels, no client JavaScript, and nothing that slows the page.
  */
-export default function ShareLinks({
+export default async function ShareLinks({
   url,
   title,
 }: {
   url: string;
   title: string;
 }) {
+  const site = await getSite();
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
 

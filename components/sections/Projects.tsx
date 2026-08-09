@@ -5,9 +5,9 @@ import { useScrollReveal } from '@/lib/useScrollReveal';
 import SectionHeading from '@/components/ui/SectionHeading';
 import ProjectCard from '@/components/ui/ProjectCard';
 import MagneticButton from '@/components/ui/MagneticButton';
-import { projects } from '@/lib/data/projects';
+import type { Project } from '@/lib/types/content';
 
-export default function Projects() {
+export default function Projects({ projects }: { projects: Project[] }) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useScrollReveal(sectionRef, {

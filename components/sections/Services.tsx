@@ -5,8 +5,9 @@ import { useScrollReveal } from '@/lib/useScrollReveal';
 import SectionHeading from '@/components/ui/SectionHeading';
 import MagneticButton from '@/components/ui/MagneticButton';
 import ServiceList from '@/components/ui/ServiceList';
+import type { Service } from '@/lib/types/content';
 
-export default function Services() {
+export default function Services({ services }: { services: Service[] }) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useScrollReveal(sectionRef, {
@@ -41,7 +42,7 @@ export default function Services() {
           </MagneticButton>
         </div>
 
-        <ServiceList className="services-list" />
+        <ServiceList services={services} className="services-list" />
       </div>
     </section>
   );

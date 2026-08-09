@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { site } from '@/lib/site';
+import type { SiteConfig } from '@/lib/types/content';
 
 interface BookingModalContextValue {
   open: (source?: string) => void;
@@ -89,8 +89,10 @@ const selectClass =
 
 export default function BookingModalProvider({
   children,
+  site,
 }: {
   children: React.ReactNode;
+  site: SiteConfig;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [source, setSource] = useState<string>('unknown');

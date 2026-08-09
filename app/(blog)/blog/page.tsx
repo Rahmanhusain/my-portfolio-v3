@@ -1,20 +1,22 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { posts } from '@/lib/data/posts';
+import { getPosts } from '@/lib/data/posts';
+import { getSite } from '@/lib/data/site';
 import { siteUrl } from '@/lib/seo';
-import { site } from '@/lib/site';
+import type { Post } from '@/lib/types/content';
 import CtaBand from '@/components/sections/CtaBand';
 import ScrollProgress from '@/components/ui/ScrollProgress';
 import BackToTop from '@/components/ui/BackToTop';
 
-const sortedPosts = [...posts].sort(
-  (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
-);
+const pageDescription =
+  'Practical articles on React, Next.js, GSAP, Tailwind CSS, automation, and running a small business online — written by a full-stack developer who ships.';
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+
+  return {
   title: 'Blog — Web Development & Business Insights',
-  description:
-    'Practical articles on React, Next.js, GSAP, Tailwind CSS, automation, and running a small business online — written by a full-stack developer who ships.',
+  description: pageDescription,
   keywords: [
     'web development blog',
     'React tutorials',
@@ -42,14 +44,15 @@ export const metadata: Metadata = {
     site: site.social.twitterHandle,
     creator: site.social.twitterHandle,
   },
-};
+  };
+}
 
-const jsonLd = {
+const buildJsonLd = (sortedPosts: Post[]) => ({
   '@context': 'https://schema.org',
   '@type': 'Blog',
   '@id': `${siteUrl}/blog#blog`,
   name: 'Rahman — Web Development Blog',
-  description: metadata.description,
+  description: pageDescription,
   url: `${siteUrl}/blog`,
   inLanguage: 'en-US',
   isPartOf: { '@id': `${siteUrl}/#website` },
@@ -68,7 +71,7 @@ const jsonLd = {
     keywords: p.keywords.join(', '),
     author: { '@id': `${siteUrl}/#person` },
   })),
-};
+});
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
@@ -79,7 +82,11 @@ const breadcrumbJsonLd = {
   ],
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  // `getPosts()` already returns newest-first.
+  const sortedPosts = await getPosts();
+  const jsonLd = buildJsonLd(sortedPosts);
+
   return (
     <>
       <script

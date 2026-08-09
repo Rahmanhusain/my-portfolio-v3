@@ -1,6 +1,6 @@
 import Marquee from '@/components/ui/Marquee';
 import { techStack } from '@/lib/data/techStack';
-import { site } from '@/lib/site';
+import { getSite } from '@/lib/data/site';
 
 /**
  * The band directly under the hero: what I build with, and the promises that
@@ -12,7 +12,9 @@ import { site } from '@/lib/site';
  *
  * Server Component: the marquee is CSS-only.
  */
-export default function TrustStrip() {
+export default async function TrustStrip() {
+  const site = await getSite();
+
   return (
     <section
       className="relative border-t border-border py-14 md:py-16"

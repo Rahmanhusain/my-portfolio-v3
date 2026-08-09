@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { Resend } from 'resend';
+import { saveLead } from '@/lib/db/leads';
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,6 +39,20 @@ export async function POST(request: NextRequest) {
     const referer = request.headers.get('referer') ?? 'unknown';
     const path = request.nextUrl?.pathname ?? '/';
     const submittedAt = new Date().toISOString();
+
+    // Archive the lead for the admin inbox before notifying. `saveLead`
+    // never throws, so a database problem cannot block the notification.
+    await saveLead({
+      type: 'contact',
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      serviceType,
+      budget,
+      timeline,
+      message: message.trim(),
+      meta: { ip, userAgent, referrer: referer, path },
+    });
 
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;

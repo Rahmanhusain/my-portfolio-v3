@@ -4,9 +4,9 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import { useScrollReveal } from '@/lib/useScrollReveal';
 import SectionHeading from '@/components/ui/SectionHeading';
-import { posts } from '@/lib/data/posts';
+import type { Post } from '@/lib/types/content';
 
-export default function BlogPreview() {
+export default function BlogPreview({ posts }: { posts: Post[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   // posts are sorted newest-first in the data file; take the first 3
   const previewPosts = [...posts]

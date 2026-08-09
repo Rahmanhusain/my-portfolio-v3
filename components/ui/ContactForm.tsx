@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import MagneticButton from '@/components/ui/MagneticButton';
-import { site } from '@/lib/site';
+import type { SiteConfig } from '@/lib/types/content';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 type Currency = 'USD' | 'INR' | 'EUR' | 'GBP' | 'AUD' | 'CAD' | 'AED';
@@ -114,7 +114,7 @@ function ChevronDown() {
   );
 }
 
-export default function ContactForm() {
+export default function ContactForm({ site }: { site: SiteConfig }) {
   const [status, setStatus] = useState<FormStatus>('idle');
   const [form, setForm] = useState<FormData>({
     name: '',
