@@ -44,6 +44,23 @@ The filename **must exactly match** the `slug` field inside the file, e.g.
 | `bannerAlt`   | string            | ✅       | Descriptive alt text for the banner image. |
 | `body`        | ContentBlock[]    | ✅       | Array of content blocks. See Part 3 for all block types. |
 
+> ### ⚠️ Keep `bannerImage` under ~300 KB
+>
+> The banner doubles as the page's `og:image` — the picture that appears when
+> the link is shared. **WhatsApp refuses to fetch preview images much over
+> 300 KB and silently falls back to a bare text row.** Telegram, LinkedIn and
+> Slack are far more generous (several MB), so a heavy banner looks perfectly
+> fine everywhere you are likely to test it and broken on the one platform most
+> clients actually use.
+>
+> 1200×630 is the right *dimension*; it says nothing about file size. A
+> screenshot exported straight from a design tool is routinely 1–2 MB. Run it
+> through a compressor, or export as JPEG/WebP rather than PNG, before
+> uploading. The admin media library flags anything over the limit.
+>
+> Pages without their own banner fall back to the generated card at
+> `app/opengraph-image.tsx`, which is ~45 KB and always works.
+
 ---
 
 ### Sample post JSON

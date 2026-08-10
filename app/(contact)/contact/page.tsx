@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { siteUrl } from "@/lib/seo";
+import { siteUrl, defaultOgImages } from "@/lib/seo";
 import {
   locationLabelFor,
   mailtoFor,
@@ -37,9 +37,11 @@ export async function generateMetadata(): Promise<Metadata> {
       "Have a project in mind? Let's talk about how I can help bring your vision to life.",
     url: `${siteUrl}/contact`,
     type: "website",
+    images: defaultOgImages,
   },
   twitter: {
     card: "summary_large_image",
+    images: defaultOgImages,
     title: "Contact — Rahman Software Developer",
     description:
       "Have a project in mind? Let's talk about how I can help bring your vision to life.",

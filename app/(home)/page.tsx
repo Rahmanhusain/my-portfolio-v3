@@ -13,7 +13,7 @@ import SmoothScrollProvider from '@/components/layout/SmoothScrollProvider';
 import ServiceMarquee from '@/components/ui/ServiceMarquee';
 import ScrollProgress from '@/components/ui/ScrollProgress';
 import BackToTop from '@/components/ui/BackToTop';
-import { siteUrl } from '@/lib/seo';
+import { siteUrl, defaultOgImages } from '@/lib/seo';
 import { getSite } from '@/lib/data/site';
 import { getServices } from '@/lib/data/services';
 import { getProjects } from '@/lib/data/projects';
@@ -50,9 +50,11 @@ export async function generateMetadata(): Promise<Metadata> {
       'Fast, accessible web apps, custom CRMs, e-commerce, APIs, and AI automations. Book a free 30-minute call.',
     url: siteUrl,
     type: 'website',
+    images: defaultOgImages,
   },
   twitter: {
     card: 'summary_large_image',
+    images: defaultOgImages,
     title: 'Rahman — Full-Stack Web Developer',
     description:
       'Fast, accessible web apps, custom CRMs, e-commerce, APIs, and AI automations. Book a free 30-minute call.',
