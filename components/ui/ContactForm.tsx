@@ -128,6 +128,13 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
 
+  /* Auto-hide the success banner after 5 seconds. */
+  useEffect(() => {
+    if (status !== 'success') return;
+    const timer = setTimeout(() => setStatus('idle'), 5000);
+    return () => clearTimeout(timer);
+  }, [status]);
+
   /* Region detection: default to INR for visitors in India, USD otherwise.
      Done in an effect (not at init) because Intl APIs only resolve on the
      client, and reading them in render would mismatch SSR vs CSR. */

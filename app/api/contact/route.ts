@@ -144,19 +144,59 @@ export async function POST(request: NextRequest) {
 
       try {
         const resend = new Resend(resendKey);
-        const { error } = await resend.emails.send({
-          // `onboarding@resend.dev` works out-of-the-box; swap for your own
-          // verified domain once Resend is configured.
+
+        // 1. Notify you with the full submission details.
+        // const { error } = await resend.emails.send({
+        //   // `onboarding@resend.dev` works out-of-the-box; swap for your own
+        //   // verified domain once Resend is configured.
+        //   from: process.env.CONTACT_FROM_EMAIL ?? 'Rahman Portfolio <onboarding@resend.dev>',
+        //   to: contactEmail,
+        //   replyTo: email.trim(),
+        //   subject: `New contact message from ${name.trim()}`,
+        //   text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\n${serviceType ? `Service: ${serviceType}\n` : ''}${budget ? `Budget: ${budget}\n` : ''}${timeline ? `Timeline: ${timeline}\n` : ''}\n${message}\n\n—\nIP: ${ip}\nPage: ${path}\nSubmitted: ${submittedAt}`,
+        //   html,
+        // });
+        // if (error) {
+        //   emailFailed = true;
+        //   console.error('[Contact] Resend error:', error);
+        // }
+
+        // 2. Send a confirmation email to the person who filled the form.
+        const confirmHtml = `
+          <div style="font-family:Inter,Arial,sans-serif;color:#1a1a1a;line-height:1.6;max-width:560px;margin:0 auto;">
+            <h2 style="margin:0 0 8px;">Thanks for reaching out, ${escapeHtml(name.trim())}!</h2>
+            <p style="color:#555;margin:0 0 20px;">
+              I've received your message and will get back to you within 24 hours.
+              Here's a copy of what you sent:
+            </p>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:20px;">
+              <tr><td style="padding:6px 0;color:#888;width:110px;">Service</td><td style="padding:6px 0;">${escapeHtml(serviceType ?? '—')}</td></tr>
+              <tr><td style="padding:6px 0;color:#888;">Budget</td><td style="padding:6px 0;">${escapeHtml(budget ?? '—')}</td></tr>
+              <tr><td style="padding:6px 0;color:#888;">Timeline</td><td style="padding:6px 0;">${escapeHtml(timeline ?? '—')}</td></tr>
+            </table>
+            <p style="font-weight:600;margin:0 0 8px;">Your message</p>
+            <blockquote style="margin:0 0 24px;padding:12px 16px;border-left:3px solid #ff8fab;background:#fafafa;color:#333;">
+              ${escapeHtml(message.trim()).replace(/\n/g, '<br/>')}
+            </blockquote>
+            <p style="color:#555;">
+              If you have anything to add, just reply to this email.<br/>
+              Talk soon — Rahman
+            </p>
+          </div>`;
+
+        const { error: confirmError } = await resend.emails.send({
           from: process.env.CONTACT_FROM_EMAIL ?? 'Rahman Portfolio <onboarding@resend.dev>',
-          to: contactEmail,
-          replyTo: email.trim(),
-          subject: `New contact message from ${name.trim()}`,
-          text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\n${serviceType ? `Service: ${serviceType}\n` : ''}${budget ? `Budget: ${budget}\n` : ''}${timeline ? `Timeline: ${timeline}\n` : ''}\n${message}\n\n—\nIP: ${ip}\nPage: ${path}\nSubmitted: ${submittedAt}`,
-          html,
+          to: email.trim(),
+          replyTo: contactEmail,
+          cc: process.env.contactEmail?.split(',').map((e) => e.trim()) ?? [],
+          subject: `Got your message — I'll be in touch soon`,
+          text: `Hi ${name.trim()},\n\nThanks for reaching out! I've received your message and will get back to you within 24 hours.\n\nYour message:\n${message.trim()}\n\nTalk soon,\nRahman`,
+          html: confirmHtml,
         });
-        if (error) {
-          emailFailed = true;
-          console.error('[Contact] Resend error:', error);
+        if (confirmError) {
+          // A failed confirmation doesn't block the success response — you
+          // already have the lead saved and your own notification delivered.
+          console.error('[Contact] Confirmation email error:', confirmError);
         }
       } catch (err) {
         emailFailed = true;
