@@ -60,12 +60,12 @@ export default async function NotFound() {
           </p>
 
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Link
+            <a
               href="/"
               className="hover-lift inline-flex items-center rounded-full bg-fg px-6 py-3 text-sm font-semibold text-bg transition-colors duration-200 hover:bg-strong"
             >
               Back to home
-            </Link>
+            </a>
             <Link
               href="/contact"
               className="hover-lift inline-flex items-center rounded-full border border-border px-6 py-3 text-sm font-medium text-fg transition-colors duration-200 hover:border-fg"
