@@ -11,7 +11,7 @@ const navLinks = [
   { label: 'Services', href: '/services' },
   { label: 'About',    href: '/#about'   },
   { label: 'Blog',     href: '/blog'     },
-  { label: 'Contact',  href: '/#contact' },
+  { label: 'Contact',  href: '/contact' },
 ];
 
 /** A nav item is "current" when the route is that section or below it.

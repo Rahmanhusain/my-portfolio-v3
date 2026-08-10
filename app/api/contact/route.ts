@@ -12,13 +12,21 @@ export async function POST(request: NextRequest) {
       budget?: string;
       timeline?: string;
       message?: string;
-    };
-    const { name, email, phone, serviceType, budget, timeline, message } = body;
+      device?: Record<string, unknown>;
 
-    // Basic server-side validation
-    if (!name?.trim() || !email?.trim() || !phone?.trim() || !message?.trim()) {
-      return Response.json({ error: 'All fields are required.' }, { status: 400 });
+    };
+    const { name, email, phone, serviceType, budget, timeline, message, device } = body;
+
+    // Basic server-side validation. The project-details message is optional —
+    // name, email and phone are already enough to reply to.
+    if (!name?.trim() || !email?.trim() || !phone?.trim()) {
+      return Response.json({ error: 'Name, email and phone are required.' }, { status: 400 });
     }
+
+    // Normalised once so every consumer below (archive, Telegram, both emails)
+    // agrees on what "no message" looks like instead of each guarding for
+    // undefined in its own way.
+    const messageText = message?.trim() ?? '';
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -35,10 +43,11 @@ export async function POST(request: NextRequest) {
     const ip = forwarded
       ? forwarded.split(',')[0].trim()
       : (request.headers.get('x-real-ip') ?? 'unknown');
-    const userAgent = request.headers.get('user-agent') ?? 'unknown';
-    const referer = request.headers.get('referer') ?? 'unknown';
     const path = request.nextUrl?.pathname ?? '/';
     const submittedAt = new Date().toISOString();
+
+       const asText = (value: unknown) =>
+      typeof value === 'string' && value.trim() ? value.trim() : undefined;
 
     // Archive the lead for the admin inbox before notifying. `saveLead`
     // never throws, so a database problem cannot block the notification.
@@ -50,8 +59,18 @@ export async function POST(request: NextRequest) {
       serviceType,
       budget,
       timeline,
-      message: message.trim(),
-      meta: { ip, userAgent, referrer: referer, path },
+      message: messageText,
+      meta: {
+        ip,
+        userAgent: asText(device?.userAgent),
+        referrer: asText(device?.referrer),
+        path: asText(device?.path),
+        timezone: asText(device?.timezone),
+        language: asText(device?.language),
+        platform: asText(device?.platform),
+        deviceType: asText(device?.deviceType),
+        screen: asText(device?.screen),
+      }
     });
 
     const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -80,14 +99,21 @@ export async function POST(request: NextRequest) {
         serviceType ? line('Service', serviceType) : null,
         budget ? line('Budget', budget) : null,
         timeline ? line('Timeline', timeline) : null,
-        '*Message:*',
-        esc(message.trim()),
+        // Skipped entirely when empty — a "*Message:*" heading with nothing
+        // under it reads like the notification broke.
+        messageText ? '*Message:*' : null,
+        messageText ? esc(messageText) : null,
         '──────────────────────',
         '*Meta*',
-        line('IP', ip),
-        line('User agent', userAgent),
-        line('Referrer', referer),
-        line('Page', path),
+       line('Timezone', asText(device?.timezone) ?? ''),
+      line('Locale', asText(device?.language) ?? ''),
+      line('Platform', asText(device?.platform) ?? ''),
+      line('User agent', asText(device?.userAgent) ?? ''),
+      line('Device type', asText(device?.deviceType) ?? ''),
+      line('Screen', asText(device?.screen) ?? ''),
+      line('Referrer', asText(device?.referrer) ?? ''),
+      line('Page', asText(device?.path) ?? ''),
+      line('IP', ip),
         line('Submitted', submittedAt),
       ].filter(Boolean).join('\n');
 
@@ -130,10 +156,12 @@ export async function POST(request: NextRequest) {
           ${serviceType ? `<p><strong>Service:</strong> ${escapeHtml(serviceType)}</p>` : ''}
           ${budget ? `<p><strong>Budget:</strong> ${escapeHtml(budget)}</p>` : ''}
           ${timeline ? `<p><strong>Timeline:</strong> ${escapeHtml(timeline)}</p>` : ''}
-          <p><strong>Message:</strong></p>
+          ${messageText
+            ? `<p><strong>Message:</strong></p>
           <blockquote style="margin:0;padding:12px 16px;border-left:3px solid #ff8fab;background:#fafafa;color:#333;">
-            ${escapeHtml(message).replace(/\n/g, '<br/>')}
-          </blockquote>
+            ${escapeHtml(messageText).replace(/\n/g, '<br/>')}
+          </blockquote>`
+            : '<p style="color:#888;"><em>No project details were provided.</em></p>'}
           <hr style="border:none;border-top:1px solid #eee;margin:16px 0;" />
           <p style="color:#888;font-size:12px;">
             IP: ${escapeHtml(ip)}<br/>
@@ -174,10 +202,12 @@ export async function POST(request: NextRequest) {
               <tr><td style="padding:6px 0;color:#888;">Budget</td><td style="padding:6px 0;">${escapeHtml(budget ?? '—')}</td></tr>
               <tr><td style="padding:6px 0;color:#888;">Timeline</td><td style="padding:6px 0;">${escapeHtml(timeline ?? '—')}</td></tr>
             </table>
-            <p style="font-weight:600;margin:0 0 8px;">Your message</p>
+            ${messageText
+              ? `<p style="font-weight:600;margin:0 0 8px;">Your message</p>
             <blockquote style="margin:0 0 24px;padding:12px 16px;border-left:3px solid #ff8fab;background:#fafafa;color:#333;">
-              ${escapeHtml(message.trim()).replace(/\n/g, '<br/>')}
-            </blockquote>
+              ${escapeHtml(messageText).replace(/\n/g, '<br/>')}
+            </blockquote>`
+              : ''}
             <p style="color:#555;">
               If you have anything to add, just reply to this email.<br/>
               Talk soon — Rahman
@@ -188,9 +218,9 @@ export async function POST(request: NextRequest) {
           from: process.env.CONTACT_FROM_EMAIL ?? 'Rahman Portfolio <onboarding@resend.dev>',
           to: email.trim(),
           replyTo: contactEmail,
-          cc: process.env.contactEmail?.split(',').map((e) => e.trim()) ?? [],
+          // cc: process.env.CONTACT_EMAIL?.split(',').map((e) => e.trim()) ?? [],
           subject: `Got your message — I'll be in touch soon`,
-          text: `Hi ${name.trim()},\n\nThanks for reaching out! I've received your message and will get back to you within 24 hours.\n\nYour message:\n${message.trim()}\n\nTalk soon,\nRahman`,
+          text: `Hi ${name.trim()},\n\nThanks for reaching out! I've received your message and will get back to you within 24 hours.\n${messageText ? `\nYour message:\n${messageText}\n` : ''}\nTalk soon,\nRahman`,
           html: confirmHtml,
         });
         if (confirmError) {
@@ -208,7 +238,7 @@ export async function POST(request: NextRequest) {
 
     // Dev fallback so we never lose a lead before env vars are wired up.
     if (!telegramConfigured && !emailConfigured && process.env.NODE_ENV === 'development') {
-      console.log('[Contact Form]', { name, email, phone, message, ip, path });
+      console.log('[Contact Form]', { name, email, phone, message: messageText, ip, path });
     }
 
     // Success if at least one configured channel delivered (or none configured).

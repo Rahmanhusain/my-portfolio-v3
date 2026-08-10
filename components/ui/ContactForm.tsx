@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MagneticButton from '@/components/ui/MagneticButton';
 import type { SiteConfig } from '@/lib/types/content';
 
@@ -14,6 +14,8 @@ interface FormData {
   serviceType: string;
   budgetAmount: string;
   budgetCurrency: Currency;
+  /** Ticked by default — the visitor opts *out* of it to name a figure. */
+  budgetDecideOnCall: boolean;
   timeline: string;
   message: string;
 }
@@ -28,75 +30,24 @@ const CURRENCIES: { value: Currency; symbol: string; label: string }[] = [
   { value: 'AED', symbol: 'د.إ', label: 'AED (د.إ)' },
 ];
 
-/* Per-currency bracket options. "Custom" lets the visitor type their own number
-   and "not-sure" keeps the door open for the undecided — same as before. */
-const BUDGET_BUCKETS: Record<Currency, { value: string; label: string }[]> = {
-  USD: [
-    { value: 'under-2500',    label: 'Under $2,500' },
-    { value: '2500-5000',     label: '$2,500 – $5,000' },
-    { value: '5000-10000',    label: '$5,000 – $10,000' },
-    { value: '10000-plus',    label: '$10,000+' },
-    { value: 'custom',        label: 'Custom amount…' },
-    { value: 'not-sure',      label: 'Not sure yet' },
-  ],
-  INR: [
-    { value: 'under-2L',      label: 'Under ₹2,00,000' },
-    { value: '2L-4L',         label: '₹2,00,000 – ₹4,00,000' },
-    { value: '4L-8L',         label: '₹4,00,000 – ₹8,00,000' },
-    { value: '8L-15L',        label: '₹8,00,000 – ₹15,00,000' },
-    { value: '15L-plus',      label: '₹15,00,000+' },
-    { value: 'custom',        label: 'Custom amount…' },
-    { value: 'not-sure',      label: 'Not sure yet' },
-  ],
-  EUR: [
-    { value: 'under-2500',    label: 'Under €2,500' },
-    { value: '2500-5000',     label: '€2,500 – €5,000' },
-    { value: '5000-10000',    label: '€5,000 – €10,000' },
-    { value: '10000-plus',    label: '€10,000+' },
-    { value: 'custom',        label: 'Custom amount…' },
-    { value: 'not-sure',      label: 'Not sure yet' },
-  ],
-  GBP: [
-    { value: 'under-2000',    label: 'Under £2,000' },
-    { value: '2000-4000',     label: '£2,000 – £4,000' },
-    { value: '4000-8000',     label: '£4,000 – £8,000' },
-    { value: '8000-plus',     label: '£8,000+' },
-    { value: 'custom',        label: 'Custom amount…' },
-    { value: 'not-sure',      label: 'Not sure yet' },
-  ],
-  AUD: [
-    { value: 'under-4k',      label: 'Under A$4,000' },
-    { value: '4k-8k',         label: 'A$4,000 – A$8,000' },
-    { value: '8k-15k',        label: 'A$8,000 – A$15,000' },
-    { value: '15k-plus',      label: 'A$15,000+' },
-    { value: 'custom',        label: 'Custom amount…' },
-    { value: 'not-sure',      label: 'Not sure yet' },
-  ],
-  CAD: [
-    { value: 'under-4k',      label: 'Under C$4,000' },
-    { value: '4k-8k',         label: 'C$4,000 – C$8,000' },
-    { value: '8k-15k',        label: 'C$8,000 – C$15,000' },
-    { value: '15k-plus',      label: 'C$15,000+' },
-    { value: 'custom',        label: 'Custom amount…' },
-    { value: 'not-sure',      label: 'Not sure yet' },
-  ],
-  AED: [
-    { value: 'under-10k',     label: 'Under د.إ10,000' },
-    { value: '10k-20k',       label: 'د.إ10,000 – د.إ20,000' },
-    { value: '20k-40k',       label: 'د.إ20,000 – د.إ40,000' },
-    { value: '40k-plus',      label: 'د.إ40,000+' },
-    { value: 'custom',        label: 'Custom amount…' },
-    { value: 'not-sure',      label: 'Not sure yet' },
-  ],
-};
-
-const BUDGET_LABELS: Record<Currency, Record<string, string>> = Object.fromEntries(
-  CURRENCIES.map((c) => [c.value, Object.fromEntries(BUDGET_BUCKETS[c.value].map((b) => [b.value, b.label]))])
-) as Record<Currency, Record<string, string>>;
-
 const SYMBOL: Record<Currency, string> = Object.fromEntries(
   CURRENCIES.map((c) => [c.value, c.symbol])
 ) as Record<Currency, string>;
+
+/* Budget defaults to "decide on call" — the honest answer for most enquiries,
+   and it removes the one question a visitor is least able to answer before
+   speaking to anyone. Unticking the box is how someone who *does* have a
+   figure names it, in the currency they picked.
+
+   The typed value is kept permissive on purpose — a range ("5000-8000") or a
+   grouped figure ("1,50,000") are both normal answers. Letters and symbols are
+   stripped so the value stays readable in the notification and the admin
+   inbox, and the length is capped so the field cannot smuggle a payload. */
+const MAX_BUDGET_LENGTH = 24;
+
+function sanitizeBudget(value: string): string {
+  return value.replace(/[^\d.,\s\-–]/g, '').slice(0, MAX_BUDGET_LENGTH);
+}
 
 const inputClass =
   'w-full bg-raised border border-border rounded-xl px-4 py-3 text-sm text-fg placeholder:text-muted focus:outline-none focus:border-muted transition-colors duration-200';
@@ -123,10 +74,13 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
     serviceType: '',
     budgetAmount: '',
     budgetCurrency: 'USD',
+    budgetDecideOnCall: true,
     timeline: '',
     message: '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  /** Focused when "Decide on call" is unticked, so typing can start at once. */
+  const budgetInputRef = useRef<HTMLInputElement>(null);
 
   /* Auto-hide the success banner after 5 seconds. */
   useEffect(() => {
@@ -183,20 +137,47 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
       }
     }
     if (!form.serviceType) newErrors.serviceType = 'Please select a service.';
-    if (!form.budgetAmount) newErrors.budgetAmount = 'Pick a budget range or "Not sure yet".';
-    if (form.budgetAmount === 'custom') {
-      const raw = form.message; // reused only for the validation check below
-      void raw;
+    // Only checked once the visitor has opted out of "Decide on call" — at
+    // that point an empty box is an unfinished thought, not an answer.
+    if (!form.budgetDecideOnCall && !form.budgetAmount.trim()) {
+      newErrors.budgetAmount = 'Enter an amount, or tick “Decide on call”.';
     }
     if (!form.timeline) newErrors.timeline = 'Please select a timeline.';
-    if (!form.message.trim()) {
-      newErrors.message = 'Message is required.';
-    } else if (form.message.trim().length < 20) {
-      newErrors.message = 'Please share a bit more detail (at least 20 characters).';
-    }
+    // Project details are optional and unbounded: name, email, phone, service
+    // and timeline are already enough to reply to, and a length floor only
+    // ever punished the people who wrote a short, clear sentence.
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  function collectDeviceInfo() {
+  if (typeof window === 'undefined') return {};
+  const ua = navigator.userAgent;
+  const deviceType = /Mobi|Android|iPhone|iPad|iPod/i.test(ua)
+    ? /iPad|Tablet/i.test(ua)
+      ? 'tablet'
+      : 'mobile'
+    : 'desktop';
+  const conn =
+    (navigator as Navigator & { connection?: { effectiveType?: string } }).connection
+      ?.effectiveType ?? null;
+  return {
+    userAgent: ua,
+    language: navigator.language,
+    languages: navigator.languages?.join(', ') ?? null,
+    platform: navigator.platform,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    deviceType,
+    screen: `${window.screen.width}x${window.screen.height} @${window.devicePixelRatio}x`,
+    viewport: `${window.innerWidth}x${window.innerHeight}`,
+    online: navigator.onLine,
+    connection: conn,
+    referrer: document.referrer || null,
+    url: window.location.href,
+    path: window.location.pathname,
+  };
+}
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,11 +185,13 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
     setStatus('loading');
     try {
       // Compose a human-readable budget for the backend + email/Telegram.
-      const budgetLabel =
-        form.budgetAmount === 'custom'
-          ? 'Custom'
-          : BUDGET_LABELS[form.budgetCurrency][form.budgetAmount] ?? form.budgetAmount;
-      const budget = `${budgetLabel} (${form.budgetCurrency})`;
+      // The default reads as an explicit "Decide on call" rather than an empty
+      // line nobody can interpret later.
+      const amount = form.budgetAmount.trim();
+      const budget =
+        form.budgetDecideOnCall || !amount
+          ? 'Decide on call'
+          : `${SYMBOL[form.budgetCurrency]}${amount} (${form.budgetCurrency})`;
 
       const res = await fetch('/api/contact', {
         method: 'POST',
@@ -223,6 +206,7 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
           budgetAmount: form.budgetAmount,
           timeline: form.timeline,
           message: form.message,
+          device: collectDeviceInfo(),
         }),
       });
       if (!res.ok) throw new Error('Failed');
@@ -233,7 +217,11 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
         phone: '',
         serviceType: '',
         budgetAmount: '',
-        budgetCurrency: 'USD',
+        // Keep the currency. Region detection only runs once on mount, so
+        // resetting to USD here would silently undo it for a visitor in India
+        // who sends a second message.
+        budgetCurrency: form.budgetCurrency,
+        budgetDecideOnCall: true,
         timeline: '',
         message: '',
       });
@@ -242,9 +230,6 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
     }
   };
 
-  const messageLength = form.message.trim().length;
-  const budgetOptions = BUDGET_BUCKETS[form.budgetCurrency];
-  const showCustomInput = form.budgetAmount === 'custom';
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
@@ -362,9 +347,10 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
         </div>
       </div>
 
-      {/* Budget — currency picker + range select + optional custom amount */}
+      {/* Budget — "Decide on call" is ticked by default; untick it to name a
+          figure. The currency picker stays live either way. */}
       <fieldset>
-        <legend className="block text-xs text-muted mb-1.5">Budget Range</legend>
+        <legend className="block text-xs text-muted mb-1.5">Budget</legend>
         <div className="grid grid-cols-[112px_1fr] gap-2">
           <div className="relative">
             <label htmlFor="contact-budget-currency" className="sr-only">
@@ -374,11 +360,12 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
               id="contact-budget-currency"
               name="budgetCurrency"
               value={form.budgetCurrency}
-              onChange={(e) => {
-                const next = e.target.value as Currency;
-                // Reset the bucket — the old value won't exist in the new list.
-                setForm({ ...form, budgetCurrency: next, budgetAmount: '' });
-              }}
+              onChange={(e) =>
+                // The typed amount is deliberately preserved — switching
+                // currency is how someone corrects the unit on a figure they
+                // already entered, so wiping it would be hostile.
+                setForm({ ...form, budgetCurrency: e.target.value as Currency })
+              }
               className={`${selectClass} pr-8 pl-3`}
               aria-label="Budget currency"
             >
@@ -392,53 +379,66 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
             <label htmlFor="contact-budget" className="sr-only">
               Budget amount
             </label>
-            <select
-              id="contact-budget"
-              name="budgetAmount"
-              value={form.budgetAmount}
-              onChange={(e) => setForm({ ...form, budgetAmount: e.target.value })}
-              className={`${selectClass} pr-10`}
-              aria-describedby={errors.budgetAmount ? 'contact-budget-error' : 'contact-budget-hint'}
-              aria-invalid={!!errors.budgetAmount}
+            <span
+              aria-hidden="true"
+              className={`absolute left-4 top-1/2 -translate-y-1/2 text-sm text-muted transition-opacity duration-200 ${
+                form.budgetDecideOnCall ? 'opacity-40' : ''
+              }`}
             >
-              <option value="" disabled>Select range</option>
-              {budgetOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-            <ChevronDown />
-          </div>
-        </div>
-
-        {showCustomInput && (
-          <div className="mt-2 relative">
-            <label htmlFor="contact-budget-custom" className="sr-only">
-              Custom budget amount
-            </label>
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-muted">
               {SYMBOL[form.budgetCurrency]}
             </span>
             <input
-              id="contact-budget-custom"
+              ref={budgetInputRef}
+              id="contact-budget"
+              name="budgetAmount"
               type="text"
               inputMode="numeric"
-              placeholder="Type your budget"
-              className={`${inputClass} pl-10`}
-              aria-describedby="contact-budget-hint"
+              autoComplete="off"
+              value={form.budgetAmount}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  budgetAmount: `custom:${e.target.value.replace(/[^\d.,\s]/g, '')}`,
-                })
+                setForm({ ...form, budgetAmount: sanitizeBudget(e.target.value) })
               }
+              disabled={form.budgetDecideOnCall}
+              placeholder={form.budgetDecideOnCall ? '—' : 'e.g. 5,000'}
+              className={`${inputClass} pl-10 disabled:cursor-not-allowed disabled:opacity-50`}
+              aria-describedby={
+                errors.budgetAmount ? 'contact-budget-error' : 'contact-budget-hint'
+              }
+              aria-invalid={!!errors.budgetAmount}
             />
           </div>
-        )}
+        </div>
+
+        <label className="mt-2.5 flex w-fit cursor-pointer items-center gap-2.5 text-sm text-strong">
+          <input
+            type="checkbox"
+            name="budgetDecideOnCall"
+            checked={form.budgetDecideOnCall}
+            onChange={(e) => {
+              const decideOnCall = e.target.checked;
+              setForm({
+                ...form,
+                budgetDecideOnCall: decideOnCall,
+                // Clear on tick so a disabled field never shows a number that
+                // is not the one being sent.
+                budgetAmount: decideOnCall ? '' : form.budgetAmount,
+              });
+              setErrors({ ...errors, budgetAmount: undefined });
+              // Unticking is a request to type, so put the caret where the
+              // typing goes instead of making them click again.
+              if (!decideOnCall) {
+                requestAnimationFrame(() => budgetInputRef.current?.focus());
+              }
+            }}
+            className="h-4 w-4 shrink-0 cursor-pointer rounded border-border accent-fg"
+          />
+          Decide on call
+        </label>
 
         <p id="contact-budget-hint" className="text-xs text-muted mt-1.5">
-          {form.budgetAmount === 'not-sure'
-            ? "No problem — we'll figure it out together on the call."
-            : 'Currency-converted estimates available on request.'}
+          {form.budgetDecideOnCall
+            ? "No problem — we'll work it out together on the call."
+            : 'A rough figure or a range is fine — nothing here is binding.'}
         </p>
         {errors.budgetAmount && (
           <p id="contact-budget-error" className="text-xs text-red-400 mt-1.5">
@@ -480,7 +480,7 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
 
       <div>
         <label htmlFor="contact-message" className="block text-xs text-muted mb-1.5">
-          Project Details
+          Project Details <span className="text-subtle">(optional)</span>
         </label>
         <textarea
           id="contact-message"
@@ -490,23 +490,15 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
           value={form.message}
           onChange={(e) => setForm({ ...form, message: e.target.value })}
           className={`${inputClass} resize-none`}
-          aria-describedby={errors.message ? 'contact-message-error' : 'contact-message-hint'}
-          aria-invalid={!!errors.message}
+          aria-describedby="contact-message-hint"
         />
-        <div className="flex items-center justify-between mt-1.5">
-          {errors.message ? (
-            <p id="contact-message-error" className="text-xs text-red-400">
-              {errors.message}
-            </p>
-          ) : (
-            <p id="contact-message-hint" className="text-xs text-muted">
-              Share your goals, key requirements, and what success looks like.
-            </p>
-          )}
-          <span className={`text-xs ${messageLength < 20 ? 'text-muted' : 'text-fg'}`}>
-            {messageLength}
-          </span>
-        </div>
+        {/* The character count existed only to signal the old 20-character
+            minimum. With no floor to reach it is just a number counting up at
+            someone, so it goes with the rule it served. */}
+        <p id="contact-message-hint" className="text-xs text-muted mt-1.5">
+          Optional — but the more you share about goals and requirements, the
+          more useful my first reply is.
+        </p>
       </div>
 
       <div className="space-y-3">
@@ -514,7 +506,7 @@ export default function ContactForm({ site }: { site: SiteConfig }) {
           type="submit"
           variant="solid"
           disabled={status === 'loading'}
-          className="w-full justify-center"
+          className="w-full justify-center cursor-pointer"
         >
           {status === 'loading' ? 'Sending…' : 'Send Message'}
         </MagneticButton>

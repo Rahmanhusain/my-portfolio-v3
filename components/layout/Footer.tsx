@@ -66,6 +66,9 @@ export default async function Footer() {
             <Link href="/blog" className={linkClass}>
               Blog
             </Link>
+            <Link href="/projects" className={linkClass}>
+              Projects
+            </Link>
             <Link href="/contact" className={linkClass}>
             Contact
             </Link>
