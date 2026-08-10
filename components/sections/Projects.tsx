@@ -44,8 +44,8 @@ export default function Projects({ projects }: { projects: Project[] }) {
           </MagneticButton>
         </div>
 
-        <div className="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.slice(0, 3).map((project, i) => (
+        <div className="projects-grid grid grid-cols-1 md:grid-cols-2 gap-6">
+          {projects.slice(0, 4).map((project, i) => (
             <ProjectCard key={project.slug} project={project} index={i} />
           ))}
         </div>

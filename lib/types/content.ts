@@ -90,6 +90,8 @@ export interface Project {
   // ── Optional. Omit the field and its UI block is not rendered at all, so a
   //    personal project can skip client/testimonial/metrics without leaving
   //    an empty heading or a gap behind. ───────────────────────────────────
+  ProjectImage?: string;
+  ProjectAlt?: string;
   bannerImage?: string;
   bannerAlt?: string;
   client?: string;
@@ -135,6 +137,12 @@ export interface Testimonial {
    *  comma or an empty row. */
   role?: string;
   company?: string;
+  /** URL of the client's profile photo. Falls back to the initials avatar when
+   *  absent or when the image fails to load. */
+  avatarUrl?: string;
+  /** The type of service the client hired for — shown below the client name
+   *  on the testimonial card (e.g. "Web Development", "UI Design"). */
+  serviceType?: string;
 }
 
 // ─── FAQs ────────────────────────────────────────────────────────────────────

@@ -136,7 +136,7 @@ export default async function ProjectsPage() {
       {/* ── Grid ────────────────────────────────────────────────────────── */}
       <div className="pb-20">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="stagger grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="stagger grid grid-cols-1 gap-6 md:grid-cols-2 ">
             {projects.map((project, i) => (
               <ProjectCard
                 key={project.slug}

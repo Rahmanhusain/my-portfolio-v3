@@ -1,3 +1,7 @@
+'use client';
+
+import Image from 'next/image';
+import { useState } from 'react';
 import type { Testimonial } from '@/lib/data/testimonials';
 import clsx from 'clsx';
 
@@ -6,7 +10,7 @@ interface TestimonialCardProps {
   className?: string;
 }
 
-/** Deterministic avatar tint per person, so the row has some colour variety
+/** Deterministic avatar tint per person — varies across the carousel row
  *  without a random value that would differ between server and client. */
 const AVATAR_TINTS = [
   'from-[#dfe3f2] to-[#eef0f8]',
@@ -17,6 +21,39 @@ const AVATAR_TINTS = [
 function tintFor(id: string) {
   const sum = [...id].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
   return AVATAR_TINTS[sum % AVATAR_TINTS.length];
+}
+
+/** Avatar: shows the photo when `avatarUrl` is provided and the image loads
+ *  successfully; falls back to the initials plate on error or absence. */
+function Avatar({ testimonial }: { testimonial: Testimonial }) {
+  const [imgError, setImgError] = useState(false);
+  const showImage = !!testimonial.avatarUrl && !imgError;
+
+  return (
+    <div
+      className={clsx(
+        'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full overflow-hidden',
+        'border border-faint',
+        !showImage && `bg-gradient-to-br ${tintFor(testimonial.id)}`
+      )}
+      aria-hidden="true"
+    >
+      {showImage ? (
+        <Image
+          src={testimonial.avatarUrl!}
+          alt=""
+          fill
+          sizes="44px"
+          className="object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-xs font-semibold text-strong">
+          {testimonial.initials}
+        </span>
+      )}
+    </div>
+  );
 }
 
 export default function TestimonialCard({
@@ -50,29 +87,25 @@ export default function TestimonialCard({
 
       <blockquote className="relative flex-1">
         <p className="font-display text-base leading-relaxed tracking-tight text-strong md:text-lg">
-          &ldquo;{testimonial.quote}&rdquo;
+        {testimonial.quote}
         </p>
       </blockquote>
 
       <footer className="mt-7 flex items-center gap-3.5 border-t border-border pt-6">
-        {/* Avatar — initials on a tinted plate */}
-        <div
-          className={clsx(
-            'flex h-11 w-11 shrink-0 items-center justify-center rounded-full',
-            'border border-faint bg-gradient-to-br text-xs font-semibold text-strong',
-            tintFor(testimonial.id)
-          )}
-          aria-hidden="true"
-        >
-          {testimonial.initials}
-        </div>
+        <Avatar testimonial={testimonial} />
+
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold tracking-tight text-fg">
             {testimonial.name}
           </p>
-          {attribution && (
-            <p className="truncate text-xs text-subtle">{attribution}</p>
+          {testimonial.serviceType && (
+            <p className="truncate text-xs font-medium text-muted">
+              {testimonial.serviceType}
+            </p>
           )}
+          {/* {attribution && (
+            <p className="truncate text-xs text-subtle">{attribution}</p>
+          )} */}
         </div>
       </footer>
     </article>

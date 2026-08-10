@@ -11,18 +11,23 @@ interface ProjectCardProps {
   headingLevel?: 'h2' | 'h3';
 }
 
-/** Deterministic per-card hue so the placeholder art varies but never
- *  re-randomises between server and client renders. Used when a project has
- *  no `bannerImage` yet. */
+/** Deterministic per-card accent colour so the bottom bar varies without
+ *  re-randomising between server and client renders. */
+const ACCENTS = [
+  'bg-[#f5c842]', // warm yellow
+  'bg-[#a78bfa]', // soft violet
+  'bg-[#34d399]', // mint green
+  'bg-[#f87171]', // coral
+  'bg-[#60a5fa]', // sky blue
+  'bg-[#fb923c]', // orange
+];
+
+/** Gradient plates used when a project has no banner image yet. */
 const TINTS = [
   'from-[#dfe3f2] via-raised to-bg',
   'from-[#efe0ee] via-raised to-bg',
   'from-[#dbeee2] via-raised to-bg',
 ];
-
-/** Tags shown before collapsing the rest into a "+N" chip. Four chips wrap to
- *  two ragged lines at card width; three never do. */
-const MAX_TAGS = 3;
 
 export default function ProjectCard({
   project,
@@ -30,30 +35,23 @@ export default function ProjectCard({
   headingLevel = 'h3',
 }: ProjectCardProps) {
   const Heading = headingLevel;
-  const visibleTags = project.tags.slice(0, MAX_TAGS);
-  const hiddenTagCount = project.tags.length - visibleTags.length;
-
-  // The strongest thing a card can say is the outcome, so the first metric is
-  // promoted onto the cover. Projects without results just don't get a badge.
-  const headline = project.results?.[0];
+  const accent = ACCENTS[index % ACCENTS.length];
 
   return (
     <article
       className={clsx(
-        'project-card glow-card group relative flex h-full flex-col overflow-hidden rounded-2xl',
-        'border border-border bg-raised transition-colors duration-500 hover:border-faint'
+        'group relative flex h-full flex-col overflow-hidden'
       )}
     >
-      {/* Cover — the real banner when there is one, otherwise a gradient plate
-          with the project number and a sweeping sheen. */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-bg">
-        {project.bannerImage ? (
+      {/* ── Cover image ─────────────────────────────────────────────────── */}
+      <div className="relative aspect-[16/10] overflow-hidden rounded-3xl bg-transparent">
+        {project.ProjectImage ? (
           <Image
-            src={project.bannerImage}
-            alt={project.bannerAlt ?? project.title}
+            src={project.ProjectImage ?? ''}
+            alt={project.ProjectAlt ?? project.title}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 384px"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 560px"
+            className="object-cover transition-transform duration-700 group-hover:scale-105 rounded-3xl bg-transparent"
           />
         ) : (
           <>
@@ -64,6 +62,7 @@ export default function ProjectCard({
               )}
               aria-hidden="true"
             />
+            {/* Subtle grid overlay */}
             <div
               className="absolute inset-0 opacity-[0.07]"
               style={{
@@ -73,6 +72,7 @@ export default function ProjectCard({
               }}
               aria-hidden="true"
             />
+            {/* Large faded project number */}
             <div className="absolute inset-0 flex items-center justify-center">
               <span
                 className="font-display text-8xl font-bold select-none text-fg opacity-[0.08] transition-opacity duration-500 group-hover:opacity-[0.16]"
@@ -84,39 +84,34 @@ export default function ProjectCard({
           </>
         )}
 
-        {/* Keeps the chips legible over a photographic banner */}
+        {/* Scrim so chips stay readable over photography */}
         <div
-          className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/[0.12] to-transparent"
+          className="absolute inset-x-0 bottom-0 h-16 "
           aria-hidden="true"
         />
 
-        {/* Year, top-right */}
-        <span className="absolute top-3 right-3 rounded-full border border-black/[0.08] bg-raised/85 px-2.5 py-1 text-[10px] font-medium text-strong backdrop-blur-sm">
+        {/* Year badge — top right */}
+        {/* <span className="absolute top-3 right-3 rounded-full border border-black/[0.08] bg-raised/85 px-2.5 py-1 text-[10px] font-medium text-strong backdrop-blur-sm">
           {project.year}
-        </span>
+        </span> */}
 
-        {/* Headline metric, bottom-left — the card's actual pitch */}
-        {headline && (
+        {/* Headline metric — bottom left, the card's actual pitch */}
+        {/* {project.results?.[0] && (
           <div className="absolute bottom-3 left-3 flex items-baseline gap-1.5 rounded-full border border-black/[0.08] bg-raised/90 py-1 pr-3 pl-2.5 backdrop-blur-sm">
             <span className="font-display text-xs font-bold tracking-tight text-fg">
-              {headline.metric}
+              {project.results[0].metric}
             </span>
             <span className="text-[10px] leading-none text-muted">
-              {headline.label}
+              {project.results[0].label}
             </span>
           </div>
-        )}
+        )} */}
       </div>
 
-      <div className="flex flex-1 flex-col p-6">
-        {/* Eyebrow */}
-        <p className="mb-2.5 text-[10px] font-medium uppercase tracking-widest text-subtle">
-          Case Study {project.number}
-        </p>
-
-        <Heading className="mb-3 font-display text-lg font-semibold leading-tight tracking-tight text-fg">
-          {/* The overlay makes the whole card clickable while the anchor itself
-              stays a single, plain, crawlable link. Same trick as ServiceList. */}
+      {/* ── Card body ───────────────────────────────────────────────────── */}
+      <div className="flex flex-1 flex-col py-5 px-2">
+        {/* Title — overlay-link makes the whole card clickable */}
+        <Heading className="mb-1.5 font-display text-xl font-semibold leading-snug tracking-tight text-fg">
           <Link
             href={`/projects/${project.slug}`}
             className="after:absolute after:inset-0 after:content-['']"
@@ -126,35 +121,17 @@ export default function ProjectCard({
           </Link>
         </Heading>
 
-        <p className="mb-5 line-clamp-1 text-sm leading-relaxed text-muted">
+        {/* Subtitle — shortDesc acts as the "Agency Framer Template" line */}
+        <p className="line-clamp-1 text-sm text-muted">
           {project.shortDesc}
         </p>
-
-        {/* Tags — pushed to the bottom so cards of unequal copy length align */}
-        <div className="mt-auto flex flex-wrap items-center gap-2">
-          {visibleTags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-border px-2.5 py-1 text-xs text-muted transition-colors duration-200 group-hover:border-faint"
-            >
-              {tag}
-            </span>
-          ))}
-          {hiddenTagCount > 0 && (
-            <span className="text-xs text-subtle">+{hiddenTagCount}</span>
-          )}
-        </div>
-
-        <div className="mt-5 flex items-center gap-2 border-t border-border pt-4 text-sm text-fg">
-          <span>Read case study</span>
-          <span
-            aria-hidden="true"
-            className="arrow-slide text-muted transition-colors group-hover:text-fg"
-          >
-            →
-          </span>
-        </div>
       </div>
+
+      {/* ── Coloured accent bar ──────────────────────────────────────────── */}
+      {/* <div
+        className={clsx('h-1 w-full transition-all duration-500 group-hover:h-1.5', accent)}
+        aria-hidden="true"
+      /> */}
     </article>
   );
 }
