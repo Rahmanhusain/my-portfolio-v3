@@ -165,10 +165,98 @@ export default function SmoothScrollProvider({
 
     window.addEventListener('hashchange', onHashChange);
 
+    /*
+     * Scroll for the in-page links the router treats as a no-op.
+     *
+     * `next/link` compares the target URL against the current one. When only
+     * the fragment is involved it either finds them identical and does nothing,
+     * or swaps the fragment without scrolling — and since the URL barely
+     * changes the browser fires no `hashchange`, so `onHashChange` above never
+     * runs either. Two dead controls come out of that:
+     *
+     *   • "About" at `/#about` — click it after scrolling away and nothing
+     *     happens, because the URL is already exactly `/#about`.
+     *   • The "Rahman" wordmark at `/#about` — it points at `/`, which is a
+     *     fragment-only change, so the page never returns to the top.
+     *
+     * A plain `<a href="#x">` re-scrolls on its own; this is specific to
+     * router-intercepted links, which is why the article TOCs never had it.
+     *
+     * Two details this depends on, both verified against the router's source:
+     *
+     * 1. **Capture phase.** `Link` calls `preventDefault()` unconditionally for
+     *    local URLs, and React's delegated listener sits on `document` — so a
+     *    bubble-phase listener here would see `defaultPrevented` already true
+     *    on every single link click and could never tell the dead ones apart.
+     * 2. **No `preventDefault()` of our own.** `Link` bails out of navigating
+     *    when it sees the event already prevented, and the wordmark case *does*
+     *    need it to navigate, so the `#about` actually drops off the URL. We
+     *    only add the scroll the router omits; propagation is left alone so
+     *    per-link `onClick` handlers (the mobile menu's close, for one) still
+     *    fire.
+     */
+    const onInPageLinkClick = (event: MouseEvent) => {
+      // Leave modified and middle clicks to the browser — they open tabs and
+      // windows, and hijacking them is always wrong.
+      if (event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+      const anchor =
+        event.target instanceof Element ? event.target.closest('a') : null;
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      if (anchor.hasAttribute('download')) return;
+      if (anchor.target && anchor.target !== '_self') return;
+
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+
+      let url: URL;
+      try {
+        url = new URL(href, window.location.href);
+      } catch {
+        return;
+      }
+
+      const here = window.location;
+      if (url.origin !== here.origin) return;
+      if (url.pathname !== here.pathname || url.search !== here.search) return;
+
+      // When the fragment genuinely changes the router scrolls for us. Stay
+      // out of the way, or the two scrolls fight each other.
+      const sameFragment = url.hash === here.hash;
+      const clearingFragment = !url.hash && Boolean(here.hash);
+      if (!sameFragment && !clearingFragment) return;
+
+      if (url.hash.length > 1) {
+        // An id that is not a valid CSS selector — one starting with a digit,
+        // say — makes querySelector throw rather than return null.
+        let target: Element | null = null;
+        try {
+          target = document.querySelector(url.hash);
+        } catch {
+          return;
+        }
+        if (!target) return;
+
+        // Deliberately not `immediate`: this is an explicit click, so easing
+        // is the expected feel, and travelling through the sections lets their
+        // reveal triggers fire on the way rather than needing
+        // `resolvePassedTriggers` to force them.
+        lenis.scrollTo(target as HTMLElement, { offset: -80 });
+      } else {
+        lenis.scrollTo(0);
+      }
+    };
+
+    document.addEventListener('click', onInPageLinkClick, true);
+
     return () => {
       cancelAnimationFrame(initRafId);
       if (jumpCleanup) jumpCleanup();
       window.removeEventListener('hashchange', onHashChange);
+      // The `true` matters — a capture listener is only removable by a
+      // matching capture removal.
+      document.removeEventListener('click', onInPageLinkClick, true);
       // Order matters: stop the ticker driving Lenis first, so nothing can
       // animate the scroll position while the rest of this is torn down.
       gsap.ticker.remove(ticker);

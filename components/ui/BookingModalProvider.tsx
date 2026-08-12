@@ -262,10 +262,11 @@ export default function BookingModalProvider({
           aria-modal="true"
           aria-labelledby="booking-modal-title"
           aria-describedby="booking-modal-desc"
-          className={`relative w-full max-w-md my-auto bg-bg border border-border rounded-2xl p-6 md:p-8 shadow-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto transition-all duration-200 motion-reduce:transition-none ${
+          className={`relative w-full max-w-md my-auto bg-bg border border-border rounded-2xl shadow-2xl max-h-[calc(100dvh-2rem)] overflow-hidden transition-all duration-200 motion-reduce:transition-none ${
             isOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-95'
           }`}
         >
+          <div className="h-full overflow-y-auto p-6 md:p-8">
           <button
             type="button"
             onClick={close}
@@ -452,6 +453,7 @@ export default function BookingModalProvider({
             you can pick a date and your preferred available time slot — your
             booking is confirmed there.
           </p>
+          </div>
         </div>
       </div>
     </BookingModalContext.Provider>
