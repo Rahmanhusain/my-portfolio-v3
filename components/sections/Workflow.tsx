@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
-import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { gsap } from '@/lib/gsap';
 import { useGSAP } from '@gsap/react';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { CodeIcon, LifebuoyIcon, PenIcon, RocketIcon, SearchIcon } from '../icons';
@@ -10,19 +10,15 @@ interface WorkflowStep {
   title: string;
   description: string;
   icon: React.ReactNode;
-  /** Shown as a pill on the card — sets expectations before the call does. */
   duration: string;
-  /** Revealed when the step is expanded. Concrete things the client receives,
-   *  not restatements of the description. */
   deliverables: string[];
+  tagline: string;
 }
 
-/* Durations and deliverables have to match what the FAQs and /services already
-   promise — a visitor who reads both and finds them disagreeing trusts
-   neither. Keep them honest and keep them in step. */
 const steps: WorkflowStep[] = [
   {
     title: 'Discovery',
+    tagline: 'Define the goal',
     description:
       'We start with a call to define your goals, constraints, and what success looks like — so the work is aimed at outcomes, not just features.',
     icon: <SearchIcon className="h-5 w-5" strokeWidth="1.5" />,
@@ -35,6 +31,7 @@ const steps: WorkflowStep[] = [
   },
   {
     title: 'Design',
+    tagline: 'Shape the experience',
     description:
       'I design the interface and experience, share it for review, and iterate until it feels right before a single line of production code is written.',
     icon: <PenIcon className="h-4 w-4" strokeWidth="1.5" />,
@@ -47,6 +44,7 @@ const steps: WorkflowStep[] = [
   },
   {
     title: 'Build',
+    tagline: 'Write clean code',
     description:
       'I develop with a clean, typed, well-documented codebase. You get progress updates and a working preview at each milestone.',
     icon: <CodeIcon className="h-5 w-5" strokeWidth="1.5" />,
@@ -59,6 +57,7 @@ const steps: WorkflowStep[] = [
   },
   {
     title: 'Launch',
+    tagline: 'Ship with confidence',
     description:
       'I handle deployment, performance, and accessibility checks, then ship your product to a reliable, fast hosting environment.',
     icon: <RocketIcon className="h-5 w-5" strokeWidth="1.5" />,
@@ -71,6 +70,7 @@ const steps: WorkflowStep[] = [
   },
   {
     title: 'Support',
+    tagline: 'Stay and improve',
     description:
       'After launch I stay involved — the first 30 days include free fixes, and I remain available for improvements as you grow.',
     icon: <LifebuoyIcon className="h-5 w-5" strokeWidth="1.5" />,
@@ -83,263 +83,162 @@ const steps: WorkflowStep[] = [
   },
 ];
 
-/** Small check mark for the deliverables list. Decorative — the list item text
- *  carries the meaning. */
+/** Auto-advance interval (ms). */
+const AUTO_MS = 3500;
+/** How long a manual interaction suppresses the timer (ms). */
+const PAUSE_MS = 6000;
+
 function CheckIcon() {
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 14 14"
-      className="mt-[0.3rem] h-3 w-3 shrink-0 text-fg"
-      fill="none"
-    >
-      <path
-        d="M2 7.5l3.2 3.2L12 4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg aria-hidden viewBox="0 0 14 14" className="mt-[0.3rem] h-3.5 w-3.5 shrink-0 text-fg" fill="none">
+      <path d="M2 7.5l3.2 3.2L12 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-/**
- * Resting halo on every node: a ring painted in the page colour, which is what
- * punches the gap in the rail where it passes behind a node. Written with the
- * token so a re-theme can't leave a pale disc floating on a dark page.
- */
-const REST_SHADOW = '0 0 0 6px var(--color-bg)';
-
-/** Reads a theme token as a real colour value GSAP can interpolate. `var(…)`
- *  strings can't be tweened, so the palette is resolved once, at run time,
- *  rather than duplicated as hex literals in this file. */
-function readTokens() {
-  const root = getComputedStyle(document.documentElement);
-  const token = (name: string, fallback: string) =>
-    root.getPropertyValue(name).trim() || fallback;
-
-  const fg = token('--color-fg', '#17150f');
-
-  /** fg at a given alpha, for the shadow under a lit node. */
-  const fgAlpha = (alpha: number) => {
-    const hex = fg.replace('#', '');
-    const full =
-      hex.length === 3
-        ? hex
-            .split('')
-            .map((c) => c + c)
-            .join('')
-        : hex;
-    if (full.length !== 6) return fg; // non-hex token — drop the alpha, keep it valid
-    const [r, g, b] = [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-
-  return {
-    bg: token('--color-bg', '#f5f2ec'),
-    fg,
-    muted: token('--color-muted', '#6b6459'),
-    faint: token('--color-faint', '#c9c2b3'),
-    fgAlpha,
-  };
-}
-
 export default function Workflow() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef  = useRef<HTMLElement>(null);
+  const fillRef     = useRef<HTMLDivElement>(null);
+  const panelRef    = useRef<HTMLDivElement>(null);
+  const tabRefs     = useRef<(HTMLButtonElement | null)[]>([]);
 
-  /** Which step is expanded, or `null`. One at a time — five open cards is a
-   *  wall of text and defeats the point of the timeline. */
-  const [openStep, setOpenStep] = useState<number | null>(null);
-  const headerIds = useId();
-  const stepButtons = useRef<(HTMLButtonElement | null)[]>([]);
-  const hasToggled = useRef(false);
+  /* Swipe tracking */
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
-  /*
-   * Expanding a card changes its height, which moves every node below it.
-   * The rail's ScrollTrigger start/end positions were measured at creation, so
-   * without a refresh the line would keep drawing to where the nodes *used* to
-   * be and drift further out of true with each toggle.
-   *
-   * The delay lets the grid-rows transition finish first — refreshing mid-
-   * animation just measures another wrong height.
-   */
-  useEffect(() => {
-    if (!hasToggled.current) {
-      // Skip the mount pass; the GSAP setup below does its own refresh.
-      hasToggled.current = true;
-      return;
+  const [active, setActive]   = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [paused, setPaused]   = useState(false);
+
+  /* ── timer refs ─────────────────────────────────────────────────────────── */
+  const intervalRef   = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pauseTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* ── helpers ────────────────────────────────────────────────────────────── */
+  const startInterval = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setActive((prev) => (prev + 1) % steps.length);
+    }, AUTO_MS);
+  }, []);
+
+  const pauseInterval = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
-    const timer = window.setTimeout(() => ScrollTrigger.refresh(), 360);
-    return () => window.clearTimeout(timer);
-  }, [openStep]);
+    setPaused(true);
+    if (pauseTimer.current) clearTimeout(pauseTimer.current);
+    pauseTimer.current = setTimeout(() => {
+      setPaused(false);
+      startInterval();
+    }, PAUSE_MS);
+  }, [startInterval]);
 
-  /** Roving arrow-key navigation between steps, the standard accordion
-   *  pattern — Tab still moves out of the group entirely. */
-  const onStepKeyDown = (event: React.KeyboardEvent, index: number) => {
+  const goTo = useCallback((i: number, fromUser = false) => {
+    if (fromUser) pauseInterval();
+    setActive(i);
+  }, [pauseInterval]);
+
+  /* ── start timer when section becomes visible ───────────────────────────── */
+  useEffect(() => {
+    if (!visible) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    startInterval();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (pauseTimer.current)  clearTimeout(pauseTimer.current);
+    };
+  }, [visible, startInterval]);
+
+  /* ── fill bar ───────────────────────────────────────────────────────────── */
+  useEffect(() => {
+    if (!fillRef.current) return;
+    const pct = (active / (steps.length - 1)) * 100;
+    gsap.to(fillRef.current, { width: `${pct}%`, duration: 0.55, ease: 'power2.inOut' });
+  }, [active]);
+
+  /* ── panel slide-in ─────────────────────────────────────────────────────── */
+  useEffect(() => {
+    if (!panelRef.current || !visible) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.fromTo(
+      panelRef.current,
+      { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+    );
+  }, [active, visible]);
+
+  /* ── entrance animations ────────────────────────────────────────────────── */
+  useGSAP(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    gsap.fromTo(
+      sectionRef.current,
+      { opacity: 0, y: 36 },
+      {
+        opacity: 1, y: 0,
+        duration: reduced ? 0 : 0.75,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 78%',
+          once: true,
+          onEnter: () => setVisible(true),
+        },
+      },
+    );
+
+    if (!reduced) {
+      gsap.fromTo(
+        tabRefs.current,
+        { opacity: 0, y: 16 },
+        {
+          opacity: 1, y: 0,
+          duration: 0.45,
+          stagger: 0.07,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 75%', once: true },
+        },
+      );
+    }
+  }, { scope: sectionRef });
+
+  /* ── keyboard navigation ────────────────────────────────────────────────── */
+  const onTabKeyDown = (e: React.KeyboardEvent, i: number) => {
     const last = steps.length - 1;
     let next: number | null = null;
-
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-      next = index === last ? 0 : index + 1;
-    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-      next = index === 0 ? last : index - 1;
-    } else if (event.key === 'Home') {
-      next = 0;
-    } else if (event.key === 'End') {
-      next = last;
-    }
-
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = i === last ? 0 : i + 1;
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = i === 0 ? last : i - 1;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End')  next = last;
     if (next === null) return;
-    event.preventDefault();
-    stepButtons.current[next]?.focus();
+    e.preventDefault();
+    goTo(next, true);
+    tabRefs.current[next]?.focus();
   };
 
-  useGSAP(
-    () => {
-      const prefersReducedMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches;
+  /* ── swipe handlers ─────────────────────────────────────────────────────── */
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
 
-      const rows = gsap.utils.toArray<HTMLElement>('.workflow-row');
-      const dots = rows.map((row) => row.querySelector('.w'));
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    /* Only register as a horizontal swipe if it's the dominant axis */
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    if (dx < 0) {
+      /* swipe left → next */
+      goTo((active + 1) % steps.length, true);
+    } else {
+      /* swipe right → prev */
+      goTo((active - 1 + steps.length) % steps.length, true);
+    }
+  };
 
-      const palette = readTokens();
-
-      /*
-       * A reached node *sharpens*; it does not invert.
-       *
-       * This used to fill the disc with `--color-fg`, which on a warm-paper
-       * page means a near-black blob — five of them marching down a soft cream
-       * layout, each one heavier than any real content around it. The step
-       * icon also had to flip to the page colour to stay legible, so the glyph
-       * you were meant to read became a knockout.
-       *
-       * Instead the disc stays paper the whole time and the *ring* does the
-       * work: a hairline in `faint` when unreached, doubled to a crisp
-       * `fg` edge via an inset shadow when the rail arrives. No layout shift
-       * (an inset shadow costs no box, unlike a wider border), no heavy fill,
-       * and the icon keeps its own colour throughout — it only steps up from
-       * `muted` to `fg`.
-       */
-      const restShadow = `0 0 0 6px ${palette.bg}`;
-      const activeShadow = [
-        // Ring in the page colour — this is what punches the gap in the rail
-        // where it passes behind a node.
-        `0 0 0 6px ${palette.bg}`,
-        // Reads as a second border weight, without occupying a box.
-        `inset 0 0 0 1px ${palette.fg}`,
-        // Barely-there lift. The old 0.55 alpha read as a hard drop shadow.
-        `0 6px 16px -8px ${palette.fgAlpha(0.2)}`,
-      ].join(', ');
-
-      /** Lights or dims a node. Guarded by a data flag so a scrubbed scroll
-       *  doesn't restart the same tween on every frame. */
-      const setDotActive = (
-        dot: Element | null | undefined,
-        active: boolean,
-        instant = false
-      ) => {
-        if (!dot) return;
-        const node = dot as HTMLElement;
-        const state = active ? '1' : '0';
-        if (node.dataset.active === state) return;
-        node.dataset.active = state;
-
-        gsap.to(node, {
-          // `backgroundColor` is deliberately absent: the disc is `bg-bg` in
-          // CSS and stays there, so there is nothing to fill or unfill.
-          // borderColor: active ? palette.fg : palette.faint,
-          color: active ? palette.fg : palette.muted,
-          boxShadow: active ? activeShadow : restShadow,
-          duration: instant ? 0 : 0.35,
-          ease: 'power2.out',
-        });
-      };
-
-      if (prefersReducedMotion) {
-        rows.forEach((row, i) => {
-          const connector = row.querySelector('.workflow-connector');
-          const content = row.querySelector('.workflow-content');
-          const segment = row.querySelector('.workflow-segment');
-          gsap.set([dots[i], content], { opacity: 1, y: 0, scale: 1 });
-          if (connector) gsap.set(connector, { scaleX: 1, opacity: 1 });
-          if (segment) gsap.set(segment, { scaleY: 1 });
-          // The whole path reads as complete rather than half-lit.
-          setDotActive(dots[i], true, true);
-        });
-        return;
-      }
-
-      // Reveal each node, its branch, and its card as the row enters view.
-      rows.forEach((row, i) => {
-        const connector = row.querySelector('.workflow-connector');
-        const content = row.querySelector('.workflow-content');
-
-        gsap.set(dots[i], { scale: 0, opacity: 0 });
-        gsap.set(connector, { scaleX: 0, opacity: 0 });
-        gsap.set(content, { opacity: 0, y: 28 });
-
-        gsap
-          .timeline({ scrollTrigger: { trigger: row, start: 'top 78%' } })
-          .to(dots[i], {
-            scale: 1,
-            opacity: 1,
-            duration: 0.4,
-            ease: 'back.out(2.2)',
-          })
-          .to(
-            connector,
-            { scaleX: 1, opacity: 1, duration: 0.4, ease: 'power2.out' },
-            '-=0.15'
-          )
-          .to(
-            content,
-            { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-            '-=0.35'
-          );
-      });
-
-      // Draw each segment node -> node on the way down, undraw on the way up,
-      // lighting the node at each end as the line arrives.
-      //
-      // The trigger is the segment itself, and the segment spans exactly one
-      // node centre to the next — so scroll progress and the drawn length are
-      // the same number, and a node can't light before its line reaches it.
-      rows.forEach((row, i) => {
-        const segment = row.querySelector('.workflow-segment');
-        if (!segment) return; // the last node has no outgoing segment
-
-        // Held in an object rather than referenced directly: ScrollTrigger can
-        // render a scrubbed tween while it is still being constructed, and a
-        // `const` self-reference would throw before it is assigned.
-        const drawing: { tween?: ReturnType<typeof gsap.fromTo> } = {};
-
-        drawing.tween = gsap.fromTo(
-          segment,
-          { scaleY: 0 },
-          {
-            scaleY: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: segment,
-              start: 'top 62%',
-              end: 'bottom 62%',
-              scrub: 0.4,
-            },
-            // Driven off the tween, not the trigger, so the scrub's easing
-            // lag is shared by the line and the node it feeds.
-            onUpdate: () => {
-              const progress = drawing.tween?.progress() ?? 0;
-              setDotActive(dots[i], progress > 0.001);
-              setDotActive(dots[i + 1], progress > 0.995);
-            },
-          }
-        );
-      });
-    },
-    { scope: sectionRef }
-  );
+  const step = steps[active];
 
   return (
     <section
@@ -353,239 +252,257 @@ export default function Workflow() {
           id="workflow-heading"
           eyebrow="How I work"
           title="A clear process, start to finish."
-          description="No black boxes. Every project moves through the same five connected stages — you always know where things stand."
+          description="No black boxes. Every project moves through the same five stages — you always know where things stand."
         />
 
-        {/* Node graph — each node is joined to the next by its own segment.
-            Two custom properties keep the geometry honest:
-              --wf-node  distance from the top of a card to its node centre
-              --wf-gap   vertical space between cards
-            A segment is `top: --wf-node` and `100% + --wf-gap` tall, which lands
-            it exactly on the next node whatever height the two cards happen to
-            be. Change either value here and the rail follows; hardcode one and
-            the line starts overshooting on long cards. */}
-        <ol className="relative mt-10 max-w-4xl mx-auto [--wf-gap:3rem] [--wf-node:2.5rem] md:[--wf-gap:4rem]">
-          {steps.map((step, i) => {
-            const isLeft = i % 2 === 0; // desktop: even = left card, odd = right card
-            const isLast = i === steps.length - 1;
-            const isOpen = openStep === i;
-            return (
-              <li
-                key={step.title}
-                className="workflow-row relative pb-[var(--wf-gap)] last:pb-0"
-              >
-                {/* Wrapper sized to the card, so the rail measures card to card.
-                    `group/row` spans the node *and* the card, so pointing at
-                    either one lights the other — the two read as one control. */}
-                <div className="group/row relative pl-16 md:pl-0">
-                  {/* Segment: line from THIS node down to the NEXT node */}
-                  {!isLast && (
-                    <>
-                      {/* Unlit track */}
-                      <span
-                        aria-hidden="true"
-                        style={{
-                          top: 'var(--wf-node)',
-                          height: 'calc(100% + var(--wf-gap))',
-                        }}
-                        className="absolute w-px -translate-x-1/2 left-5 md:left-1/2 bg-border"
-                      />
-                      {/* Fill that grows toward the next node on scroll */}
-                      <span
-                        aria-hidden="true"
-                        style={{
-                          top: 'var(--wf-node)',
-                          height: 'calc(100% + var(--wf-gap))',
-                        }}
-                        className="workflow-segment absolute w-px -translate-x-1/2 left-5 md:left-1/2 origin-top bg-gradient-to-b from-fg to-muted"
-                      />
-                    </>
-                  )}
+        {/* ── Tab strip + rail ──────────────────────────────────────────── */}
+        <div
+          className="relative mt-10 md:mt-14"
+          role="tablist"
+          aria-label="Workflow steps"
+        >
+          {/* Unlit rail */}
+          <div
+            aria-hidden
+            className="absolute top-[1.375rem] left-[4.5rem] right-[4.5rem] hidden md:block h-px bg-border"
+          />
+          {/* Animated fill */}
+          <div
+            ref={fillRef}
+            aria-hidden
+            className="absolute top-[1.375rem] left-[4.5rem] hidden md:block h-px bg-gradient-to-r from-fg to-muted origin-left"
+            style={{ width: '0%' }}
+          />
 
-                  {/* Node — sits on the card's title line, not its centre, which
-                      is what makes the segment maths above exact */}
+          <div className="grid grid-cols-5 gap-2 md:gap-0 relative z-10">
+            {steps.map((s, i) => {
+              const isActive = active === i;
+              const isPast   = i < active;
+              return (
+                <button
+                  key={s.title}
+                  ref={(el) => { tabRefs.current[i] = el; }}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`wf-panel-${i}`}
+                  id={`wf-tab-${i}`}
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => goTo(i, true)}
+                  onKeyDown={(e) => onTabKeyDown(e, i)}
+                  className={[
+                    'group flex flex-col items-center gap-2 px-1 py-1 outline-none',
+                    'transition-opacity duration-200',
+                    !isActive && !isPast ? 'opacity-55 hover:opacity-100' : 'opacity-100',
+                  ].join(' ')}
+                >
                   <span
-                    // `text-muted`, not `text-fg`: it is the resting state GSAP
-                    // tweens away from, so starting on `fg` would flash a dark
-                    // glyph for a frame before the first scroll update.
-                    className="workflow-dot absolute z-10 top-[var(--wf-node)] left-5 md:left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-faint bg-bg text-muted"
-                    style={{ boxShadow: REST_SHADOW }}
+                    className={[
+                      'relative flex h-11 w-11 items-center justify-center rounded-full border',
+                      'transition-all duration-300',
+                      isActive
+                        ? 'bg-fg border-fg text-bg shadow-[0_4px_20px_-6px_rgba(23,21,15,0.4)]'
+                        : isPast
+                          ? 'bg-bg border-fg text-fg'
+                          : 'bg-bg border-border text-muted group-hover:border-faint group-hover:text-fg',
+                    ].join(' ')}
                   >
-                    {step.icon}
-                    {/* Halo on hover/expand. A *child* of the node on purpose:
-                        GSAP owns the node's own transform, background, border
-                        and box-shadow for the scroll choreography, so animating
-                        any of those from CSS here would fight it. This element
-                        touches none of them. */}
-                    <span
-                      aria-hidden="true"
-                      className={[
-                        'pointer-events-none absolute inset-0 rounded-full border border-fg',
-                        'transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none',
-                        'group-hover/row:scale-150 group-hover/row:opacity-25',
-                        'group-focus-within/row:scale-150 group-focus-within/row:opacity-25',
-                        isOpen ? 'scale-150 opacity-25' : 'scale-100 opacity-0',
-                      ].join(' ')}
-                    />
+                    {isPast && !isActive ? (
+                      <svg aria-hidden viewBox="0 0 14 14" className="h-3.5 w-3.5" fill="none">
+                        <path d="M2 7.5l3.2 3.2L12 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : (
+                      s.icon
+                    )}
+                    {isActive && (
+                      <span
+                        aria-hidden
+                        className="absolute inset-0 rounded-full border border-fg animate-ping opacity-20"
+                      />
+                    )}
                   </span>
 
-                  {/* Branch from the rail to the card — spans the gap exactly,
-                      starting at the node's edge rather than under it */}
-                  <span
-                    aria-hidden="true"
-                    className={[
-                      'workflow-connector absolute top-[var(--wf-node)] -translate-y-1/2 h-px w-6 bg-gradient-to-r from-faint to-transparent',
-                      // mobile: node edge -> card
-                      'left-10 origin-left',
-                      // desktop: centre rail -> whichever side the card is on
-                      isLeft
-                        ? 'md:left-auto md:right-1/2 md:mr-5 md:origin-right md:bg-gradient-to-l'
-                        : 'md:left-1/2 md:ml-5 md:origin-left md:bg-gradient-to-r',
-                    ].join(' ')}
-                  />
+                  <span className="hidden sm:block text-center">
+                    <span className={['block text-[11px] font-semibold uppercase tracking-widest leading-none transition-colors duration-200', isActive ? 'text-fg' : 'text-muted'].join(' ')}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className={['block mt-1 text-xs font-medium leading-snug transition-colors duration-200', isActive ? 'text-fg' : 'text-muted'].join(' ')}>
+                      {s.title}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-                  {/* Content card, alternating sides on desktop */}
-                  <div
-                    className={[
-                      'workflow-content',
-                      'md:w-[calc(50%-2.75rem)]',
-                      isLeft ? 'md:mr-auto' : 'md:ml-auto',
-                    ].join(' ')}
-                  >
-                    <div
-                      className={[
-                        'bloom-card group relative rounded-2xl border bg-gradient-to-b from-raised to-surface p-6',
-                        'transition-[border-color,transform] duration-300 motion-reduce:transition-none',
-                        // Lifts on hover *or* keyboard focus — a keyboard user
-                        // gets the same affordance a mouse user does.
-                        'hover:-translate-y-0.5 focus-within:-translate-y-0.5',
-                        isOpen ? 'border-faint' : 'border-border hover:border-faint',
-                      ].join(' ')}
-                    >
-                      {/* Ghost step number, tucked in the corner the text runs
-                          away from. Decorative only — `faint` is the token for
-                          exactly this and never carries meaning. */}
-                      {/* <span
-                        aria-hidden="true"
-                        className={[
-                          'pointer-events-none absolute select-none font-display text-5xl font-bold leading-none text-faint opacity-45 transition-opacity duration-300 group-hover:opacity-70',
-                          isLeft
-                            ? 'top-3 right-4 md:left-4 md:right-auto'
-                            : 'top-3 right-4',
-                        ].join(' ')}
-                      >
-                        {String(i + 1).padStart(2, '0')}
-                      </span> */}
+        {/* ── Detail panel (swipeable) ──────────────────────────────────── */}
+        <div
+          ref={panelRef}
+          id={`wf-panel-${active}`}
+          role="tabpanel"
+          aria-labelledby={`wf-tab-${active}`}
+          className="mt-8 md:mt-10 touch-pan-y"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          <div className="bloom-card relative overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-raised to-surface">
+            {/* Ghost number */}
+            <span
+              aria-hidden
+              className="pointer-events-none select-none absolute top-4 right-6 font-display text-[5rem] sm:text-[7rem] font-bold leading-none text-faint opacity-25"
+            >
+              {String(active + 1).padStart(2, '0')}
+            </span>
 
-                      <div className={`relative ${isLeft ? 'md:text-right' : ''}`}>
-                        {/* The heading *wraps* the button rather than sitting
-                            beside it — that is the pattern screen readers
-                            announce as a real expandable section, and it keeps
-                            the document outline intact. */}
-                        <h3 className="font-display text-lg font-semibold tracking-tight">
-                          <button
-                            type="button"
-                            ref={(el) => {
-                              stepButtons.current[i] = el;
-                            }}
-                            id={`${headerIds}-trigger-${i}`}
-                            aria-expanded={isOpen}
-                            aria-controls={`${headerIds}-panel-${i}`}
-                            onClick={() =>
-                              setOpenStep((current) => (current === i ? null : i))
-                            }
-                            onKeyDown={(event) => onStepKeyDown(event, i)}
-                            className={[
-                              'flex w-full cursor-pointer items-center gap-3 text-fg',
-                              // Mirrored so the chevron always sits on the edge
-                              // nearest the rail, pointing back at its node.
-                              isLeft ? 'md:flex-row-reverse' : '',
-                            ].join(' ')}
-                          >
-                            <span
-                              className={`flex-1 text-left ${isLeft ? 'md:text-right' : ''}`}
-                            >
-                              {step.title}
-                            </span>
-
-                            <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider text-subtle">
-                              {step.duration}
-                            </span>
-
-                            <span
-                              aria-hidden="true"
-                              className={[
-                                'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-muted',
-                                'transition-transform duration-300 motion-reduce:transition-none',
-                                isOpen ? 'rotate-45' : 'rotate-0',
-                              ].join(' ')}
-                            >
-                              <svg
-                                width="11"
-                                height="11"
-                                viewBox="0 0 12 12"
-                                fill="none"
-                              >
-                                <path
-                                  d="M6 1.5v9M1.5 6h9"
-                                  stroke="currentColor"
-                                  strokeWidth="1.4"
-                                  strokeLinecap="round"
-                                />
-                              </svg>
-                            </span>
-                          </button>
-                        </h3>
-
-                        <p className="mt-2 text-sm leading-relaxed text-muted">
-                          {step.description}
-                        </p>
-
-                        {/* Height animates via `grid-template-rows: 0fr → 1fr`,
-                            which needs no fixed max-height guess and so cannot
-                            clip a long list or leave dead space under a short
-                            one. The inner element owns the `overflow-hidden`. */}
-                        <div
-                          id={`${headerIds}-panel-${i}`}
-                          role="region"
-                          aria-labelledby={`${headerIds}-trigger-${i}`}
-                          className={[
-                            'grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none',
-                            isOpen
-                              ? 'grid-rows-[1fr] opacity-100'
-                              : 'grid-rows-[0fr] opacity-0',
-                          ].join(' ')}
-                        >
-                          <div className="overflow-hidden">
-                            <ul
-                              className={[
-                                'mt-4 space-y-2 border-t border-border pt-4',
-                                // Ticks lead the text, so on a right-aligned
-                                // card the row order flips to keep them on the
-                                // outside edge.
-                                isLeft ? 'md:[&>li]:flex-row-reverse' : '',
-                              ].join(' ')}
-                            >
-                              {step.deliverables.map((item) => (
-                                <li
-                                  key={item}
-                                  className="flex items-start gap-2.5 text-sm leading-relaxed text-strong"
-                                >
-                                  <CheckIcon />
-                                  <span className="flex-1">{item}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+            <div className="relative grid md:grid-cols-[1fr_1.1fr]">
+              {/* Left */}
+              <div className="p-8 md:p-10 md:border-r border-border flex flex-col gap-6">
+                <div className="flex items-start gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-bg text-fg">
+                    {step.icon}
+                  </span>
+                  <div>
+                    <p className="text-[11px] font-medium uppercase tracking-widest text-muted mb-1">
+                      Step {String(active + 1).padStart(2, '0')} of {steps.length}
+                    </p>
+                    <h3 className="font-display text-2xl font-semibold tracking-tight text-fg leading-tight">
+                      {step.title}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-subtle">{step.tagline}</p>
                   </div>
                 </div>
-              </li>
-            );
-          })}
-        </ol>
+
+                <p className="text-sm leading-relaxed text-muted max-w-md">
+                  {step.description}
+                </p>
+
+                <div className="flex items-center gap-2 mt-auto">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg px-3 py-1.5 text-xs font-medium text-subtle">
+                    <svg aria-hidden viewBox="0 0 14 14" className="h-3 w-3 shrink-0" fill="none">
+                      <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.3" />
+                      <path d="M7 4.5V7l1.5 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    {step.duration}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right */}
+              <div className="p-8 md:p-10 flex flex-col justify-center">
+                <p className="text-[11px] font-medium uppercase tracking-widest text-muted mb-5">
+                  What you get
+                </p>
+                <ul className="space-y-4">
+                  {step.deliverables.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-strong">
+                      <span className="mt-[0.2rem] flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border bg-bg">
+                        <CheckIcon />
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-border px-8 md:px-10 py-4 flex items-center gap-4">
+              {/* Countdown bar — drains from 100→0 between advances */}
+              <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
+                <div
+                  key={`${active}-${paused}`}          /* re-mount on every step or pause toggle */
+                  className={[
+                    'h-full bg-gradient-to-r from-fg to-muted rounded-full',
+                    paused
+                      ? 'w-full'                          /* frozen full while paused */
+                      : 'animate-[countdown_3.5s_linear_forwards]',
+                  ].join(' ')}
+                />
+              </div>
+
+              <span className="shrink-0 text-[11px] font-medium tabular-nums text-subtle">
+                {active + 1} / {steps.length}
+              </span>
+
+              {/* Swipe hint */}
+              <span
+                className="hidden md:flex items-center gap-1.5 text-[11px] text-faint"
+                aria-hidden
+              >
+                <svg viewBox="0 0 16 10" className="h-3 w-4" fill="none">
+                  <path d="M1 5h14M10 1l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Swipe
+              </span>
+
+              {/* Pause / resume */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (paused) {
+                    setPaused(false);
+                    startInterval();
+                  } else {
+                    pauseInterval();
+                  }
+                }}
+                aria-label={paused ? 'Resume auto-advance' : 'Pause auto-advance'}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted hover:border-faint hover:text-fg transition-all duration-200"
+              >
+                {paused ? (
+                  /* Play icon */
+                  <svg viewBox="0 0 10 10" className="h-3 w-3 translate-x-px" fill="currentColor">
+                    <path d="M2 1.5l7 3.5-7 3.5V1.5z" />
+                  </svg>
+                ) : (
+                  /* Pause icon */
+                  <svg viewBox="0 0 10 10" className="h-3 w-3" fill="currentColor">
+                    <rect x="2" y="1.5" width="2.2" height="7" rx="0.5" />
+                    <rect x="5.8" y="1.5" width="2.2" height="7" rx="0.5" />
+                  </svg>
+                )}
+              </button>
+
+              {/* Prev / Next */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => goTo((active - 1 + steps.length) % steps.length, true)}
+                  aria-label="Previous step"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted hover:border-faint hover:text-fg transition-all duration-200"
+                >
+                  <svg viewBox="0 0 10 10" className="h-3 w-3" fill="none">
+                    <path d="M6.5 2L3.5 5l3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => goTo((active + 1) % steps.length, true)}
+                  aria-label="Next step"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted hover:border-faint hover:text-fg transition-all duration-200"
+                >
+                  <svg viewBox="0 0 10 10" className="h-3 w-3" fill="none">
+                    <path d="M3.5 2L6.5 5l-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile dot strip */}
+        <div className="mt-4 flex items-center justify-center gap-2 sm:hidden" aria-hidden>
+          {steps.map((s, i) => (
+            <button
+              key={s.title}
+              type="button"
+              onClick={() => goTo(i, true)}
+              aria-label={s.title}
+              className={['h-1.5 rounded-full transition-all duration-300', active === i ? 'w-6 bg-fg' : 'w-1.5 bg-faint'].join(' ')}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

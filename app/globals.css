@@ -822,6 +822,12 @@ section {
    step by passing it, never by hardcoding a second value here.
    Resting state is a full bar, which is exactly what the dot should look like
    if the animation never runs. */
+/* Workflow step countdown — bar drains left-to-right over the step interval */
+@keyframes countdown {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
 @keyframes dot-countdown {
   from {
     transform: scaleX(0);
