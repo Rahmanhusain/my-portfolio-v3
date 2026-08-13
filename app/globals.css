@@ -462,6 +462,18 @@ section {
     animation-range: 60vh 110vh;
   }
 
+  /* Lift clear of the sticky booking bar while it is on screen. That bar is
+     centred and up to 36rem wide, so it covers this corner on anything short
+     of a wide desktop. `StickyCta` sets the attribute; the offset clears the
+     bar's height (its own padding plus the 4.75rem card).
+
+     `bottom`, not `transform`: `fade-rise-in` above already animates transform,
+     and a running animation beats a static declaration, so a transform here
+     would simply be ignored. */
+  [data-sticky-cta='shown'] .back-to-top {
+    bottom: 6.5rem;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .scroll-progress {
       animation: none;

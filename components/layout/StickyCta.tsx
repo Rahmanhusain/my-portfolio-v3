@@ -46,7 +46,7 @@ export default function StickyCta({ site }: { site: SiteConfig }) {
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-4 transition-all duration-300 motion-reduce:transition-none ${
+      className={`fixed sm:translate-x-1/2 sm:right-1/2 inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-4 transition-all duration-300 motion-reduce:transition-none ${
         shown
           ? 'translate-y-0 opacity-100'
           : 'pointer-events-none translate-y-6 opacity-0'
