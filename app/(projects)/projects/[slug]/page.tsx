@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { getProjects } from "@/lib/data/projects";
-import { siteUrl } from "@/lib/seo";
+import {
+  siteUrl,
+  defaultOgImages,
+  socialImage,
+  structuredDataImage,
+} from "@/lib/seo";
 import { getSite } from "@/lib/data/site";
 import { renderBlock } from "@/lib/content-blocks";
 import TableOfContents from "@/components/ui/TableOfContents";
@@ -36,12 +41,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!project) return {};
 
   const canonical = `${siteUrl}/projects/${project.slug}`;
-  // Only projects with their own banner override the generated OG image.
-  const ogImage = project.bannerImage
-    ? project.bannerImage.startsWith("/")
-      ? `${siteUrl}${project.bannerImage}`
-      : project.bannerImage
-    : undefined;
+  // The dedicated `ogImage` when the project has one, then its banner. Both are
+  // optional on a project, so this can legitimately come back undefined.
+  const og = socialImage(project, project.title);
 
   return {
     title: `${project.title} — Case Study`,
@@ -53,22 +55,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: project.shortDesc,
       url: canonical,
       type: "article",
-      ...(ogImage && {
-        images: [
-          {
-            url: ogImage,
-            width: 1200,
-            height: 630,
-            alt: project.bannerAlt ?? project.title,
-          },
-        ],
-      }),
+      // Falling through to the generated site card rather than omitting the
+      // key: declaring `openGraph` at all replaces the root segment's injected
+      // images, so a banner-less project used to unfurl with no picture at all.
+      images: og
+        ? [{ url: og.url, width: 1200, height: 630, alt: og.alt }]
+        : defaultOgImages,
     },
     twitter: {
       card: "summary_large_image",
       title: `${project.title} — Case Study by Rahman`,
       description: project.shortDesc,
-      ...(ogImage && { images: [ogImage] }),
+      images: og ? [og.url] : defaultOgImages.map((image) => image.url),
       site: site.social.twitterHandle,
       creator: site.social.twitterHandle,
     },
@@ -89,6 +87,10 @@ export default async function ProjectPage({ params }: Props) {
     (url): url is string => Boolean(url)
   );
 
+  // Banner-first: schema.org `image` should be the picture on the page, not the
+  // share card the visitor never sees. Undefined when the project has neither.
+  const schemaImage = structuredDataImage(project);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -104,11 +106,8 @@ export default async function ProjectPage({ params }: Props) {
     creator: { "@id": `${siteUrl}/#person` },
     author: { "@id": `${siteUrl}/#person` },
     isPartOf: { "@id": `${siteUrl}/#website` },
-    ...(project.bannerImage && {
-      image: project.bannerImage.startsWith("/")
-        ? `${siteUrl}${project.bannerImage}`
-        : project.bannerImage,
-    }),
+    // Dropped entirely when absent, so the graph never carries an empty key.
+    ...(schemaImage && { image: schemaImage }),
     ...(sameAs.length > 0 && { sameAs }),
   };
 

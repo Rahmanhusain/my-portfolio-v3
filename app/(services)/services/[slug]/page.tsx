@@ -4,7 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { getServices, getServiceBySlug } from "@/lib/data/services";
 import { getSite } from "@/lib/data/site";
-import { siteUrl } from "@/lib/seo";
+import {
+  siteUrl,
+  defaultOgImages,
+  socialImage,
+  structuredDataImage,
+} from "@/lib/seo";
 import { renderBlock } from "@/lib/content-blocks";
 import TableOfContents from "@/components/ui/TableOfContents";
 import Faq from "@/components/ui/Faq";
@@ -26,9 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service) return {};
 
   const canonical = `${siteUrl}/services/${service.slug}`;
-  const ogImage = service.bannerImage.startsWith("/")
-    ? `${siteUrl}${service.bannerImage}`
-    : service.bannerImage;
+  // The dedicated `ogImage` when the service has one, otherwise its banner.
+  const og = socialImage(service, service.title);
 
   return {
     title: `${service.title} — Services`,
@@ -40,15 +44,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: service.shortDesc,
       url: canonical,
       type: "website",
-      images: [
-        { url: ogImage, width: 1200, height: 630, alt: service.bannerAlt },
-      ],
+      // Declaring `openGraph` at all replaces the root segment's injected
+      // images, so this must never be left empty — see lib/seo.ts.
+      images: og
+        ? [{ url: og.url, width: 1200, height: 630, alt: og.alt }]
+        : defaultOgImages,
     },
     twitter: {
       card: "summary_large_image",
       title: `${service.title} by Rahman`,
       description: service.shortDesc,
-      images: [ogImage],
+      images: og ? [og.url] : defaultOgImages.map((image) => image.url),
       site: site.social.twitterHandle,
       creator: site.social.twitterHandle,
     },
@@ -70,9 +76,9 @@ export default async function ServicePage({ params }: Props) {
     name: service.title,
     description: service.description,
     url: canonical,
-    image: service.bannerImage.startsWith("/")
-      ? `${siteUrl}${service.bannerImage}`
-      : service.bannerImage,
+    // Banner-first here: schema.org `image` should be the picture on the page,
+    // not the share card the visitor never sees.
+    image: structuredDataImage(service),
     provider: { "@id": `${siteUrl}/#business` },
     areaServed: "Worldwide",
     serviceType: service.title,

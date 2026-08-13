@@ -4,7 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPosts } from "@/lib/data/posts";
 import { getSite } from "@/lib/data/site";
-import { siteUrl } from "@/lib/seo";
+import {
+  siteUrl,
+  defaultOgImages,
+  socialImage,
+  structuredDataImage,
+} from "@/lib/seo";
 import type { Post } from "@/lib/types/content";
 import { renderBlock } from "@/lib/content-blocks";
 import TableOfContents from "@/components/ui/TableOfContents";
@@ -38,9 +43,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return {};
 
   const canonical = `${siteUrl}/blog/${post.slug}`;
-  const ogImage = post.bannerImage.startsWith("/")
-    ? `${siteUrl}${post.bannerImage}`
-    : post.bannerImage;
+  // The dedicated `ogImage` when the post has one, otherwise its banner.
+  const og = socialImage(post, post.title);
 
   return {
     title: post.title,
@@ -57,13 +61,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       modifiedTime: post.updatedAt.toISOString(),
       authors: ["Rahman"],
       tags: post.tags,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: post.bannerAlt }],
+      // Declaring `openGraph` at all replaces the root segment's injected
+      // images, so this must never be left empty — see lib/seo.ts.
+      images: og
+        ? [{ url: og.url, width: 1200, height: 630, alt: og.alt }]
+        : defaultOgImages,
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: [ogImage],
+      images: og ? [og.url] : defaultOgImages.map((image) => image.url),
       site: site.social.twitterHandle,
       creator: site.social.twitterHandle,
     },
@@ -81,9 +89,9 @@ export default async function BlogPostPage({ params }: Props) {
 
   const canonical = `${siteUrl}/blog/${post.slug}`;
   const isoDate = post.updatedAt.toISOString();
-  const image = post.bannerImage.startsWith("/")
-    ? `${siteUrl}${post.bannerImage}`
-    : post.bannerImage;
+  // Banner-first: schema.org `image` should be the picture on the page, not the
+  // share card the reader never sees.
+  const image = structuredDataImage(post);
 
   // `posts` is sorted newest-first, so "next" is the newer neighbour.
   const newer = posts[index - 1];

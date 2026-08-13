@@ -40,25 +40,59 @@ The filename **must exactly match** the `slug` field inside the file, e.g.
 | `readTime`    | string            | ✅       | e.g. `"6 min read"`. Displayed next to the date. |
 | `tags`        | string[]          | ✅       | Short labels shown as pills, e.g. `["React", "SEO"]`. |
 | `keywords`    | string[]          | ✅       | SEO keyword phrases, e.g. `["Next.js App Router SEO", "sitemap"]`. |
-| `bannerImage` | string            | ✅       | Path from `public/`, e.g. `"/blog/my-banner.jpg"`. Shown full-width at the top. Recommended size: 1200×630 px. |
+| `bannerImage` | string            | ✅       | Path from `public/`, e.g. `"/blog/my-banner.jpg"`. Shown full-width at the top of the post. |
 | `bannerAlt`   | string            | ✅       | Descriptive alt text for the banner image. |
-| `body`        | ContentBlock[]    | ✅       | Array of content blocks. See Part 3 for all block types. |
+| `ogImage`     | string            | ⚠️       | Optional. A separate 1200×630 image used **only** as the social share card. Omit it and the banner is used instead. See "Banner vs. share card" below. |
+| `ogAlt`       | string            | ⚠️       | Optional. Alt text for `ogImage`. Falls back to `bannerAlt`, then the title. |
+| `body`        | ContentBlock[]    | ✅       | Array of content blocks. See Part 4 for all block types. |
 
-> ### ⚠️ Keep `bannerImage` under ~300 KB
+---
+
+### Banner vs. share card (`bannerImage` vs. `ogImage`)
+
+These are two different jobs, which is why they are two different fields. The
+same split applies to blog posts, services, and projects.
+
+| | `bannerImage` | `ogImage` |
+|---|---|---|
+| Where it appears | Full-width strip at the top of the page | Nowhere on the site — only in link previews |
+| Who sees it | Readers who opened the page | People deciding whether to click, in WhatsApp / LinkedIn / Slack / X |
+| Shape | Cropped to a wide strip by the layout | Fixed 1200×630 tile, shown whole |
+| Required | ✅ (posts + services) | Optional |
+
+**`ogImage` is optional and falls back to `bannerImage`.** Every entry written
+before this field existed keeps working exactly as it did — if you do not set
+`ogImage`, the banner is used as the share card, which is the old behaviour.
+
+Set `ogImage` when the banner does not survive being shrunk. A banner is read at
+full width on a wide screen; a share card is often rendered as a small
+thumbnail in a chat list. Text that is comfortable in the banner is frequently
+unreadable in the preview, and a banner cropped to a thin strip leaves the share
+card looking empty at the top and bottom. A purpose-built card — bigger type,
+tighter crop, the title spelled out — is what fixes that.
+
+The two fields are also used differently behind the scenes: `og:image` and the
+Twitter card prefer `ogImage`, while the structured data Google reads
+(`schema.org` `image`) prefers `bannerImage`, because that one is supposed to be
+the picture actually on the page.
+
+> ### ⚠️ Keep share images under ~300 KB
 >
-> The banner doubles as the page's `og:image` — the picture that appears when
-> the link is shared. **WhatsApp refuses to fetch preview images much over
-> 300 KB and silently falls back to a bare text row.** Telegram, LinkedIn and
-> Slack are far more generous (several MB), so a heavy banner looks perfectly
-> fine everywhere you are likely to test it and broken on the one platform most
-> clients actually use.
+> This applies to whichever image ends up as the share card — `ogImage` if you
+> set one, `bannerImage` otherwise.
+>
+> **WhatsApp refuses to fetch preview images much over 300 KB and silently
+> falls back to a bare text row.** Telegram, LinkedIn and Slack are far more
+> generous (several MB), so a heavy image looks perfectly fine everywhere you
+> are likely to test it and broken on the one platform most clients actually
+> use.
 >
 > 1200×630 is the right *dimension*; it says nothing about file size. A
 > screenshot exported straight from a design tool is routinely 1–2 MB. Run it
 > through a compressor, or export as JPEG/WebP rather than PNG, before
 > uploading. The admin media library flags anything over the limit.
 >
-> Pages without their own banner fall back to the generated card at
+> Entries with neither image fall back to the generated card at
 > `app/opengraph-image.tsx`, which is ~45 KB and always works.
 
 ---
@@ -77,6 +111,8 @@ The filename **must exactly match** the `slug` field inside the file, e.g.
   "keywords": ["Next.js performance tips", "web performance optimization"],
   "bannerImage": "/blog/my-new-blog-post.jpg",
   "bannerAlt": "A descriptive sentence about what is shown in the banner image",
+  "ogImage": "/blog/my-new-blog-post-og.jpg",
+  "ogAlt": "Share card reading 'My New Blog Post Title'",
   "body": [
     {
       "type": "p",
@@ -169,10 +205,12 @@ The filename **must exactly match** the `slug` field inside the file.
 | `title`       | string             | ✅       | Shown as the `<h1>` and on service cards. |
 | `shortDesc`   | string             | ✅       | One-sentence summary. Used on the home page card and `/services` listing. |
 | `description` | string             | ✅       | 2–3 sentence lead paragraph shown at the top of the service page. |
-| `bannerImage` | string             | ✅       | Path from `public/`, e.g. `"/services/my-service.jpg"`. Recommended size: 1200×630 px. |
+| `bannerImage` | string             | ✅       | Path from `public/`, e.g. `"/services/my-service.jpg"`. Shown full-width at the top of the service page. |
 | `bannerAlt`   | string             | ✅       | Descriptive alt text for the banner image. |
+| `ogImage`     | string             | ⚠️       | Optional. A separate 1200×630 image used **only** as the social share card. Omit it and the banner is used instead. See [Banner vs. share card](#banner-vs-share-card-bannerimage-vs-ogimage). |
+| `ogAlt`       | string             | ⚠️       | Optional. Alt text for `ogImage`. Falls back to `bannerAlt`, then the title. |
 | `keywords`    | string[]           | ✅       | SEO keyword phrases for this service. |
-| `body`        | ContentBlock[]     | ✅       | Rich content rendered between the lead paragraph and the benefits grid. See Part 3. |
+| `body`        | ContentBlock[]     | ✅       | Rich content rendered between the lead paragraph and the benefits grid. See Part 4. |
 | `benefits`    | ServiceBenefit[]   | ✅       | Array of `{ "title": "...", "description": "..." }` objects. Rendered as a 2-column card grid. |
 | `whyMe`       | string             | ✅       | Single paragraph for the "Why work with me" section. |
 | `faq`         | ServiceFaq[]     | ⚠️       | Optional array of `{ "question": "...", "answer": "..." }` objects. Rendered as the **per-service** FAQ section (overrides the global FAQ when present). |
@@ -190,6 +228,8 @@ The filename **must exactly match** the `slug` field inside the file.
   "description": "Two or three sentences that open the service page. Explain what the service is, who it is for, and what makes your approach different.",
   "bannerImage": "/services/my-new-service.jpg",
   "bannerAlt": "A descriptive sentence about what is shown in the banner image",
+  "ogImage": "/services/my-new-service-og.jpg",
+  "ogAlt": "Share card reading 'My New Service'",
   "keywords": ["my service keyword phrase", "another keyword phrase"],
   "body": [
     {
@@ -335,6 +375,8 @@ project can skip the client-work fields without looking broken.
 |---|---|---|
 | `bannerImage` | string | Full-bleed banner at the top, and the card cover. **When absent**, both fall back to a gradient plate with the project `number` — which is why you can ship a case study before you have a screenshot. Put files in `public/projectsimage/`. |
 | `bannerAlt` | string | Alt text for the banner. Required *if* `bannerImage` is set — falls back to the title otherwise, which is worse for SEO. |
+| `ogImage` | string | A separate 1200×630 image used **only** as the social share card — see [Banner vs. share card](#banner-vs-share-card-bannerimage-vs-ogimage). Unlike posts and services, a project can have *neither* image; the link then unfurls with the generated site card from `app/opengraph-image.tsx`, never with nothing. The gradient plate is a layout device and is not used as a share card. |
+| `ogAlt` | string | Alt text for `ogImage`. Falls back to `bannerAlt`, then the title. |
 | `client` | string | A "Client" pair in the fact strip. Omit for personal work. |
 | `role` | string | A "Role" pair — `"Full-stack developer"`, `"Solo build"`. |
 | `duration` | string | A "Timeline" pair — `"9 weeks"`, `"Ongoing side project"`. |
@@ -378,8 +420,9 @@ If both `liveUrl` and `repoUrl` are missing, the whole button row is skipped.
 }
 ```
 
-Note what is *not* in that sample: no `bannerImage`, no `client`, no
-`testimonial`, no links. It renders correctly as-is.
+Note what is *not* in that sample: no `bannerImage`, no `ogImage`, no `client`,
+no `testimonial`, no links. It renders correctly as-is, and shares with the
+generated site card.
 
 ---
 
@@ -605,5 +648,7 @@ Renders a thin `<hr>` line. Use sparingly to mark a major topic shift.
 - **No nesting.** Blocks are a flat array. You cannot put a list inside a paragraph. Use separate blocks instead.
 - **Escape special characters in JSON.** A double quote inside a string must be written as `\"`. A backslash must be written as `\\`.
 - **New lines in `p` blocks.** JSON strings do not support literal newlines. If you want a line break, split into two separate `p` blocks.
-- **Images must be in `public/`.** Put post images in `public/blog/` and service images in `public/services/` to keep things organised.
+- **Images must be in `public/`.** Put post images in `public/blog/`, service images in `public/services/`, and project images in `public/projectsimage/` to keep things organised.
+- **Name share cards predictably.** An `-og` suffix next to the banner (`/blog/my-post.jpg` → `/blog/my-post-og.jpg`) makes it obvious which file is which when you come back to the folder in six months.
+- **`ogImage` is never rendered on the page.** If you want a picture visible in the article, that is `bannerImage` or an `image` block — setting `ogImage` alone changes nothing a visitor can see.
 - **`updatedAt` format is strict.** Must be `"YYYY-MM-DD"` (e.g. `"2025-07-04"`). This drives the sort order on the blog listing and the sitemap dates.

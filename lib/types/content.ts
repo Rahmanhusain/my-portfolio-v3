@@ -35,6 +35,12 @@ export interface Service {
   description: string;
   bannerImage: string;
   bannerAlt: string;
+  /** Purpose-built 1200×630 social card, never rendered on the page. Optional —
+   *  `bannerImage` is used for `og:image` when this is absent. See
+   *  `socialImage()` in `lib/seo.ts`. */
+  ogImage?: string;
+  /** Alt text for `ogImage`. Falls back to `bannerAlt`, then the title. */
+  ogAlt?: string;
   /** Long-tail phrases for `<meta name="keywords">` and JSON-LD. */
   keywords: string[];
   /** Two-to-three-word display chips shown next to the title in the
@@ -94,6 +100,12 @@ export interface Project {
   ProjectAlt?: string;
   bannerImage?: string;
   bannerAlt?: string;
+  /** Purpose-built 1200×630 social card, never rendered on the page. When both
+   *  this and `bannerImage` are absent the page falls back to the generated
+   *  card at `app/opengraph-image.tsx`. */
+  ogImage?: string;
+  /** Alt text for `ogImage`. Falls back to `bannerAlt`, then the title. */
+  ogAlt?: string;
   client?: string;
   role?: string;
   duration?: string;
@@ -117,6 +129,11 @@ export interface PostRaw {
   keywords: string[];
   bannerImage: string;
   bannerAlt: string;
+  /** Purpose-built 1200×630 social card, never rendered on the page. Optional —
+   *  `bannerImage` is used for `og:image` when this is absent. */
+  ogImage?: string;
+  /** Alt text for `ogImage`. Falls back to `bannerAlt`, then the title. */
+  ogAlt?: string;
   body: ContentBlock[];
 }
 

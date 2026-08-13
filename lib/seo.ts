@@ -37,6 +37,67 @@ export const defaultOgImages = [
 ];
 
 /**
+ * Turn a stored content image path into an absolute URL.
+ *
+ * Paths authored in `content/**` are relative to `public/` (`/blog/foo.jpg`),
+ * but `og:image` and JSON-LD both require an absolute URL — scrapers drop a
+ * relative one silently. Values that are already absolute (an R2 / CDN URL
+ * written by the admin panel's media library) pass through untouched.
+ */
+export function absoluteImageUrl(path: string): string {
+  return path.startsWith('/') ? `${siteUrl}${path}` : path;
+}
+
+/** The image fields every content entry may carry. */
+export interface ContentImages {
+  /** Purpose-built 1200×630 share card. Never rendered on the page. */
+  ogImage?: string;
+  ogAlt?: string;
+  /** The in-page banner shown at the top of the entry. */
+  bannerImage?: string;
+  bannerAlt?: string;
+}
+
+/**
+ * The share card for a content entry: the dedicated `ogImage` when the author
+ * supplied one, otherwise the in-page banner.
+ *
+ * The two are separate because they are different jobs. A banner is cropped to
+ * a wide strip and is read at whatever size the layout gives it; a share card
+ * is a fixed 1200×630 tile that has to survive being scaled into a WhatsApp
+ * thumbnail, so it usually wants larger type and a tighter crop. Falling back
+ * to the banner keeps `ogImage` fully optional — every entry authored before
+ * this field existed behaves exactly as it did.
+ *
+ * Returns `undefined` only when the entry has neither, which is possible for
+ * projects; callers should fall back to `defaultOgImages` rather than emitting
+ * an `openGraph` block with no image at all (see the note above).
+ */
+export function socialImage(
+  source: ContentImages,
+  fallbackAlt: string,
+): { url: string; alt: string } | undefined {
+  const path = source.ogImage ?? source.bannerImage;
+  if (!path) return undefined;
+  // `ogAlt` describes the share card, so it only applies when that card is the
+  // image actually being used.
+  const alt = (source.ogImage ? source.ogAlt : undefined) ?? source.bannerAlt ?? fallbackAlt;
+  return { url: absoluteImageUrl(path), alt };
+}
+
+/**
+ * The image for the JSON-LD graph — banner first, share card only as a
+ * fallback. This is the opposite priority to `socialImage()` on purpose:
+ * schema.org `image` means "the image that represents this content", and Google
+ * expects to find it on the page. The share card is marketing artwork that no
+ * visitor ever sees, so it is the second choice here.
+ */
+export function structuredDataImage(source: ContentImages): string | undefined {
+  const path = source.bannerImage ?? source.ogImage;
+  return path ? absoluteImageUrl(path) : undefined;
+}
+
+/**
  * Synchronous metadata defaults. Uses `defaultSite` rather than the live
  * config on purpose — it is not async, so it cannot read the database. Pages
  * that need the editable site config build their metadata in their own

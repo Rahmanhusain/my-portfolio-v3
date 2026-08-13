@@ -198,6 +198,9 @@ export default function Workflow() {
           duration: 0.45,
           stagger: 0.07,
           ease: 'power2.out',
+          /* Drop the inline styles afterwards so the resting state is owned by
+             the class list, not by whatever GSAP happened to leave behind. */
+          clearProps: 'opacity,transform',
           scrollTrigger: { trigger: sectionRef.current, start: 'top 75%', once: true },
         },
       );
@@ -261,20 +264,26 @@ export default function Workflow() {
           role="tablist"
           aria-label="Workflow steps"
         >
-          {/* Unlit rail */}
+          {/*
+            The rail must terminate exactly on the first and last circle centres.
+            With five equal, gapless columns those centres sit at 10% and 90% of
+            this container, and each circle centre is py-1 (0.25rem) + half of
+            h-11 (1.375rem) = 1.625rem from the top. The fill is a *child* of the
+            rail so its percentage width is measured against the rail's span, not
+            the full strip — that is what keeps it from overshooting either end.
+          */}
           <div
             aria-hidden
-            className="absolute top-[1.375rem] left-[4.5rem] right-[4.5rem] hidden md:block h-px bg-border"
-          />
-          {/* Animated fill */}
-          <div
-            ref={fillRef}
-            aria-hidden
-            className="absolute top-[1.375rem] left-[4.5rem] hidden md:block h-px bg-gradient-to-r from-fg to-muted origin-left"
-            style={{ width: '0%' }}
-          />
+            className="absolute left-[10%] right-[10%] top-[1.625rem] -translate-y-1/2 h-0.5 rounded-full bg-border"
+          >
+            <div
+              ref={fillRef}
+              className="h-full rounded-full bg-gradient-to-r from-fg to-muted"
+              style={{ width: '0%' }}
+            />
+          </div>
 
-          <div className="grid grid-cols-5 gap-2 md:gap-0 relative z-10">
+          <div className="grid grid-cols-5 relative z-10">
             {steps.map((s, i) => {
               const isActive = active === i;
               const isPast   = i < active;
@@ -290,21 +299,17 @@ export default function Workflow() {
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => goTo(i, true)}
                   onKeyDown={(e) => onTabKeyDown(e, i)}
-                  className={[
-                    'group flex flex-col items-center gap-2 px-1 py-1 outline-none',
-                    'transition-opacity duration-200',
-                    !isActive && !isPast ? 'opacity-55 hover:opacity-100' : 'opacity-100',
-                  ].join(' ')}
+                  className="group flex flex-col items-center gap-2 px-1 py-1 outline-none"
                 >
                   <span
                     className={[
                       'relative flex h-11 w-11 items-center justify-center rounded-full border',
-                      'transition-all duration-300',
+                      'transition-all duration-300 group-focus-visible:ring-2 group-focus-visible:ring-fg group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-bg',
                       isActive
-                        ? 'bg-fg border-fg text-bg shadow-[0_4px_20px_-6px_rgba(23,21,15,0.4)]'
+                        ? 'bg-fg border-fg text-bg ring-4 ring-fg/10 shadow-[0_6px_18px_-8px_rgba(23,21,15,0.45)]'
                         : isPast
                           ? 'bg-bg border-fg text-fg'
-                          : 'bg-bg border-border text-muted group-hover:border-faint group-hover:text-fg',
+                          : 'bg-bg border-border text-subtle group-hover:border-faint group-hover:text-fg',
                     ].join(' ')}
                   >
                     {isPast && !isActive ? (
@@ -314,19 +319,13 @@ export default function Workflow() {
                     ) : (
                       s.icon
                     )}
-                    {isActive && (
-                      <span
-                        aria-hidden
-                        className="absolute inset-0 rounded-full border border-fg animate-ping opacity-20"
-                      />
-                    )}
                   </span>
 
-                  <span className="hidden sm:block text-center">
-                    <span className={['block text-[11px] font-semibold uppercase tracking-widest leading-none transition-colors duration-200', isActive ? 'text-fg' : 'text-muted'].join(' ')}>
+                  <span className="block text-center">
+                    <span className={['block text-[10px] sm:text-[11px] font-semibold uppercase tracking-widest leading-none transition-colors duration-200', isActive ? 'text-fg' : 'text-muted'].join(' ')}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span className={['block mt-1 text-xs font-medium leading-snug transition-colors duration-200', isActive ? 'text-fg' : 'text-muted'].join(' ')}>
+                    <span className={['mt-1 hidden sm:block text-xs font-medium leading-snug transition-colors duration-200', isActive ? 'text-fg' : 'text-muted'].join(' ')}>
                       {s.title}
                     </span>
                   </span>
@@ -357,7 +356,7 @@ export default function Workflow() {
 
             <div className="relative grid md:grid-cols-[1fr_1.1fr]">
               {/* Left */}
-              <div className="p-8 md:p-10 md:border-r border-border flex flex-col gap-6">
+              <div className="p-6 sm:p-8 md:p-10 md:border-r border-border flex flex-col gap-6">
                 <div className="flex items-start gap-4">
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-bg text-fg">
                     {step.icon}
@@ -389,7 +388,7 @@ export default function Workflow() {
               </div>
 
               {/* Right */}
-              <div className="p-8 md:p-10 flex flex-col justify-center">
+              <div className="p-6 pt-0 sm:p-8 sm:pt-0 md:p-10 md:pt-10 flex flex-col justify-center">
                 <p className="text-[11px] font-medium uppercase tracking-widest text-muted mb-5">
                   What you get
                 </p>
@@ -407,7 +406,7 @@ export default function Workflow() {
             </div>
 
             {/* Footer */}
-            <div className="border-t border-border px-8 md:px-10 py-4 flex items-center gap-4">
+            <div className="border-t border-border px-5 sm:px-8 md:px-10 py-4 flex items-center gap-3 sm:gap-4">
               {/* Countdown bar — drains from 100→0 between advances */}
               <div className="flex-1 h-1 rounded-full bg-border overflow-hidden">
                 <div
@@ -491,14 +490,15 @@ export default function Workflow() {
           </div>
         </div>
 
-        {/* Mobile dot strip */}
-        <div className="mt-4 flex items-center justify-center gap-2 sm:hidden" aria-hidden>
+        {/* Mobile dot strip — a duplicate control surface for the tablist above,
+            so it stays out of the tab order as well as the accessibility tree. */}
+        <div className="mt-5 flex items-center justify-center gap-2 sm:hidden" aria-hidden>
           {steps.map((s, i) => (
             <button
               key={s.title}
               type="button"
+              tabIndex={-1}
               onClick={() => goTo(i, true)}
-              aria-label={s.title}
               className={['h-1.5 rounded-full transition-all duration-300', active === i ? 'w-6 bg-fg' : 'w-1.5 bg-faint'].join(' ')}
             />
           ))}
